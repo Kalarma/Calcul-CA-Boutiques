@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LGDJ — Extracteur CA (Offline)</title>
+  <style>
+    /* ====== THEME TOKENS ====== */
+    :root{
+      --ver: "v0.3.0";
+
+      /* dark defaults */
+      --bg0:#0b1020;
+      --bg1:#0c1426;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(0,0,0,.18);
+      --text:#eef2ff;
+      --muted:#aab3c7;
+      --line:rgba(255,255,255,.10);
+      --shadow: 0 18px 55px rgba(0,0,0,.45);
+
+      /* palette */
+      --pri:#4f46e5;   /* indigo */
+      --pri2:#22c55e;  /* green */
+      --warn:#f59e0b;  /* amber */
+      --danger:#ef4444;/* red */
+
+      --jeux:#60a5fa;  /* blue */
+      --acc:#fb7185;   /* rose */
+      --tcg:#a78bfa;   /* purple */
+
+      --r:18px;
+      --btn: rgba(255,255,255,.08);
+      --btnH: rgba(255,255,255,.12);
+      --chip: rgba(255,255,255,.06);
+
+      --input: rgba(0,0,0,.18);
+    }
+
+    [data-theme="light"]{
+      --bg0:#f5f7ff;
+      --bg1:#eef2ff;
+      --panel: rgba(255,255,255,.80);
+      --panel2: rgba(255,255,255,.65);
+      --text:#0b1020;
+      --muted:#54607a;
+      --line:rgba(11,16,32,.12);
+      --shadow: 0 18px 55px rgba(11,16,32,.16);
+      --btn: rgba(11,16,32,.06);
+      --btnH: rgba(11,16,32,.10);
+      --chip: rgba(11,16,32,.05);
+      --input: rgba(11,16,32,.05);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 18% 12%, rgba(79,70,229,.20), transparent 60%),
+        radial-gradient(900px 520px at 80% 14%, rgba(34,197,94,.14), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+      overflow:hidden; /* no page scroll */
+    }
+
+    .app{height:100vh; display:flex; flex-direction:column;}
+
+    .topbar{
+      padding:12px 14px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+
+    .brand{display:flex;align-items:center;gap:10px;font-weight:950;letter-spacing:.2px}
+    .logo{
+      width:36px;height:36px;border-radius:14px;
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(79,70,229,.18), rgba(34,197,94,.10));
+      display:grid;place-items:center;
+      box-shadow: var(--shadow);
+    }
+    .brandTitle{display:flex;flex-direction:column;line-height:1.05}
+    .brandTitle small{font-size:11px;color:var(--muted);font-weight:800}
+
+    .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+
+    .chip{
+      font-size:12px;color:var(--muted);
+      border:1px solid var(--line);
+      background: var(--chip);
+      padding:6px 10px;border-radius:999px;
+      white-space:nowrap;
+      font-weight:800;
+    }
+
+    button{
+      cursor:pointer;
+      border:1px solid var(--line);
+      background: var(--btn);
+      color:var(--text);
+      padding:8px 10px;
+      border-radius: 12px;
+      font-weight:900;
+      font-size:12px;
+      transition: background .15s ease, transform .04s ease;
+      user-select:none;
+    }
+    button:hover{background:var(--btnH)}
+    button:active{transform: translateY(1px)}
+
+    .btnPrimary{border-color: rgba(79,70,229,.35); background: rgba(79,70,229,.14)}
+    .btnPrimary:hover{background: rgba(79,70,229,.20)}
+
+    .btnTutor{border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.12)}
+    .btnTutor:hover{background: rgba(34,197,94,.18)}
+
+    .main{
+      flex:1;
+      padding:0 14px 14px;
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:12px;
+      min-height:0;
+    }
+    @media(max-width:980px){
+      .main{grid-template-columns:1fr;}
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      border-radius: var(--r);
+      overflow:hidden;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel .hd{
+      padding:12px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      border-bottom:1px solid var(--line);
+      background: var(--panel2);
+    }
+
+    .hdTitle{font-weight:950;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .bd{padding:12px; min-height:0;}
+
+    textarea, input{
+      width:100%;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: var(--input);
+      color:var(--text);
+      padding:11px 12px;
+      outline:none;
+      font-size:13px;
+      line-height:1.35;
+    }
+
+    textarea{
+      resize:none;
+      min-height:0;
+      height:100%;
+      overflow:auto;
+    }
+
+    .inputGrid{
+      display:grid;
+      grid-template-rows: 1fr auto;
+      gap:10px;
+      height:100%;
+      min-height:0;
+    }
+
+    .field{display:grid;gap:8px;margin-top:10px}
+    .label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.2px}
+    .help{color:var(--muted);font-size:12px}
+
+    .rightGrid{
+      display:grid;
+      grid-template-rows: auto auto 1fr;
+      gap:12px;
+      height:100%;
+      min-height:0;
+    }
+
+    .alert{
+      border:1px solid rgba(245,158,11,.40);
+      background: rgba(245,158,11,.10);
+      color: var(--text);
+      border-radius: 14px;
+      padding:10px 12px;
+      font-weight:850;
+      font-size:12px;
+      display:none;
+    }
+
+    .card{
+      border-radius: var(--r);
+      border:1px solid var(--line);
+      background: var(--panel);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      backdrop-filter: blur(10px);
+    }
+
+    .card .chd{
+      padding:14px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      border-bottom:1px solid var(--line);
+      background: var(--panel2);
+    }
+
+    .card .cbd{padding:12px 14px; min-height:0;}
+
+    .row{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:11px 0;
+      border-bottom:1px dashed rgba(125,125,155,.22);
+    }
+    [data-theme="light"] .row{border-bottom:1px dashed rgba(11,16,32,.16)}
+
+    .row:last-child{border-bottom:none}
+    .row.clickable{cursor:pointer}
+    .row.clickable:hover .k{color:var(--text)}
+
+    .k{display:flex;align-items:center;gap:10px;color:var(--muted);font-weight:900}
+
+    .badge{
+      width:10px;height:10px;border-radius:4px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.18);
+    }
+
+    .v{font-weight:980; letter-spacing:.2px}
+
+    .divider{height:1px;background: var(--line);margin:10px 0 8px}
+
+    .totalBox{
+      border-radius: 14px;
+      padding:12px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      border:1px solid var(--line);
+      background: var(--panel2);
+      margin-top:10px;
+    }
+
+    .totalLabel{font-weight:980;letter-spacing:.25px}
+    .totalValue{font-weight:980;font-size:18px}
+
+    /* List panel */
+    .listPanel{
+      border-radius: var(--r);
+      border:1px solid var(--line);
+      background: var(--panel);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      backdrop-filter: blur(10px);
+    }
+    .listPanel .lhd{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      background: var(--panel2);
+    }
+
+    .crumb{display:flex; align-items:center; gap:8px; font-weight:980; min-width:0;}
+    .crumb span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+    .list{
+      padding:10px 14px;
+      overflow:auto;
+      min-height:0;
+    }
+
+    .item{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:10px 0;
+      border-bottom:1px dashed rgba(125,125,155,.22);
+      cursor:pointer;
+    }
+    [data-theme="light"] .item{border-bottom:1px dashed rgba(11,16,32,.16)}
+
+    .item:last-child{border-bottom:none}
+    .item:hover .name{color:var(--text)}
+
+    .name{color:var(--muted); font-weight:900; display:flex; align-items:center; gap:10px; min-width:0;}
+    .name span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+    .marker{
+      width:18px;height:18px;border-radius:8px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.10);
+      display:grid;place-items:center;
+      font-size:12px;
+      flex:0 0 auto;
+    }
+
+    .amt{font-weight:980}
+
+    .empty{padding:22px;color:var(--muted);text-align:center;font-weight:900}
+
+    /* Pie */
+    .pieWrap{
+      border-radius: var(--r);
+      border:1px solid var(--line);
+      background: var(--panel);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      backdrop-filter: blur(10px);
+    }
+    .pieHd{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;background: var(--panel2);}
+    .pieBd{padding:12px 14px; display:grid; grid-template-columns: 180px 1fr; gap:14px; align-items:center;}
+    @media(max-width:980px){.pieBd{grid-template-columns:1fr}}
+
+    .legend{display:grid;gap:8px;}
+    .legRow{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .legL{display:flex;align-items:center;gap:10px; min-width:0;}
+    .sw{width:10px;height:10px;border-radius:4px; flex:0 0 auto;}
+    .legName{color:var(--muted);font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .legVal{font-weight:950}
+
+    /* Modal */
+    .modalBg{
+      position:fixed;inset:0;
+      background: rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:50;
+    }
+    [data-theme="light"] .modalBg{background: rgba(11,16,32,.22)}
+
+    .modal{
+      width:min(860px, 100%);
+      max-height: min(86vh, 860px);
+      overflow:auto;
+      border-radius: 18px;
+      border:1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .modal .mhd{
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      background: var(--panel2);
+    }
+
+    .modal .mbd{padding:14px 16px; color:var(--text)}
+    .modal h3{margin:0 0 10px 0; font-size:16px}
+    .modal ol{margin:0; padding-left:18px}
+    .modal li{margin:8px 0; color:var(--text)}
+    .muted{color:var(--muted)}
+
+    .foot{
+      padding:0 14px 14px;
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+      color:var(--muted);
+      font-size:11px;
+      font-weight:800;
+    }
+
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 19V5" stroke="currentColor" stroke-opacity=".9" stroke-width="2" stroke-linecap="round"/>
+            <path d="M4 19H20" stroke="currentColor" stroke-opacity=".9" stroke-width="2" stroke-linecap="round"/>
+            <path d="M8 16V11" stroke="currentColor" stroke-opacity=".85" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 16V8" stroke="currentColor" stroke-opacity=".85" stroke-width="2" stroke-linecap="round"/>
+            <path d="M16 16V13" stroke="currentColor" stroke-opacity=".85" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="brandTitle">
+          <div>Extracteur CA</div>
+          <small class="mono" id="ver"></small>
+        </div>
+      </div>
+
+      <div class="actions">
+        <span class="chip">Lues: <span class="mono" id="metaLines">0</span></span>
+        <span class="chip">Utilisées: <span class="mono" id="metaUsed">0</span></span>
+        <span class="chip">Erreurs: <span class="mono" id="metaErr">0</span></span>
+        <button class="btnTutor" id="btnTut">Tutoriel</button>
+        <button id="btnTheme">Clair</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- INPUT -->
+      <section class="panel">
+        <div class="hd">
+          <div class="hdTitle">Copier-coller PrestaShop</div>
+          <div class="actions">
+            <button class="btnPrimary" id="btnParse">Analyser</button>
+            <button id="btnClear">Vider</button>
+          </div>
+        </div>
+        <div class="bd inputGrid">
+          <textarea id="raw" placeholder="Colle ici le tableau HTML PrestaShop (Ctrl+V).\n\nAstuce : reste sur la page du tableau, fais Ctrl+A puis Ctrl+C, puis ici Ctrl+V."></textarea>
+
+          <div class="field">
+            <div class="label">Licences TCG (virgules)</div>
+            <input id="licenses" value="Pokémon, Lorcana, One Piece, Magic, Altered, Flesh and Blood, Star Wars Unlimited, Riftbound, Yu-Gi-Oh, Naruto" />
+            <div class="help">La détection TCG se fait par présence du nom de la licence dans la catégorie.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OUTPUT -->
+      <section class="panel">
+        <div class="hd">
+          <div class="hdTitle" id="rightTitle">Résultats</div>
+          <div class="actions">
+            <button id="btnBack" style="display:none">Retour</button>
+          </div>
+        </div>
+
+        <div class="bd rightGrid" id="rightBody">
+          <div class="alert" id="warnTwo">⚠️ Deux boutiques détectées. Cette application est pensée pour 1 boutique à la fois : les résultats peuvent être erronés.</div>
+          <!-- dynamic -->
+        </div>
+      </section>
+    </div>
+
+    <div class="foot">
+      <div class="mono">LGDJ — <span id="ver2"></span></div>
+      <div>Offline • HT • Drilldown</div>
+    </div>
+  </div>
+
+  <!-- Tutoriel modal -->
+  <div class="modalBg" id="modalBg" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" aria-label="Tutoriel">
+      <div class="mhd">
+        <div style="font-weight:980">Tutoriel — Export PrestaShop</div>
+        <button id="btnCloseTut">Fermer</button>
+      </div>
+      <div class="mbd">
+        <h3>Marche à suivre</h3>
+        <ol>
+          <li>Dans PrestaShop, sélectionne la boutique <b>Pigalle</b> ou <b>Gambetta</b> depuis n’importe quelle page (ex : <span class="muted">Tableau de bord</span>).</li>
+          <li>Va dans <b>Commandes</b> → <b>Rapport Commandes TVA Bénéfices</b>.</li>
+          <li>Dans <b>Préférences d'export</b> :
+            <ul>
+              <li><b>Type de rapport</b> : <b>Catégories</b></li>
+              <li><b>Format de sortie</b> : <b>html</b> (normalement déjà sélectionné)</li>
+            </ul>
+          </li>
+          <li>Dans <b>Filtres par Dates et Références</b> :
+            <ul>
+              <li>Dans <b>Par date de commande</b>, choisis la plage d’analyse (début/fin).</li>
+              <li>Pour une analyse <b>journalière</b> : mets la <b>même date</b> en début et fin.</li>
+            </ul>
+          </li>
+          <li>Dans <b>Filtre par statuts de commande</b> :
+            <ul>
+              <li>Tout décocher</li>
+              <li>Cocher uniquement <b>Store - Sale</b></li>
+            </ul>
+          </li>
+          <li>Clique sur le bouton vert <b>Exporter</b>.</li>
+          <li>Le tableau apparaît : reste sur la page, fais <b>Ctrl+A</b>, puis <b>Ctrl+C</b>.</li>
+          <li>Reviens ici et fais <b>Ctrl+V</b> dans la zone de collage : les résultats s’affichent.</li>
+        </ol>
+        <p class="muted" style="margin-top:12px">Astuce : l’app est conçue pour analyser une seule boutique à la fois (Pigalle OU Gambetta).</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const VERSION = "v0.3.0";
+
+  // --- Rules ---
+  const ACCESSORY_KEYWORDS = [
+    "accessoire","accessoires","protege","protège","sleeve","deck box","classeur","portfolio",
+    "des","dés","piste","pistes","protections acryliques","grenier ludique","booknooks",
+    "produits derives","produits dérivés","tapis"
+  ];
+
+  const BOUTIQUES = [
+    { key: "GAMBETTA", label: "LGDJ Gambetta", needles: ["lgdj gambetta","gambetta"] },
+    { key: "PIGALLE", label: "LGDJ Pigalle", needles: ["lgdj pigalle","pigalle"] }
+  ];
+
+  // --- Elements ---
+  const el = (id) => document.getElementById(id);
+  const els = {
+    app: el('app'),
+    ver: el('ver'),
+    ver2: el('ver2'),
+
+    raw: el('raw'),
+    licenses: el('licenses'),
+
+    metaLines: el('metaLines'),
+    metaUsed: el('metaUsed'),
+    metaErr: el('metaErr'),
+
+    btnParse: el('btnParse'),
+    btnClear: el('btnClear'),
+    btnBack: el('btnBack'),
+
+    rightTitle: el('rightTitle'),
+    rightBody: el('rightBody'),
+
+    warnTwo: el('warnTwo'),
+
+    btnTheme: el('btnTheme'),
+    btnTut: el('btnTut'),
+    modalBg: el('modalBg'),
+    btnCloseTut: el('btnCloseTut'),
+  };
+
+  // --- State ---
+  let parsed = null;
+  let view = { level: 'dashboard', category: null, tcgLicense: null };
+
+  // ===== helpers =====
+  function normalize(s){
+    return (s||"").toString().normalize("NFD").replace(/\p{Diacritic}/gu,"").toLowerCase();
+  }
+
+  function parseMoneyToNumber(token){
+    let t = token.replace(/[^0-9,.-]/g,"").replace(/\s+/g,"").trim();
+    if(!t) return null;
+    const hasComma = t.includes(",");
+    const hasDot = t.includes(".");
+    let cleaned = t;
+    if(hasComma && hasDot){
+      const lc = cleaned.lastIndexOf(",");
+      const ld = cleaned.lastIndexOf(".");
+      if(ld > lc) cleaned = cleaned.replace(/,/g,"");
+      else cleaned = cleaned.replace(/\./g,"").replace(/,/g,".");
+    } else if(hasComma && !hasDot){
+      cleaned = cleaned.replace(/,/g,".");
+    }
+    const n = Number(cleaned);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function extractHTFromLine(line){
+    const moneyTokens = [...line.matchAll(/(-?\d[\d\s.,]*)(\$|€)/g)].map(m => m[0]);
+    if(moneyTokens.length === 0) return null;
+    const nums = moneyTokens.map(parseMoneyToNumber).filter(v => typeof v === 'number');
+    if(nums.length >= 3) return nums[2];
+    return nums.length ? nums[nums.length - 1] : null;
+  }
+
+  function extractCategoryName(line){
+    const parts = line.split("\t").map(p=>p.trim()).filter(Boolean);
+    if(parts.length >= 4) return parts[2];
+    const m = line.match(/LGDJ\s+(?:Gambetta|Pigalle)\s+(?:\d+\s+)?(.+?)\s+\d+\s+0\$/i);
+    if(m && m[1]) return m[1].trim();
+    return line.replace(/^LGDJ\s+(Gambetta|Pigalle)\s*/i,"").slice(0,80).trim();
+  }
+
+  function detectBoutique(lineNorm){
+    for(const b of BOUTIQUES){
+      if(b.needles.some(n => lineNorm.includes(n))) return b.key;
+    }
+    return null;
+  }
+
+  function isAccessory(catNorm){
+    return ACCESSORY_KEYWORDS.some(k => catNorm.includes(normalize(k)));
+  }
+
+  function formatEUR(n){
+    const v = Number.isFinite(n) ? n : 0;
+    return v.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function sortEntriesDesc(map){
+    return [...map.entries()].sort((a,b)=> b[1]-a[1]);
+  }
+
+  function sumMap(map){
+    let t = 0;
+    for(const v of map.values()) t += v;
+    return t;
+  }
+
+  function pickLicense(catNorm, tcgNeedlesNorm){
+    for(const lic of tcgNeedlesNorm){
+      if(lic && catNorm.includes(lic)) return lic;
+    }
+    return null;
+  }
+
+  function prettyLicense(licNorm){
+    const src = (els.licenses.value || '').split(',').map(s=>s.trim()).filter(Boolean);
+    const target = normalize(licNorm);
+    for(const s of src){
+      if(normalize(s) === target) return s;
+    }
+    return licNorm;
+  }
+
+  function escapeHtml(s){
+    return (s||'').toString()
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'",'&#039;');
+  }
+
+  function getVar(name){
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  // ===== pie svg =====
+  function polarToCartesian(cx, cy, r, angle){
+    const rad = (angle - 90) * Math.PI / 180.0;
+    return { x: cx + (r * Math.cos(rad)), y: cy + (r * Math.sin(rad)) };
+  }
+
+  function arcPath(cx, cy, r, startAngle, endAngle){
+    const start = polarToCartesian(cx, cy, r, endAngle);
+    const end = polarToCartesian(cx, cy, r, startAngle);
+    const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+    return ['M', cx, cy,'L', start.x, start.y,'A', r, r, 0, largeArc, 0, end.x, end.y,'Z'].join(' ');
+  }
+
+  function renderPie(data, title){
+    const total = data.reduce((a,b)=>a + (b.value||0), 0);
+    const safe = data.filter(d => d.value > 0);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'pieWrap';
+
+    const hd = document.createElement('div');
+    hd.className = 'pieHd';
+    hd.innerHTML = `<div class="crumb"><span>${escapeHtml(title)}</span></div>`;
+    wrap.appendChild(hd);
+
+    const bd = document.createElement('div');
+    bd.className = 'pieBd';
+
+    if(total <= 0 || safe.length === 0){
+      bd.innerHTML = `<div class="empty">Aucune donnée</div>`;
+      wrap.appendChild(bd);
+      return wrap;
+    }
+
+    const size = 180;
+    const cx = size/2;
+    const cy = size/2;
+    const r = 82;
+
+    let angle = 0;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('width', String(size));
+    svg.setAttribute('height', String(size));
+    svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
+
+    // background
+    const bg = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    bg.setAttribute('cx', cx);
+    bg.setAttribute('cy', cy);
+    bg.setAttribute('r', r);
+    bg.setAttribute('fill', getVar('--panel2'));
+    bg.setAttribute('stroke', getVar('--line'));
+    bg.setAttribute('stroke-width', '1');
+    svg.appendChild(bg);
+
+    safe.forEach(d => {
+      const slice = (d.value / total) * 360;
+      const start = angle;
+      const end = angle + slice;
+      angle = end;
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d', arcPath(cx, cy, r, start, end));
+      path.setAttribute('fill', d.color || 'white');
+      path.setAttribute('stroke', 'rgba(0,0,0,.12)');
+      path.setAttribute('stroke-width', '1');
+      svg.appendChild(path);
+    });
+
+    const hole = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    hole.setAttribute('cx', cx);
+    hole.setAttribute('cy', cy);
+    hole.setAttribute('r', 46);
+    hole.setAttribute('fill', getVar('--bg0'));
+    hole.setAttribute('stroke', getVar('--line'));
+    hole.setAttribute('stroke-width', '1');
+    svg.appendChild(hole);
+
+    const t1 = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t1.setAttribute('x', cx);
+    t1.setAttribute('y', cy - 4);
+    t1.setAttribute('text-anchor','middle');
+    t1.setAttribute('fill', getVar('--text'));
+    t1.setAttribute('font-size','12');
+    t1.setAttribute('font-weight','900');
+    t1.textContent = formatEUR(total);
+
+    const t2 = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t2.setAttribute('x', cx);
+    t2.setAttribute('y', cy + 14);
+    t2.setAttribute('text-anchor','middle');
+    t2.setAttribute('fill', getVar('--muted'));
+    t2.setAttribute('font-size','10');
+    t2.setAttribute('font-weight','800');
+    t2.textContent = '€ HT';
+
+    svg.appendChild(t1);
+    svg.appendChild(t2);
+
+    const legend = document.createElement('div');
+    legend.className = 'legend';
+
+    safe
+      .slice()
+      .sort((a,b)=>b.value-a.value)
+      .forEach(d => {
+        const pct = total > 0 ? (d.value/total*100) : 0;
+        const row = document.createElement('div');
+        row.className = 'legRow';
+        row.innerHTML = `
+          <div class="legL">
+            <span class="sw" style="background:${d.color}"></span>
+            <span class="legName">${escapeHtml(d.name)}</span>
+          </div>
+          <div class="legVal">${formatEUR(d.value)} <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span></div>
+        `;
+        legend.appendChild(row);
+      });
+
+    bd.appendChild(svg);
+    bd.appendChild(legend);
+    wrap.appendChild(bd);
+    return wrap;
+  }
+
+  // ===== parse =====
+  function parseAll(){
+    const raw = els.raw.value || '';
+    const lines = raw.split(/\r?\n/);
+
+    const tcgNeedlesNorm = (els.licenses.value || '')
+      .split(',').map(s => normalize(s.trim())).filter(Boolean);
+
+    const rows = [];
+    let used = 0, err = 0;
+
+    for(const line of lines){
+      const ln = normalize(line);
+      const boutiqueKey = detectBoutique(ln);
+      if(!boutiqueKey) continue;
+
+      const ht = extractHTFromLine(line);
+      if(ht === null){ err++; continue; }
+
+      const cat = extractCategoryName(line);
+      const catNorm = normalize(cat);
+
+      const license = pickLicense(catNorm, tcgNeedlesNorm);
+      const tcg = !!license;
+      const acc = !tcg && isAccessory(catNorm);
+      const top = tcg ? 'TCG' : (acc ? 'Accessoires' : 'Jeux');
+
+      rows.push({ boutiqueKey, top, category: cat, categoryNorm: catNorm, ht, license });
+      used++;
+    }
+
+    // aggregate per boutique
+    const byBoutique = {};
+    for(const b of BOUTIQUES){
+      byBoutique[b.key] = {
+        totals: { Jeux:0, Accessoires:0, TCG:0, total:0, sansTCG:0 },
+        sub: {
+          Jeux: new Map(),
+          Accessoires: new Map(),
+          TCG: {
+            licenses: new Map(),
+            seriesByLicense: new Map(),
+          }
+        },
+        used: 0
+      };
+    }
+
+    for(const r of rows){
+      const b = byBoutique[r.boutiqueKey];
+      b.used += 1;
+      b.totals.total += r.ht;
+      if(r.top === 'Jeux'){
+        b.totals.Jeux += r.ht;
+        b.sub.Jeux.set(r.category, (b.sub.Jeux.get(r.category)||0) + r.ht);
+      } else if(r.top === 'Accessoires'){
+        b.totals.Accessoires += r.ht;
+        b.sub.Accessoires.set(r.category, (b.sub.Accessoires.get(r.category)||0) + r.ht);
+      } else {
+        b.totals.TCG += r.ht;
+        const lic = r.license || 'tcg';
+        b.sub.TCG.licenses.set(lic, (b.sub.TCG.licenses.get(lic)||0) + r.ht);
+        if(!b.sub.TCG.seriesByLicense.has(lic)) b.sub.TCG.seriesByLicense.set(lic, new Map());
+        const seriesMap = b.sub.TCG.seriesByLicense.get(lic);
+        seriesMap.set(r.category, (seriesMap.get(r.category)||0) + r.ht);
+      }
+    }
+
+    for(const b of BOUTIQUES){
+      byBoutique[b.key].totals.sansTCG = byBoutique[b.key].totals.total - byBoutique[b.key].totals.TCG;
+    }
+
+    // meta
+    els.metaLines.textContent = String(lines.length);
+    els.metaUsed.textContent  = String(used);
+    els.metaErr.textContent   = String(err);
+
+    // Determine detected boutiques
+    const present = BOUTIQUES.filter(b => byBoutique[b.key].used > 0);
+
+    // Warning if 2 boutiques
+    els.warnTwo.style.display = (present.length >= 2) ? 'block' : 'none';
+
+    // Choose active boutique (expect 1)
+    let activeKey = null;
+    if(present.length === 1) activeKey = present[0].key;
+    else if(present.length >= 2) activeKey = present[0].key; // fallback
+
+    parsed = { rows, byBoutique, present, activeKey, meta: { lines: lines.length, used, err } };
+
+    // reset view
+    view = { level: 'dashboard', category: null, tcgLicense: null };
+    render();
+  }
+
+  // ===== render =====
+  function render(){
+    els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove());
+
+    if(!parsed || !parsed.activeKey){
+      els.rightTitle.textContent = 'Résultats';
+      els.btnBack.style.display = 'none';
+
+      const empty = document.createElement('div');
+      empty.className = 'empty dyn';
+      empty.innerHTML = 'Colle un export puis clique <b>Analyser</b>.';
+      els.rightBody.appendChild(empty);
+      return;
+    }
+
+    els.btnBack.style.display = (view.level === 'dashboard') ? 'none' : 'inline-flex';
+
+    if(view.level === 'dashboard') renderDashboard();
+    else if(view.level === 'category') renderCategory();
+    else if(view.level === 'tcgLicense') renderTcgLicense();
+  }
+
+  function renderDashboard(){
+    const bKey = parsed.activeKey;
+    const label = BOUTIQUES.find(b=>b.key===bKey)?.label || bKey;
+    const t = parsed.byBoutique[bKey].totals;
+
+    els.rightTitle.textContent = label;
+
+    const colors = {
+      Jeux: getVar('--jeux'),
+      Accessoires: getVar('--acc'),
+      TCG: getVar('--tcg')
+    };
+
+    const pie = renderPie([
+      {name:'Jeux de société', value:t.Jeux, color: colors.Jeux},
+      {name:'Accessoires', value:t.Accessoires, color: colors.Accessoires},
+      {name:'TCG', value:t.TCG, color: colors.TCG},
+    ], 'Répartition (catégories)');
+    pie.classList.add('dyn');
+
+    const card = document.createElement('div');
+    card.className = 'card dyn';
+    card.innerHTML = `
+      <div class="chd">
+        <div class="hdTitle">Sous-totaux</div>
+      </div>
+      <div class="cbd">
+        <div class="row clickable" data-cat="Jeux">
+          <div class="k"><span class="badge" style="background:${colors.Jeux}"></span> Jeux de société</div>
+          <div class="v" style="color:${colors.Jeux}">${formatEUR(t.Jeux)} €</div>
+        </div>
+        <div class="row clickable" data-cat="Accessoires">
+          <div class="k"><span class="badge" style="background:${colors.Accessoires}"></span> Accessoires</div>
+          <div class="v" style="color:${colors.Accessoires}">${formatEUR(t.Accessoires)} €</div>
+        </div>
+        <div class="row clickable" data-cat="TCG">
+          <div class="k"><span class="badge" style="background:${colors.TCG}"></span> TCG</div>
+          <div class="v" style="color:${colors.TCG}">${formatEUR(t.TCG)} €</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="totalBox">
+          <div class="totalLabel">CA Total (sans TCG)</div>
+          <div class="totalValue" style="color:${getVar('--pri2')}">${formatEUR(t.sansTCG)} €</div>
+        </div>
+        <div class="totalBox">
+          <div class="totalLabel">CA TOTAL GLOBAL</div>
+          <div class="totalValue">${formatEUR(t.total)} €</div>
+        </div>
+      </div>
+    `;
+
+    // click to enter category
+    card.querySelectorAll('.row.clickable').forEach(n => {
+      n.addEventListener('click', () => {
+        view = { level:'category', category: n.getAttribute('data-cat'), tcgLicense:null };
+        render();
+      });
+    });
+
+    els.rightBody.appendChild(pie);
+    els.rightBody.appendChild(card);
+  }
+
+  function renderCategory(){
+    const bKey = parsed.activeKey;
+    const label = BOUTIQUES.find(b=>b.key===bKey)?.label || bKey;
+    const cat = view.category;
+
+    const colors = {
+      Jeux: getVar('--jeux'),
+      Accessoires: getVar('--acc'),
+      TCG: getVar('--tcg')
+    };
+
+    els.rightTitle.textContent = `${label} — ${cat}`;
+
+    const listPanel = document.createElement('div');
+    listPanel.className = 'listPanel dyn';
+
+    const lhd = document.createElement('div');
+    lhd.className = 'lhd';
+    lhd.innerHTML = `
+      <div class="crumb"><span>${escapeHtml(cat)}</span></div>
+      <div class="actions"><button id="btnHome">Accueil</button></div>
+    `;
+
+    const list = document.createElement('div');
+    list.className = 'list';
+
+    let pieData = [];
+
+    if(cat === 'Jeux' || cat === 'Accessoires'){
+      const map = parsed.byBoutique[bKey].sub[cat];
+      const entries = sortEntriesDesc(map);
+      const total = sumMap(map);
+
+      // pie = top 10 + autres
+      pieData = entries.slice(0,10).map(([name,value]) => ({ name, value, color: colors[cat] }));
+      if(entries.length > 10){
+        const topSum = entries.slice(0,10).reduce((a,e)=>a+e[1],0);
+        pieData.push({ name:'Autres', value: Math.max(0, total-topSum), color: 'rgba(125,125,155,.35)' });
+      }
+
+      if(entries.length === 0) list.innerHTML = `<div class="empty">Aucune sous-catégorie</div>`;
+      else {
+        entries.forEach(([name,value]) => {
+          const it = document.createElement('div');
+          it.className = 'item';
+          it.innerHTML = `
+            <div class="name"><span class="marker">›</span><span>${escapeHtml(name)}</span></div>
+            <div class="amt">${formatEUR(value)} €</div>
+          `;
+          it.addEventListener('click', () => {
+            // focus this item (like navigating), but no deeper hierarchy
+            view = { level:'category', category: cat, tcgLicense:null, leaf:{name, value} };
+            renderLeaf(cat, name, value, colors[cat]);
+          });
+          list.appendChild(it);
+        });
+      }
+
+    } else {
+      // TCG licenses
+      const licMap = parsed.byBoutique[bKey].sub.TCG.licenses;
+      const entries = sortEntriesDesc(licMap);
+      const total = sumMap(licMap);
+
+      pieData = entries.slice(0,10).map(([lic,value]) => ({ name: prettyLicense(lic), value, color: colors.TCG }));
+      if(entries.length > 10){
+        const topSum = entries.slice(0,10).reduce((a,e)=>a+e[1],0);
+        pieData.push({ name:'Autres', value: Math.max(0, total-topSum), color: 'rgba(125,125,155,.35)' });
+      }
+
+      if(entries.length === 0) list.innerHTML = `<div class="empty">Aucune licence TCG détectée</div>`;
+      else {
+        entries.forEach(([lic,value]) => {
+          const it = document.createElement('div');
+          it.className = 'item';
+          it.innerHTML = `
+            <div class="name"><span class="marker">›</span><span>${escapeHtml(prettyLicense(lic))}</span></div>
+            <div class="amt">${formatEUR(value)} €</div>
+          `;
+          it.addEventListener('click', () => {
+            view = { level:'tcgLicense', category:'TCG', tcgLicense: lic };
+            render();
+          });
+          list.appendChild(it);
+        });
+      }
+    }
+
+    listPanel.appendChild(lhd);
+    listPanel.appendChild(list);
+
+    const pie = renderPie(pieData, (cat==='TCG' ? 'Répartition (licences)' : 'Répartition (sous-catégories)'));
+    pie.classList.add('dyn');
+
+    els.rightBody.appendChild(pie);
+    els.rightBody.appendChild(listPanel);
+
+    listPanel.querySelector('#btnHome').addEventListener('click', () => {
+      view = { level:'dashboard', category:null, tcgLicense:null };
+      render();
+    });
+  }
+
+  function renderLeaf(cat, name, value, color){
+    // replace right panel dynamic content
+    els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove());
+
+    const pie = renderPie([{name, value, color}], 'Répartition (sélection)');
+    pie.classList.add('dyn');
+
+    const panel = document.createElement('div');
+    panel.className = 'listPanel dyn';
+    panel.innerHTML = `
+      <div class="lhd">
+        <div class="crumb"><span>${escapeHtml(cat)} › ${escapeHtml(name)}</span></div>
+        <div class="actions"><button id="btnUp">Retour</button></div>
+      </div>
+      <div class="list">
+        <div class="item" style="cursor:default">
+          <div class="name"><span class="marker">•</span><span>${escapeHtml(name)}</span></div>
+          <div class="amt" style="color:${color}">${formatEUR(value)} €</div>
+        </div>
+      </div>
+    `;
+
+    els.rightBody.appendChild(pie);
+    els.rightBody.appendChild(panel);
+
+    panel.querySelector('#btnUp').addEventListener('click', () => {
+      view = { level:'category', category: cat, tcgLicense:null };
+      render();
+    });
+  }
+
+  function renderTcgLicense(){
+    const bKey = parsed.activeKey;
+    const label = BOUTIQUES.find(b=>b.key===bKey)?.label || bKey;
+    const lic = view.tcgLicense;
+
+    els.rightTitle.textContent = `${label} — TCG — ${prettyLicense(lic)}`;
+
+    const seriesMap = parsed.byBoutique[bKey].sub.TCG.seriesByLicense.get(lic) || new Map();
+    const entries = sortEntriesDesc(seriesMap);
+    const total = sumMap(seriesMap);
+
+    const color = getVar('--tcg');
+
+    const pieData = entries.slice(0,10).map(([name,value]) => ({name, value, color}));
+    if(entries.length > 10){
+      const topSum = entries.slice(0,10).reduce((a,e)=>a+e[1],0);
+      pieData.push({ name:'Autres', value: Math.max(0, total-topSum), color: 'rgba(125,125,155,.35)' });
+    }
+
+    const pie = renderPie(pieData, 'Répartition (séries)');
+    pie.classList.add('dyn');
+
+    const listPanel = document.createElement('div');
+    listPanel.className = 'listPanel dyn';
+    listPanel.innerHTML = `
+      <div class="lhd">
+        <div class="crumb"><span>${escapeHtml(prettyLicense(lic))}</span></div>
+        <div class="actions"><button id="btnUp">Retour</button></div>
+      </div>
+      <div class="list" id="seriesList"></div>
+    `;
+
+    const list = listPanel.querySelector('#seriesList');
+    if(entries.length === 0){
+      list.innerHTML = `<div class="empty">Aucune série trouvée</div>`;
+    } else {
+      entries.forEach(([name,value]) => {
+        const it = document.createElement('div');
+        it.className = 'item';
+        it.style.cursor = 'default';
+        it.innerHTML = `
+          <div class="name"><span class="marker">•</span><span>${escapeHtml(name)}</span></div>
+          <div class="amt">${formatEUR(value)} €</div>
+        `;
+        list.appendChild(it);
+      });
+    }
+
+    els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove());
+    els.rightBody.appendChild(pie);
+    els.rightBody.appendChild(listPanel);
+
+    listPanel.querySelector('#btnUp').addEventListener('click', () => {
+      view = { level:'category', category:'TCG', tcgLicense:null };
+      render();
+    });
+  }
+
+  // ===== back btn =====
+  els.btnBack.addEventListener('click', () => {
+    if(view.level === 'tcgLicense') view = { level:'category', category:'TCG', tcgLicense:null };
+    else if(view.level === 'category') view = { level:'dashboard', category:null, tcgLicense:null };
+    else view = { level:'dashboard', category:null, tcgLicense:null };
+    render();
+  });
+
+  // ===== theme =====
+  function setTheme(theme){
+    els.app.setAttribute('data-theme', theme);
+    localStorage.setItem('lgdj_theme', theme);
+    els.btnTheme.textContent = (theme === 'light') ? 'Sombre' : 'Clair';
+    // re-render pie colors
+    if(parsed) render();
+  }
+
+  els.btnTheme.addEventListener('click', () => {
+    const cur = els.app.getAttribute('data-theme') || 'dark';
+    setTheme(cur === 'dark' ? 'light' : 'dark');
+  });
+
+  // ===== tutoriel =====
+  function openTut(){
+    els.modalBg.style.display = 'flex';
+    els.modalBg.setAttribute('aria-hidden','false');
+  }
+  function closeTut(){
+    els.modalBg.style.display = 'none';
+    els.modalBg.setAttribute('aria-hidden','true');
+  }
+
+  els.btnTut.addEventListener('click', openTut);
+  els.btnCloseTut.addEventListener('click', closeTut);
+  els.modalBg.addEventListener('click', (e)=>{ if(e.target === els.modalBg) closeTut(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeTut(); });
+
+  // ===== buttons =====
+  els.btnParse.addEventListener('click', parseAll);
+  els.btnClear.addEventListener('click', () => {
+    els.raw.value = '';
+    parsed = null;
+    view = { level:'dashboard', category:null, tcgLicense:null };
+    els.metaLines.textContent = '0';
+    els.metaUsed.textContent = '0';
+    els.metaErr.textContent = '0';
+    els.warnTwo.style.display = 'none';
+    render();
+    els.raw.focus();
+  });
+
+  // init
+  els.ver.textContent = VERSION;
+  els.ver2.textContent = VERSION;
+  const savedTheme = localStorage.getItem('lgdj_theme') || 'dark';
+  setTheme(savedTheme);
+  render();
+</script>
+</body>
+</html>
+```
