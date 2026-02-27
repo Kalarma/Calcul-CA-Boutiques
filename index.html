@@ -6,7 +6,7 @@
   <title>LGDJ — Extracteur CA (Offline)</title>
   <style>
     :root{
-      --ver: "v0.7.1";
+      --ver:"v0.7.2";
 
       --bg0:#0b1020;
       --bg1:#0c1426;
@@ -22,7 +22,6 @@
       --warn:#f59e0b;
       --bad:#fb7185;
 
-      /* base hue for pies */
       --pieBase:#60a5fa;
 
       --r:18px;
@@ -31,10 +30,8 @@
       --chip: rgba(255,255,255,.06);
       --input: rgba(0,0,0,.18);
 
-      /* hover highlight */
-      --hoverTxt: rgba(238,242,255,.92);
-      --hoverStroke: rgba(255,255,255,.22);
       --hoverGlow: 0 0 0 2px rgba(255,255,255,.10) inset;
+      --hoverStroke: rgba(255,255,255,.22);
     }
 
     *{box-sizing:border-box}
@@ -59,7 +56,6 @@
       justify-content:space-between;
       gap:10px;
     }
-
     .brand{display:flex;align-items:center;gap:10px;font-weight:950;letter-spacing:.2px;min-width:0}
     .logo{
       width:36px;height:36px;border-radius:14px;
@@ -129,18 +125,18 @@
     .btnGear:hover{background: rgba(245,158,11,.16)}
     .btnPrimary{border-color: rgba(79,70,229,.35); background: rgba(79,70,229,.14)}
     .btnPrimary:hover{background: rgba(79,70,229,.20)}
+    .btnDanger{border-color: rgba(251,113,133,.35); background: rgba(251,113,133,.12)}
+    .btnDanger:hover{background: rgba(251,113,133,.18)}
 
     .main{
       flex:1;
       padding:0 14px 14px;
       display:grid;
-      grid-template-columns: .62fr 1.38fr; /* input slimmer */
+      grid-template-columns: .60fr 1.40fr; /* left slim */
       gap:12px;
       min-height:0;
     }
-    @media(max-width:980px){
-      .main{grid-template-columns:1fr;}
-    }
+    @media(max-width:980px){ .main{grid-template-columns:1fr;} }
 
     .panel{
       border:1px solid var(--line);
@@ -153,37 +149,16 @@
       flex-direction:column;
       backdrop-filter: blur(10px);
     }
-
     .panel .hd{
       padding:12px;
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       border-bottom:1px solid var(--line);
       background: var(--panel2);
     }
+    .hdTitle{font-weight:950;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-    .hdTitle{
-      font-weight:950;
-      font-size:14px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .rightHdRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      width:100%;
-      min-width:0;
-    }
-    .rightDate{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:950;
-      white-space:nowrap;
-      flex:0 0 auto;
-    }
+    .rightHdRow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-width:0}
+    .rightDate{font-size:12px;color:var(--muted);font-weight:950;white-space:nowrap;flex:0 0 auto}
 
     .bd{padding:12px; min-height:0;}
 
@@ -198,18 +173,16 @@
       font-size:13px;
       line-height:1.35;
     }
-
     textarea{resize:none; min-height:0; overflow:auto; height: 33vh;} /* ~1/3 écran */
 
     .inputGrid{
       display:grid;
-      grid-template-rows: auto 1fr;
+      grid-template-rows: auto auto 1fr;
       gap:10px;
       height:100%;
       min-height:0;
     }
 
-    /* Right side scrolls */
     .rightScroll{
       height:100%;
       overflow:auto;
@@ -255,16 +228,10 @@
       align-items:start;
       min-height:0;
     }
-    @media(max-width:980px){.comboBd{grid-template-columns:1fr}}
+    @media(max-width:980px){ .comboBd{grid-template-columns:1fr} }
 
-    .crumb{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-weight:980;
-      min-width:0;
-    }
-    .crumb span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .crumb{display:flex;align-items:center;gap:8px;font-weight:980;min-width:0}
+    .crumb span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .hint{color:var(--muted);font-weight:850;font-size:12px;white-space:nowrap}
 
     .legend{
@@ -274,24 +241,24 @@
       max-height: 52vh;
       overflow:auto;
       padding-right:6px;
+      scroll-behavior:smooth;
     }
     .legRow{
       display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:8px 0; border-bottom:1px dashed rgba(125,125,155,.22);
+      padding:8px 8px; border-bottom:1px dashed rgba(125,125,155,.22);
       cursor:pointer;
       border-radius:10px;
     }
     .legRow:last-child{border-bottom:none}
     .legRow:hover{box-shadow: var(--hoverGlow);}
     .legRow:hover .legName{color:var(--text)}
-
-    .legRow.isHover .legName{color:var(--hoverTxt)}
     .legRow.isHover{box-shadow: var(--hoverGlow);}
 
     .legL{display:flex;align-items:center;gap:10px; min-width:0;}
     .sw{width:10px;height:10px;border-radius:4px; flex:0 0 auto;}
     .legName{color:var(--muted);font-weight:950; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
     .legVal{font-weight:950; white-space:nowrap;}
+    .qty{color:var(--muted); font-weight:850; font-size:12px; margin-left:8px;}
 
     .totals{display:grid;gap:10px;margin-top:10px;}
     .totalBox{
@@ -306,7 +273,7 @@
 
     .empty{padding:22px;color:var(--muted);text-align:center;font-weight:900}
 
-    /* Modal base */
+    /* Modals */
     .modalBg{
       position:fixed;inset:0;background: rgba(0,0,0,.45);
       display:none;align-items:center;justify-content:center;padding:16px;z-index:50;
@@ -328,7 +295,6 @@
     }
     .modal .mbd{padding:14px 16px;}
 
-    /* Tutoriel — encadré */
     .tutShell{
       border:1px solid var(--line);
       background: rgba(0,0,0,.18);
@@ -341,17 +307,8 @@
       border-bottom:1px solid rgba(255,255,255,.08);
       display:flex;align-items:center;justify-content:space-between;gap:12px;
     }
-    .tutTitle{
-      font-weight:980;
-      letter-spacing:.2px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    }
-    .tutStep{
-      color:var(--muted);
-      font-weight:900;
-      font-size:12px;
-      white-space:nowrap;
-    }
+    .tutTitle{font-weight:980;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .tutStep{color:var(--muted);font-weight:900;font-size:12px;white-space:nowrap;}
     .tutBody{padding:12px 14px}
     .tutBody h3{margin:0 0 8px 0; font-size:15px}
     .tutBody p{margin:0; color:var(--text); line-height:1.55}
@@ -364,7 +321,6 @@
     .seg button{border-radius:999px;padding:8px 12px;font-size:12px;font-weight:950;}
     .seg button.active{border-color: rgba(79,70,229,.45);background: rgba(79,70,229,.18);}
 
-    /* Pie slices */
     .slice{cursor:pointer; transition: opacity .15s ease, filter .15s ease;}
     .slice:hover{opacity:.90}
     .slice.isHover{
@@ -400,7 +356,7 @@
         <div class="brandTitle">
           <div class="ttl">Extracteur CA</div>
           <div class="verRow">
-            <button class="verBtn" id="btnVer">v0.7.1</button>
+            <button class="verBtn" id="btnVer">v0.7.2</button>
             <div class="dateInfo" id="dateInfo">—</div>
           </div>
         </div>
@@ -425,7 +381,20 @@
         </div>
 
         <div class="bd inputGrid">
-          <textarea id="raw" placeholder="Colle ici le tableau PrestaShop (Ctrl+V).\n\nSur PrestaShop : Ctrl+A → Ctrl+C → ici Ctrl+V."></textarea>
+          <textarea id="raw" placeholder="Colle ici le tableau PrestaShop (Ctrl+V)."></textarea>
+
+          <!-- Totals (left) -->
+          <div class="totals" id="leftTotals">
+            <div class="totalBox">
+              <div class="totalLabel">CA TOTAL (hors TCG)</div>
+              <div class="totalValue" style="color:var(--pri2)"><span id="leftSansTCG">0,00</span> €</div>
+            </div>
+            <div class="totalBox">
+              <div class="totalLabel">CA TOTAL GLOBAL</div>
+              <div class="totalValue"><span id="leftTotal">0,00</span> €</div>
+            </div>
+          </div>
+
           <div class="muted" style="font-size:12px;line-height:1.4">
             Analyse automatique dès qu’il y a du texte.
           </div>
@@ -453,13 +422,13 @@
     </div>
 
     <div class="foot">
-      <div class="mono">LGDJ — <span id="ver2">v0.7.1</span></div>
+      <div class="mono">LGDJ — <span id="ver2">v0.7.2</span></div>
       <div class="contact">Si problème ou suggestion d’amélioration : contacter Zao</div>
       <div>Offline • Drilldown • HT</div>
     </div>
   </div>
 
-  <!-- Tutoriel modal -->
+  <!-- Tutoriel -->
   <div class="modalBg" id="tutBg" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" aria-label="Tutoriel" style="width:min(860px, 100%)">
       <div class="mhd">
@@ -483,7 +452,7 @@
     </div>
   </div>
 
-  <!-- Settings modal -->
+  <!-- Settings -->
   <div class="modalBg" id="setBg" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" aria-label="Paramètres" style="width:min(820px, 100%)">
       <div class="mhd">
@@ -497,6 +466,15 @@
           <button id="qtyOn">Visibles</button>
         </div>
 
+        <div class="label">Escape Game indépendant ?</div>
+        <div class="muted" style="font-size:12px;margin-bottom:8px;line-height:1.4">
+          Oui = catégorie “Escape Game”. Non = rangé dans “Autre”.
+        </div>
+        <div class="seg" role="group" aria-label="Escape Game">
+          <button id="escNo">Non</button>
+          <button id="escYes">Oui</button>
+        </div>
+
         <div class="label">Puzzles & Casse-têtes réunis ?</div>
         <div class="seg" role="group" aria-label="Puzzles et casse-têtes">
           <button id="mergePCNo">Non</button>
@@ -505,7 +483,7 @@
 
         <div class="label">Événements indépendants ?</div>
         <div class="muted" style="font-size:12px;margin-bottom:8px;line-height:1.4">
-          Oui = tout regrouper dans une catégorie parent “Événement”. Non = laisser les événements dans leur catégorie (Jeux/TCG/etc.).
+          Oui = tout regrouper dans “Événement”. Non = laisser dans leur catégorie (Jeux/TCG/etc.).
         </div>
         <div class="seg" role="group" aria-label="Événements">
           <button id="evtNo">Non</button>
@@ -514,7 +492,7 @@
 
         <div class="label">Jeux de rôles indépendants ?</div>
         <div class="muted" style="font-size:12px;margin-bottom:8px;line-height:1.4">
-          Oui = catégorie parent “Jeux de rôles”. Non = intégrer à “Jeux de société”.
+          Oui = catégorie “Jeux de rôles”. Non = intégrer à “Jeux de société”.
         </div>
         <div class="seg" role="group" aria-label="JDR">
           <button id="jdrNo">Non</button>
@@ -530,6 +508,10 @@
           <button id="tcgAccYes">Oui</button>
         </div>
 
+        <div class="pager" style="justify-content:flex-end">
+          <button id="btnReset" class="btnDanger">Réinitialiser</button>
+        </div>
+
         <div class="muted" style="margin-top:12px;font-size:12px;line-height:1.45">
           Note : si la colonne Quantité n’est pas présente, l’app affiche “—”.
         </div>
@@ -537,7 +519,7 @@
     </div>
   </div>
 
-  <!-- Version / Changelog modal -->
+  <!-- Version / Changelog -->
   <div class="modalBg" id="verBg" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" aria-label="Changelog">
       <div class="mhd">
@@ -548,7 +530,7 @@
     </div>
   </div>
 
-  <!-- Stats debug modal -->
+  <!-- Stats debug -->
   <div class="modalBg" id="statsBg" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" aria-label="Détails des lignes">
       <div class="mhd">
@@ -583,12 +565,44 @@
   </div>
 
 <script>
-  const VERSION = "v0.7.1";
+  const VERSION = "v0.7.2";
 
-  // Licences (tu me diras quand ajouter/retirer)
+  // === Changelog (with dates + older = shorter) ===
+  const CHANGELOG = [
+    {
+      ver: "v0.7.2",
+      date: "2026-02-27",
+      items: [
+        "Changelog multi-versions avec dates, plus concis sur les anciennes versions",
+        "Totaux (hors TCG / global) affichés aussi à gauche",
+        "Paramètres: ajout Escape Game indépendant + bouton Réinitialiser (avec confirmation)",
+        "Confort: survol d’une part du camembert -> scroll auto vers la catégorie associée",
+        "Catégories: “Jeux enfants” devient un sous-dossier de “Jeux de société” (détail par “Jeux X ans”)",
+        "Catégories: “Autre” affiche le détail au clic"
+      ]
+    },
+    {
+      ver: "v0.7.1",
+      date: "2026-02-27",
+      items: [
+        "Nouvelles catégories + paramètres de regroupement",
+        "Mode GLOBAL si 2 boutiques collées (catégories uniquement)",
+        "Camembert + liste cliquables, drilldown TCG"
+      ]
+    },
+    {
+      ver: "v0.6.x",
+      date: "2026-02-26",
+      items: [
+        "HUD/scroll, tutoriel multi-pages, stats lues/utilisées/erreurs"
+      ]
+    }
+  ];
+
+  // === Licences (tu me diras quand ajouter/retirer) ===
   const TCG_LICENSES = [
-    "Pokémon", "Lorcana", "One Piece", "Magic", "Altered", "Flesh and Blood",
-    "Star Wars Unlimited", "Riftbound", "Yu-Gi-Oh", "Naruto"
+    "Pokémon","Lorcana","One Piece","Magic","Altered","Flesh and Blood",
+    "Star Wars Unlimited","Riftbound","Yu-Gi-Oh","Naruto"
   ];
 
   const ACCESSORY_KEYWORDS = [
@@ -617,6 +631,10 @@
     "manuels"
   ];
 
+  const ESCAPE_KEYWORDS = [
+    "escape game","escape","4escape","4-escape"
+  ];
+
   const OTHER_KEYWORDS = [
     "categorie supprimee","catégorie supprimée","categorie supprimée",
     "accueil","livraison","acompte","tests","test",
@@ -630,7 +648,6 @@
     { key: "PIGALLE", label: "LGDJ Pigalle", needles: ["lgdj pigalle","pigalle"] }
   ];
 
-  // Lignes à ignorer (pas des "erreurs")
   const IGNORE_LINE_PATTERNS = [
     "-commande en attente de retrait - gambetta",
     "-commande en attente de retrait - pigalle"
@@ -651,6 +668,9 @@
     rightBody: el('rightBody'),
     warnTwo: el('warnTwo'),
 
+    leftSansTCG: el('leftSansTCG'),
+    leftTotal: el('leftTotal'),
+
     // tutoriel
     btnTut: el('btnTut'),
     tutBg: el('tutBg'),
@@ -668,6 +688,8 @@
     btnCloseSet: el('btnCloseSet'),
     qtyOff: el('qtyOff'),
     qtyOn: el('qtyOn'),
+    escNo: el('escNo'),
+    escYes: el('escYes'),
     mergePCNo: el('mergePCNo'),
     mergePCYes: el('mergePCYes'),
     evtNo: el('evtNo'),
@@ -676,6 +698,7 @@
     jdrYes: el('jdrYes'),
     tcgAccNo: el('tcgAccNo'),
     tcgAccYes: el('tcgAccYes'),
+    btnReset: el('btnReset'),
 
     // version
     btnVer: el('btnVer'),
@@ -693,21 +716,28 @@
     btnCopyStats: el('btnCopyStats'),
   };
 
+  const DEFAULTS = {
+    showQty: 'OFF',
+    escapeStandalone: 'NO',
+    mergePuzzleCasse: 'NO',
+    eventsStandalone: 'NO',
+    jdrStandalone: 'NO',
+    tcgAccessoriesInTcg: 'YES'
+  };
+
   const settings = {
-    showQty: (localStorage.getItem('lgdj_qty') || 'OFF'),              // OFF/ON
-    mergePuzzleCasse: (localStorage.getItem('lgdj_merge_pc') || 'NO'), // NO/YES
-    eventsStandalone: (localStorage.getItem('lgdj_evt') || 'NO'),      // NO/YES
-    jdrStandalone: (localStorage.getItem('lgdj_jdr') || 'NO'),         // NO/YES
-    tcgAccessoriesInTcg: (localStorage.getItem('lgdj_tcgacc') || 'YES')// YES/NO (default YES)
+    showQty: (localStorage.getItem('lgdj_qty') || DEFAULTS.showQty),
+    escapeStandalone: (localStorage.getItem('lgdj_escape') || DEFAULTS.escapeStandalone),
+    mergePuzzleCasse: (localStorage.getItem('lgdj_merge_pc') || DEFAULTS.mergePuzzleCasse),
+    eventsStandalone: (localStorage.getItem('lgdj_evt') || DEFAULTS.eventsStandalone),
+    jdrStandalone: (localStorage.getItem('lgdj_jdr') || DEFAULTS.jdrStandalone),
+    tcgAccessoriesInTcg: (localStorage.getItem('lgdj_tcgacc') || DEFAULTS.tcgAccessoriesInTcg)
   };
 
   let parsed = null;
   let view = { level: 'dashboard', category: null, tcgLicense: null, globalOnly: false };
 
-  // Debug lists
   let debug = { used: [], err: [], ignored: [] };
-
-  // Hover mapping (pie <-> legend)
   let hover = { key:null };
 
   function normalize(s){
@@ -736,11 +766,10 @@
     const moneyTokens = [...line.matchAll(/(-?\d[\d\s.,]*)(\$|€)/g)].map(m => m[0]);
     if(moneyTokens.length === 0) return null;
     const nums = moneyTokens.map(parseMoneyToNumber).filter(v => typeof v === 'number');
-    if(nums.length >= 3) return nums[2]; // Total produits HT (format PrestaShop export cat)
+    if(nums.length >= 3) return nums[2];
     return nums.length ? nums[nums.length - 1] : null;
   }
 
-  // Qty: accepte aussi "0"
   function extractQtyFromLine(line){
     const parts = line.split("\t").map(p=>p.trim());
     if(parts.length >= 5){
@@ -787,35 +816,17 @@
     return arr.some(k => catNorm.includes(normalize(k)));
   }
 
-  function isAccessory(catNorm){
-    return hasAny(catNorm, ACCESSORY_KEYWORDS);
-  }
-
-  function isPuzzle(catNorm){
-    return hasAny(catNorm, PUZZLE_KEYWORDS);
-  }
-
-  function isCasse(catNorm){
-    return hasAny(catNorm, CASSE_KEYWORDS);
-  }
-
-  function isJdr(catNorm){
-    return hasAny(catNorm, JDR_KEYWORDS);
-  }
-
-  function isOther(catNorm){
-    return hasAny(catNorm, OTHER_KEYWORDS) || catNorm.trim()==="";
-  }
-
-  function isEvent(catNorm){
-    return hasAny(catNorm, EVENT_KEYWORDS);
-  }
+  function isAccessory(catNorm){ return hasAny(catNorm, ACCESSORY_KEYWORDS); }
+  function isPuzzle(catNorm){ return hasAny(catNorm, PUZZLE_KEYWORDS); }
+  function isCasse(catNorm){ return hasAny(catNorm, CASSE_KEYWORDS); }
+  function isJdr(catNorm){ return hasAny(catNorm, JDR_KEYWORDS); }
+  function isEscape(catNorm){ return hasAny(catNorm, ESCAPE_KEYWORDS); }
+  function isOther(catNorm){ return hasAny(catNorm, OTHER_KEYWORDS) || catNorm.trim()===""; }
+  function isEvent(catNorm){ return hasAny(catNorm, EVENT_KEYWORDS); }
 
   function isKids(catNorm){
-    // Jeux X ans, Jeux enfants, + Défis Nature
     if(catNorm.includes("defis nature") || catNorm.includes("défis nature")) return true;
     if(catNorm.includes("jeux enfants")) return true;
-    // jeux 2 ans / jeux 3 ans etc
     return /jeux\s*\d+\s*ans/.test(catNorm);
   }
 
@@ -833,9 +844,7 @@
     return v.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2});
   }
 
-  function qtyText(q){
-    return Number.isFinite(q) ? String(q) : "—";
-  }
+  function qtyText(q){ return Number.isFinite(q) ? String(q) : "—"; }
 
   // ----- date range -----
   function pad2(x){ return String(x).padStart(2,'0'); }
@@ -859,6 +868,14 @@
       one && range.from === y ? " (hier)" :
       "";
     return base + tag;
+  }
+
+  function updateDates(){
+    const raw = els.raw.value || '';
+    const range = extractDateRange(raw);
+    const label = dateLabel(range);
+    els.dateInfo.textContent = label;
+    els.rightDate.textContent = label;
   }
 
   // ----- Color utilities -----
@@ -885,9 +902,7 @@
       return rgbToHex(mix(base.r, light.r, tt), mix(base.g, light.g, tt), mix(base.b, light.b, tt));
     }
   }
-  function getVar(name){
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  }
+  function getVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
   // ===== pie svg =====
   function polarToCartesian(cx, cy, r, angle){
@@ -903,12 +918,19 @@
 
   function setHover(key){
     hover.key = key;
+
     document.querySelectorAll('[data-slice-key]').forEach(p => {
       p.classList.toggle('isHover', p.getAttribute('data-slice-key') === key);
     });
     document.querySelectorAll('[data-row-key]').forEach(r => {
       r.classList.toggle('isHover', r.getAttribute('data-row-key') === key);
     });
+
+    // Auto-scroll category into view (comfort)
+    const row = document.querySelector(`[data-row-key="${CSS.escape(key)}"]`);
+    if(row){
+      row.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
+    }
   }
   function clearHover(){
     hover.key = null;
@@ -932,11 +954,7 @@
     const bd = document.createElement('div');
     bd.className = 'comboBd';
 
-    const size = 200;
-    const cx = size/2;
-    const cy = size/2;
-    const r = 88;
-
+    const size = 200, cx = size/2, cy = size/2, r = 88;
     const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.setAttribute('width', String(size));
     svg.setAttribute('height', String(size));
@@ -975,7 +993,6 @@
 
       path.addEventListener('mouseenter', () => setHover(d.key));
       path.addEventListener('mouseleave', () => clearHover());
-
       if(onPick) path.addEventListener('click', () => onPick(d));
       svg.appendChild(path);
     });
@@ -1029,13 +1046,12 @@
           <div class="legVal">
             ${formatEUR(d.value)}
             <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span>
-            ${settings.showQty==='ON' ? `<span style="margin-left:8px;color:${getVar('--muted')};font-weight:850;font-size:12px">Qté: ${qtyText(d.qty)}</span>` : ''}
+            ${settings.showQty==='ON' ? `<span class="qty">Qté: ${qtyText(d.qty)}</span>` : ''}
           </div>
         `;
 
         row.addEventListener('mouseenter', () => setHover(d.key));
         row.addEventListener('mouseleave', () => clearHover());
-
         if(onPick) row.addEventListener('click', () => onPick(d));
         legend.appendChild(row);
       });
@@ -1047,7 +1063,7 @@
     totalsWrap.className = 'totals';
     totalsWrap.innerHTML = `
       <div class="totalBox">
-        <div class="totalLabel">CA Total (hors TCG)</div>
+        <div class="totalLabel">CA TOTAL (hors TCG)</div>
         <div class="totalValue" style="color:${getVar('--pri2')}">${formatEUR(totals.sansTCG)} €</div>
       </div>
       <div class="totalBox">
@@ -1064,13 +1080,13 @@
     return wrap;
   }
 
-  // ===== classification =====
+  // ===== classification / buckets =====
   const TOP = {
     JEUX: "Jeux de société",
-    KIDS: "Jeux enfants",
     PUZ: "Puzzles",
     CASSE: "Casse-têtes",
     JDR: "Jeux de rôles",
+    ESC: "Escape Game",
     ACC: "Accessoires",
     TCG: "TCG",
     EVT: "Événement",
@@ -1078,27 +1094,20 @@
     PUZCASSE: "Puzzles & Casse-têtes"
   };
 
-  function topLabelForKey(key){
-    return key; // keys are already labels
-  }
-
   function makeBucket(){
     return {
-      totalsHT: new Map(),      // topKeyLabel -> total
-      totalsQty: new Map(),     // topKeyLabel -> qty
-      sub: new Map(),           // topKeyLabel -> Map(subKey -> {value, qty, hasQty})
-      tcg: {                    // extra for tcg drilldown
-        licenses: new Map(),    // licNorm -> {value, qty, hasQty}
-        seriesByLicense: new Map() // licNorm -> Map(seriesName -> {value, qty, hasQty})
+      totalsHT: new Map(),      // topKey -> total
+      totalsQty: new Map(),     // topKey -> qty
+      sub: new Map(),           // topKey -> Map(subKey -> {value, qty, hasQty})
+      tcg: {
+        licenses: new Map(),
+        seriesByLicense: new Map()
       },
       total: 0,
       totalQty: 0
     };
   }
-
-  function bumpMap(map, key, add){
-    map.set(key, (map.get(key) || 0) + add);
-  }
+  function bumpMap(map, key, add){ map.set(key, (map.get(key) || 0) + add); }
 
   function addToSub(bucket, topKey, subKey, ht, qty){
     if(!bucket.sub.has(topKey)) bucket.sub.set(topKey, new Map());
@@ -1106,30 +1115,60 @@
     if(!m.has(subKey)) m.set(subKey, { value:0, qty:0, hasQty:false });
     const cur = m.get(subKey);
     cur.value += ht;
-    if(qty !== null && qty !== undefined && Number.isFinite(qty)){
-      cur.qty += qty;
-      cur.hasQty = true;
-    }
+    if(qty != null && Number.isFinite(qty)){ cur.qty += qty; cur.hasQty = true; }
   }
 
   function addToTcg(bucket, licNorm, seriesName, ht, qty){
     if(!bucket.tcg.licenses.has(licNorm)) bucket.tcg.licenses.set(licNorm, { value:0, qty:0, hasQty:false });
     const lic = bucket.tcg.licenses.get(licNorm);
     lic.value += ht;
-    if(qty !== null && qty !== undefined && Number.isFinite(qty)){
-      lic.qty += qty;
-      lic.hasQty = true;
-    }
+    if(qty != null && Number.isFinite(qty)){ lic.qty += qty; lic.hasQty = true; }
 
     if(!bucket.tcg.seriesByLicense.has(licNorm)) bucket.tcg.seriesByLicense.set(licNorm, new Map());
     const sm = bucket.tcg.seriesByLicense.get(licNorm);
     if(!sm.has(seriesName)) sm.set(seriesName, { value:0, qty:0, hasQty:false });
     const s = sm.get(seriesName);
     s.value += ht;
-    if(qty !== null && qty !== undefined && Number.isFinite(qty)){
-      s.qty += qty;
-      s.hasQty = true;
-    }
+    if(qty != null && Number.isFinite(qty)){ s.qty += qty; s.hasQty = true; }
+  }
+
+  function addRow(bucket, r){
+    bucket.total += r.ht;
+    if(r.qty != null && Number.isFinite(r.qty)) bucket.totalQty += r.qty;
+
+    bumpMap(bucket.totalsHT, r.top, r.ht);
+    if(r.qty != null && Number.isFinite(r.qty)) bumpMap(bucket.totalsQty, r.top, r.qty);
+
+    addToSub(bucket, r.top, r.sub, r.ht, r.qty);
+
+    if(r.top === TOP.TCG && r.license) addToTcg(bucket, r.license, r.sub, r.ht, r.qty);
+  }
+
+  function calcSansTCG(bucket){
+    const tcg = bucket.totalsHT.get(TOP.TCG) || 0;
+    return bucket.total - tcg;
+  }
+
+  function buildTopOrder(){
+    const order = [
+      TOP.JEUX,
+      (settings.mergePuzzleCasse === 'YES') ? TOP.PUZCASSE : TOP.PUZ,
+      (settings.mergePuzzleCasse === 'YES') ? null : TOP.CASSE,
+      (settings.jdrStandalone === 'YES') ? TOP.JDR : null,
+      (settings.escapeStandalone === 'YES') ? TOP.ESC : null,
+      TOP.ACC,
+      TOP.TCG,
+      (settings.eventsStandalone === 'YES') ? TOP.EVT : null,
+      TOP.AUTRE
+    ].filter(Boolean);
+    return [...new Set(order)];
+  }
+
+  // Special: "Jeux enfants" is now a sub inside Jeux de société (not top).
+  function isKids(catNorm){
+    if(catNorm.includes("defis nature") || catNorm.includes("défis nature")) return true;
+    if(catNorm.includes("jeux enfants")) return true;
+    return /jeux\s*\d+\s*ans/.test(catNorm);
   }
 
   function classify(catName){
@@ -1138,109 +1177,67 @@
     const acc = isAccessory(catNorm);
     const evt = isEvent(catNorm);
     const other = isOther(catNorm);
+    const esc = isEscape(catNorm);
 
-    // Autre (technique)
+    // OTHER (technique)
     if(other){
       return { top: TOP.AUTRE, sub: catName, tcgLicense:null };
     }
 
-    // Événements -> catégorie parent si activé
+    // Escape game -> standalone or Autre
+    if(esc){
+      if(settings.escapeStandalone === 'YES'){
+        return { top: TOP.ESC, sub: catName, tcgLicense:null };
+      }
+      return { top: TOP.AUTRE, sub: catName, tcgLicense:null };
+    }
+
+    // Events -> parent if enabled
     if(settings.eventsStandalone === 'YES' && evt){
       return { top: TOP.EVT, sub: catName, tcgLicense:null };
     }
 
-    // Jeux enfants
+    // Kids -> as subfolder in Jeux de société
     if(isKids(catNorm)){
-      return { top: TOP.KIDS, sub: TOP.KIDS, tcgLicense:null }; // tout regroupé en "Jeux enfants"
+      // subKey normalized to a parent "Jeux enfants" for drilldown
+      return { top: TOP.JEUX, sub: "Jeux enfants", tcgLicense:null, kidsLeaf: catName };
     }
 
-    // Casse-têtes (inclut Perplexus, Smart Games)
+    // Casse-têtes
     if(isCasse(catNorm)){
       const topKey = (settings.mergePuzzleCasse === 'YES') ? TOP.PUZCASSE : TOP.CASSE;
       return { top: topKey, sub: catName, tcgLicense:null };
     }
 
-    // Puzzles (inclut Cavallini, Jours fériés)
+    // Puzzles
     if(isPuzzle(catNorm)){
       const topKey = (settings.mergePuzzleCasse === 'YES') ? TOP.PUZCASSE : TOP.PUZ;
       return { top: topKey, sub: catName, tcgLicense:null };
     }
 
-    // Jeux de rôles (selon param)
-    if(isJdr(catNorm)){
-      if(settings.jdrStandalone === 'YES'){
-        return { top: TOP.JDR, sub: catName, tcgLicense:null };
-      }
-      // sinon => Jeux de société
+    // JDR (standalone or inside Jeux)
+    if(isJdr(catNorm) && settings.jdrStandalone === 'YES'){
+      return { top: TOP.JDR, sub: catName, tcgLicense:null };
     }
 
-    // TCG (licence détectée)
+    // TCG
     if(lic){
-      // Accessoires TCG : soit dans la licence, soit dans Accessoires
       if(acc && settings.tcgAccessoriesInTcg !== 'YES'){
         return { top: TOP.ACC, sub: catName, tcgLicense:null };
       }
       return { top: TOP.TCG, sub: catName, tcgLicense: lic };
     }
 
-    // Accessoires (non TCG)
+    // Accessories (non TCG)
     if(acc){
       return { top: TOP.ACC, sub: catName, tcgLicense:null };
     }
 
-    // Jeux de dessin => Jeux de société (tombe ici)
+    // default -> Jeux de société
     return { top: TOP.JEUX, sub: catName, tcgLicense:null };
   }
 
-  function buildTopOrder(){
-    const order = [
-      TOP.JEUX,
-      TOP.KIDS,
-      (settings.mergePuzzleCasse === 'YES') ? TOP.PUZCASSE : TOP.PUZ,
-      (settings.mergePuzzleCasse === 'YES') ? null : TOP.CASSE,
-      (settings.jdrStandalone === 'YES') ? TOP.JDR : null,
-      TOP.ACC,
-      TOP.TCG,
-      (settings.eventsStandalone === 'YES') ? TOP.EVT : null,
-      TOP.AUTRE
-    ].filter(Boolean);
-
-    // Remove duplicates if merge is on
-    return [...new Set(order)];
-  }
-
   // ===== parsing / aggregation =====
-  function addRow(bucket, r){
-    bucket.total += r.ht;
-    if(r.qty !== null && r.qty !== undefined && Number.isFinite(r.qty)) bucket.totalQty += r.qty;
-
-    // totals per top
-    bumpMap(bucket.totalsHT, r.top, r.ht);
-    if(r.qty !== null && r.qty !== undefined && Number.isFinite(r.qty)) bumpMap(bucket.totalsQty, r.top, r.qty);
-
-    // sub map
-    addToSub(bucket, r.top, r.sub, r.ht, r.qty);
-
-    // tcg drilldown
-    if(r.top === TOP.TCG && r.license){
-      addToTcg(bucket, r.license, r.sub, r.ht, r.qty);
-    }
-  }
-
-  function calcSansTCG(bucket){
-    const tcg = bucket.totalsHT.get(TOP.TCG) || 0;
-    return bucket.total - tcg;
-  }
-
-  // ===== date label =====
-  function updateDates(){
-    const raw = els.raw.value || '';
-    const range = extractDateRange(raw);
-    const label = dateLabel(range);
-    els.dateInfo.textContent = label;
-    els.rightDate.textContent = label;
-  }
-
   function parseAll(){
     const raw = els.raw.value || '';
     updateDates();
@@ -1253,10 +1250,7 @@
 
     for(const line of lines){
       const l = (line||'').trim();
-      if(!l){
-        debug.ignored.push({reason:'Ligne vide', line});
-        continue;
-      }
+      if(!l){ debug.ignored.push({reason:'Ligne vide', line}); continue; }
 
       const ln = normalize(line);
 
@@ -1282,7 +1276,7 @@
       const cat = extractCategoryName(line);
 
       const cls = classify(cat);
-      rows.push({
+      const rec = {
         boutiqueKey,
         top: cls.top,
         sub: cls.sub,
@@ -1290,8 +1284,10 @@
         ht,
         qty,
         license: cls.tcgLicense,
+        kidsLeaf: cls.kidsLeaf || null,
         rawLine: line
-      });
+      };
+      rows.push(rec);
       used++;
       debug.used.push({reason:`OK → ${cls.top}`, line});
     }
@@ -1308,19 +1304,47 @@
     for(const b of BOUTIQUES) byBoutique[b.key] = makeBucket();
     const global = makeBucket();
 
+    // kids details store separately inside bucket.sub.get("Jeux de société").get("Jeux enfants") ?
+    // We'll store leafs in a dedicated map bucket.kidsLeaves
+    for(const key of Object.keys(byBoutique)) byBoutique[key].kidsLeaves = new Map();
+    global.kidsLeaves = new Map();
+
+    function addKidsLeaf(bucket, leafName, ht, qty){
+      if(!bucket.kidsLeaves.has(leafName)) bucket.kidsLeaves.set(leafName, { value:0, qty:0, hasQty:false });
+      const cur = bucket.kidsLeaves.get(leafName);
+      cur.value += ht;
+      if(qty != null && Number.isFinite(qty)){ cur.qty += qty; cur.hasQty = true; }
+    }
+
     for(const r of rows){
       addRow(byBoutique[r.boutiqueKey], r);
       addRow(global, r);
+
+      if(r.sub === "Jeux enfants" && r.kidsLeaf){
+        addKidsLeaf(byBoutique[r.boutiqueKey], r.kidsLeaf, r.ht, r.qty);
+        addKidsLeaf(global, r.kidsLeaf, r.ht, r.qty);
+      }
     }
 
     const activeKey = (!two && present.length===1) ? present[0].key : 'GLOBAL';
-
     parsed = { rows, present, two, activeKey, byBoutique, global };
-
     if(view.level !== 'dashboard') view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: two };
     else view.globalOnly = two;
 
+    updateLeftTotals();
     render();
+  }
+
+  function updateLeftTotals(){
+    if(!parsed){
+      els.leftSansTCG.textContent = "0,00";
+      els.leftTotal.textContent = "0,00";
+      return;
+    }
+    const b = currentBucket();
+    const sans = calcSansTCG(b);
+    els.leftSansTCG.textContent = formatEUR(sans);
+    els.leftTotal.textContent = formatEUR(b.total);
   }
 
   function currentBucket(){
@@ -1344,18 +1368,20 @@
       empty.innerHTML = 'Colle un export PrestaShop : les résultats apparaissent automatiquement.';
       els.rightBody.appendChild(empty);
       els.warnTwo.style.display = 'none';
-      els.rightDate.textContent = els.dateInfo.textContent || '—';
+      updateLeftTotals();
       return;
     }
+
+    updateLeftTotals();
 
     els.btnBack.style.display = (view.level === 'dashboard') ? 'none' : 'inline-flex';
 
     if(view.level === 'dashboard') renderDashboard();
     else if(view.level === 'category') renderCategory();
     else if(view.level === 'tcgLicense') renderTcgLicense();
+    else if(view.level === 'kids') renderKids();
 
     els.warnTwo.style.display = parsed.two ? 'block' : 'none';
-    els.rightDate.textContent = els.dateInfo.textContent || '—';
   }
 
   function renderDashboard(){
@@ -1382,11 +1408,7 @@
       'Répartition (catégories)',
       totals,
       (d) => {
-        if(d.key === TOP.TCG){
-          view = { level:'category', category: TOP.TCG, tcgLicense:null, globalOnly: parsed.two };
-        } else {
-          view = { level:'category', category: d.key, tcgLicense:null, globalOnly: parsed.two };
-        }
+        view = { level:'category', category: d.key, tcgLicense:null, globalOnly: parsed.two };
         render();
       }
     );
@@ -1401,8 +1423,34 @@
     els.rightTitle.textContent =
       `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — ${cat}`;
 
+    // Special: Jeux de société contains "Jeux enfants" as a subfolder
+    if(cat === TOP.JEUX){
+      const subMap = b.sub.get(TOP.JEUX) || new Map();
+      const entries = [...subMap.entries()].map(([name,obj]) => ({
+        key:name, name,
+        value: obj.value,
+        qty: obj.hasQty ? obj.qty : null
+      })).sort((a,b)=> b.value - a.value);
+
+      const totals = { total: b.total, sansTCG: calcSansTCG(b) };
+
+      const combo = renderComboPieAndTotals(
+        entries,
+        `Répartition — ${TOP.JEUX} (sous-catégories)`,
+        totals,
+        (d) => {
+          if(d.key === "Jeux enfants"){
+            view = { level:'kids', category: TOP.JEUX, tcgLicense:null, globalOnly: parsed.two };
+            render();
+          }
+        }
+      );
+
+      els.rightBody.appendChild(combo);
+      return;
+    }
+
     if(cat === TOP.TCG){
-      // Licences
       const entries = [...b.tcg.licenses.entries()]
         .map(([lic, obj]) => ({ key: lic, name: prettyLicense(lic), value: obj.value, qty: obj.hasQty ? obj.qty : null }))
         .sort((a,b)=> b.value - a.value);
@@ -1419,7 +1467,25 @@
       return;
     }
 
-    // Sous-catégories de la catégorie
+    // Autre => detail (default already)
+    if(cat === TOP.AUTRE){
+      const subMap = b.sub.get(TOP.AUTRE) || new Map();
+      const entries = [...subMap.entries()].map(([name,obj]) => ({
+        key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null
+      })).sort((a,b)=> b.value - a.value);
+
+      const totals = { total: b.total, sansTCG: calcSansTCG(b) };
+      const combo = renderComboPieAndTotals(
+        entries,
+        `Détail — ${TOP.AUTRE}`,
+        totals,
+        null
+      );
+      els.rightBody.appendChild(combo);
+      return;
+    }
+
+    // Generic category
     const subMap = b.sub.get(cat) || new Map();
     const entries = [...subMap.entries()]
       .map(([name, obj]) => ({ key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null }))
@@ -1429,6 +1495,26 @@
     const combo = renderComboPieAndTotals(
       entries,
       `Répartition — ${cat} (toutes les sous-catégories)`,
+      totals,
+      null
+    );
+    els.rightBody.appendChild(combo);
+  }
+
+  function renderKids(){
+    const b = currentBucket();
+    els.rightTitle.textContent =
+      `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — Jeux de société — Jeux enfants`;
+
+    const entries = [...(b.kidsLeaves || new Map()).entries()]
+      .map(([name,obj]) => ({ key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null }))
+      .sort((a,b)=> b.value - a.value);
+
+    const totals = { total: b.total, sansTCG: calcSansTCG(b) };
+
+    const combo = renderComboPieAndTotals(
+      entries,
+      `Détail — Jeux enfants (Jeux X ans / Défis Nature)`,
       totals,
       null
     );
@@ -1457,9 +1543,10 @@
     els.rightBody.appendChild(combo);
   }
 
-  // ===== Back button =====
+  // ===== Back =====
   els.btnBack.addEventListener('click', () => {
     if(view.level === 'tcgLicense') view = { level:'category', category: TOP.TCG, tcgLicense:null, globalOnly: parsed?.two || false };
+    else if(view.level === 'kids') view = { level:'category', category: TOP.JEUX, tcgLicense:null, globalOnly: parsed?.two || false };
     else if(view.level === 'category') view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed?.two || false };
     else view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed?.two || false };
     render();
@@ -1467,16 +1554,15 @@
 
   // ===== tutoriel pages =====
   const tutorialPages = [
-    { title: "1) Choisir la boutique", text: "Dans PrestaShop, sélectionne la boutique Pigalle OU Gambetta depuis un onglet (ex : Tableau de bord). L’app est prévue pour une boutique à la fois." },
+    { title: "1) Choisir la boutique", text: "Dans PrestaShop, sélectionne la boutique Pigalle OU Gambetta depuis un onglet (ex : Tableau de bord)." },
     { title: "2) Accéder au rapport", text: "Va dans Commandes → Rapport Commandes TVA Bénéfices." },
-    { title: "3) Paramétrer l’export", text: "Préférences d’export : Type de rapport = Catégories ; Format = html (souvent déjà sélectionné)." },
-    { title: "4) Définir la période", text: "Filtres par Dates et Références : dans Par date de commande, choisis date début et date fin. Pour une analyse journalière : même date en début et fin." },
-    { title: "5) Statuts à sélectionner", text: "Filtre par statuts de commande : tout décocher, puis cocher uniquement Store - Sale." },
-    { title: "6) Exporter + copier", text: "Clique sur Exporter. Le tableau apparaît : fais Ctrl+A puis Ctrl+C sur la page du tableau." },
-    { title: "7) Coller ici", text: "Reviens dans cette app : clique dans la zone de collage puis Ctrl+V. Les résultats s’affichent automatiquement." }
+    { title: "3) Paramétrer l’export", text: "Préférences d’export : Type de rapport = Catégories ; Format = html." },
+    { title: "4) Définir la période", text: "Par date de commande : choisis date début et date fin (même date pour un jour)." },
+    { title: "5) Statuts", text: "Tout décocher puis cocher uniquement Store - Sale." },
+    { title: "6) Exporter + copier", text: "Cliquer Exporter. Quand le tableau apparaît : Ctrl+A puis Ctrl+C." },
+    { title: "7) Coller", text: "Ici : clique dans la zone puis Ctrl+V. Les résultats sortent automatiquement." }
   ];
   let tutPage = 0;
-
   function renderTut(){
     const p = tutorialPages[tutPage];
     els.tutHead.textContent = p.title;
@@ -1500,72 +1586,101 @@
   els.tutPrev.addEventListener('click', ()=>{ if(tutPage>0){ tutPage--; renderTut(); } });
   els.tutNext.addEventListener('click', ()=>{ if(tutPage < tutorialPages.length-1){ tutPage++; renderTut(); } else closeTut(); });
 
-  // ===== settings =====
+  // ===== settings (do NOT auto-close on click) =====
   function setActivePair(noBtn, yesBtn, isYes){
     noBtn.classList.toggle('active', !isYes);
     yesBtn.classList.toggle('active', isYes);
   }
   function syncSettingsButtons(){
     setActivePair(els.qtyOff, els.qtyOn, settings.showQty==='ON');
+    setActivePair(els.escNo, els.escYes, settings.escapeStandalone==='YES');
     setActivePair(els.mergePCNo, els.mergePCYes, settings.mergePuzzleCasse==='YES');
     setActivePair(els.evtNo, els.evtYes, settings.eventsStandalone==='YES');
     setActivePair(els.jdrNo, els.jdrYes, settings.jdrStandalone==='YES');
     setActivePair(els.tcgAccNo, els.tcgAccYes, settings.tcgAccessoriesInTcg==='YES');
   }
 
+  function persistSettings(){
+    localStorage.setItem('lgdj_qty', settings.showQty);
+    localStorage.setItem('lgdj_escape', settings.escapeStandalone);
+    localStorage.setItem('lgdj_merge_pc', settings.mergePuzzleCasse);
+    localStorage.setItem('lgdj_evt', settings.eventsStandalone);
+    localStorage.setItem('lgdj_jdr', settings.jdrStandalone);
+    localStorage.setItem('lgdj_tcgacc', settings.tcgAccessoriesInTcg);
+  }
+
   function openSet(){
     syncSettingsButtons();
-    els.setBg.style.display = 'flex';
+    els.setBg.style.display='flex';
     els.setBg.setAttribute('aria-hidden','false');
   }
   function closeSet(){
-    els.setBg.style.display = 'none';
+    els.setBg.style.display='none';
     els.setBg.setAttribute('aria-hidden','true');
   }
   els.btnSettings.addEventListener('click', openSet);
   els.btnCloseSet.addEventListener('click', closeSet);
   els.setBg.addEventListener('click', (e)=>{ if(e.target === els.setBg) closeSet(); });
 
-  function saveAndReparse(){
-    localStorage.setItem('lgdj_qty', settings.showQty);
-    localStorage.setItem('lgdj_merge_pc', settings.mergePuzzleCasse);
-    localStorage.setItem('lgdj_evt', settings.eventsStandalone);
-    localStorage.setItem('lgdj_jdr', settings.jdrStandalone);
-    localStorage.setItem('lgdj_tcgacc', settings.tcgAccessoriesInTcg);
-    closeSet();
+  function applySettingsNoClose(){
+    persistSettings();
+    syncSettingsButtons();
     // Reparse to reclassify with new rules
     if((els.raw.value||'').trim()) parseAll();
     else render();
   }
 
-  els.qtyOff.addEventListener('click', ()=>{ settings.showQty='OFF'; syncSettingsButtons(); saveAndReparse(); });
-  els.qtyOn.addEventListener('click', ()=>{ settings.showQty='ON'; syncSettingsButtons(); saveAndReparse(); });
+  els.qtyOff.addEventListener('click', ()=>{ settings.showQty='OFF'; applySettingsNoClose(); });
+  els.qtyOn.addEventListener('click', ()=>{ settings.showQty='ON'; applySettingsNoClose(); });
 
-  els.mergePCNo.addEventListener('click', ()=>{ settings.mergePuzzleCasse='NO'; syncSettingsButtons(); saveAndReparse(); });
-  els.mergePCYes.addEventListener('click', ()=>{ settings.mergePuzzleCasse='YES'; syncSettingsButtons(); saveAndReparse(); });
+  els.escNo.addEventListener('click', ()=>{ settings.escapeStandalone='NO'; applySettingsNoClose(); });
+  els.escYes.addEventListener('click', ()=>{ settings.escapeStandalone='YES'; applySettingsNoClose(); });
 
-  els.evtNo.addEventListener('click', ()=>{ settings.eventsStandalone='NO'; syncSettingsButtons(); saveAndReparse(); });
-  els.evtYes.addEventListener('click', ()=>{ settings.eventsStandalone='YES'; syncSettingsButtons(); saveAndReparse(); });
+  els.mergePCNo.addEventListener('click', ()=>{ settings.mergePuzzleCasse='NO'; applySettingsNoClose(); });
+  els.mergePCYes.addEventListener('click', ()=>{ settings.mergePuzzleCasse='YES'; applySettingsNoClose(); });
 
-  els.jdrNo.addEventListener('click', ()=>{ settings.jdrStandalone='NO'; syncSettingsButtons(); saveAndReparse(); });
-  els.jdrYes.addEventListener('click', ()=>{ settings.jdrStandalone='YES'; syncSettingsButtons(); saveAndReparse(); });
+  els.evtNo.addEventListener('click', ()=>{ settings.eventsStandalone='NO'; applySettingsNoClose(); });
+  els.evtYes.addEventListener('click', ()=>{ settings.eventsStandalone='YES'; applySettingsNoClose(); });
 
-  els.tcgAccNo.addEventListener('click', ()=>{ settings.tcgAccessoriesInTcg='NO'; syncSettingsButtons(); saveAndReparse(); });
-  els.tcgAccYes.addEventListener('click', ()=>{ settings.tcgAccessoriesInTcg='YES'; syncSettingsButtons(); saveAndReparse(); });
+  els.jdrNo.addEventListener('click', ()=>{ settings.jdrStandalone='NO'; applySettingsNoClose(); });
+  els.jdrYes.addEventListener('click', ()=>{ settings.jdrStandalone='YES'; applySettingsNoClose(); });
 
-  // ===== Changelog =====
+  els.tcgAccNo.addEventListener('click', ()=>{ settings.tcgAccessoriesInTcg='NO'; applySettingsNoClose(); });
+  els.tcgAccYes.addEventListener('click', ()=>{ settings.tcgAccessoriesInTcg='YES'; applySettingsNoClose(); });
+
+  // Reset with confirmation
+  els.btnReset.addEventListener('click', ()=>{
+    const ok = confirm("Réinitialiser les paramètres par défaut ?");
+    if(!ok) return;
+    Object.assign(settings, DEFAULTS);
+    persistSettings();
+    syncSettingsButtons();
+    if((els.raw.value||'').trim()) parseAll(); else render();
+  });
+
+  // ===== Changelog modal =====
   function openVer(){
+    // newest first; older = shorter list
+    const parts = CHANGELOG.map((c, idx) => {
+      const short = idx >= 2;
+      const items = short ? c.items.slice(0, 1) : c.items;
+      return `
+        <div style="padding:12px 0;border-bottom:1px dashed rgba(255,255,255,.12)">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline">
+            <div style="font-weight:980">${c.ver}</div>
+            <div class="muted" style="font-size:12px">${c.date}</div>
+          </div>
+          <ul style="margin:8px 0 0 18px;line-height:1.55">
+            ${items.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }).join('');
+
     els.verContent.innerHTML = `
-      <h3 style="margin:0 0 10px 0">${VERSION}</h3>
-      <div style="line-height:1.55">
-        <ul>
-          <li>Nouvelles catégories : Jeux enfants, Puzzles, Casse-têtes, Jeux de rôles, Autre</li>
-          <li>Jeux enfants : regroupe “Jeux X ans” + “Défis Nature”</li>
-          <li>Autre : Accueil, Catégorie supprimée, Acompte, Livraison, Totaux(xxx)…</li>
-          <li>Paramètres : fusion Puzzles/Casse-têtes, événements en parent, JDR séparé, accessoires TCG dans leur TCG</li>
-          <li>Correction : “jeux de dessin” reste en Jeux de société (par défaut)</li>
-        </ul>
-      </div>
+      <div style="font-weight:980;font-size:16px;margin-bottom:8px">Historique des versions</div>
+      <div class="muted" style="font-size:12px;margin-bottom:10px">Plus la version est ancienne, plus le résumé est compact.</div>
+      ${parts}
     `;
     els.verBg.style.display='flex';
     els.verBg.setAttribute('aria-hidden','false');
@@ -1643,7 +1758,7 @@
     }
   });
 
-  // ===== Input: auto-parse (debounce) =====
+  // ===== paste / clear / auto-parse =====
   let parseTimer = null;
   function scheduleParse(){
     if(parseTimer) clearTimeout(parseTimer);
@@ -1655,7 +1770,6 @@
   els.raw.addEventListener('input', scheduleParse);
   els.raw.addEventListener('paste', scheduleParse);
 
-  // Coller button
   els.btnPaste.addEventListener('click', async ()=>{
     els.raw.focus();
     try{
@@ -1667,7 +1781,6 @@
     } catch {}
   });
 
-  // Clear
   els.btnClear.addEventListener('click', () => {
     els.raw.value = '';
     parsed = null;
@@ -1679,6 +1792,7 @@
     els.warnTwo.style.display = 'none';
     els.dateInfo.textContent = '—';
     els.rightDate.textContent = '—';
+    updateLeftTotals();
     render();
     els.raw.focus();
   });
