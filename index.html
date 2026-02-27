@@ -1,3 +1,4 @@
+```html
 <!doctype html>
 <html lang="fr">
 <head>
@@ -6,7 +7,7 @@
   <title>LGDJ — Extracteur CA (Offline)</title>
   <style>
     :root{
-      --ver: "v0.4.0";
+      --ver: "v0.5.0";
 
       --bg0:#0b1020;
       --bg1:#0c1426;
@@ -20,9 +21,10 @@
       --pri:#4f46e5;
       --pri2:#22c55e;
       --warn:#f59e0b;
+      --bad:#fb7185;
 
       /* base hue for pies */
-      --pieBase:#60a5fa; /* will be re-used with light/dark variants */
+      --pieBase:#60a5fa;
 
       --r:18px;
       --btn: rgba(255,255,255,.08);
@@ -46,10 +48,7 @@
 
     .app{height:100vh; display:flex; flex-direction:column;}
 
-    .topbar{
-      padding:12px 14px;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
+    .topbar{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
 
     .brand{display:flex;align-items:center;gap:10px;font-weight:950;letter-spacing:.2px}
     .logo{
@@ -60,18 +59,32 @@
       box-shadow: var(--shadow);
     }
     .brandTitle{display:flex;flex-direction:column;line-height:1.05}
-    .brandTitle small{font-size:11px;color:var(--muted);font-weight:800}
+
+    .verBtn{
+      margin-top:2px;
+      font-size:11px;
+      color:var(--muted);
+      font-weight:900;
+      background:transparent;
+      border:none;
+      padding:0;
+      text-align:left;
+      cursor:pointer;
+    }
+    .verBtn:hover{color:var(--text)}
 
     .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 
-    .chip{
+    .chipBtn{
+      cursor:pointer;
       font-size:12px;color:var(--muted);
       border:1px solid var(--line);
       background: var(--chip);
       padding:6px 10px;border-radius:999px;
       white-space:nowrap;
-      font-weight:800;
+      font-weight:900;
     }
+    .chipBtn:hover{background: rgba(255,255,255,.10); color:var(--text)}
 
     button{
       cursor:pointer;
@@ -144,11 +157,11 @@
       line-height:1.35;
     }
 
-    textarea{resize:none; min-height:0; overflow:auto;}
+    textarea{resize:none; min-height:0; overflow:auto; height: 33vh;} /* ~1/3 écran */
 
     .inputGrid{
       display:grid;
-      grid-template-rows: 240px auto; /* smaller paste zone */
+      grid-template-rows: auto 1fr;
       gap:10px;
       height:100%;
       min-height:0;
@@ -156,14 +169,14 @@
 
     .field{display:grid;gap:8px;margin-top:10px}
     .label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.2px}
-    .help{color:var(--muted);font-size:12px}
 
-    .rightGrid{
-      display:grid;
-      grid-template-rows: auto 1fr;
-      gap:12px;
+    /* Right side now scrolls */
+    .rightScroll{
       height:100%;
-      min-height:0;
+      overflow:auto;
+      padding:12px;
+      display:grid;
+      gap:12px;
     }
 
     .alert{
@@ -190,7 +203,7 @@
     .comboBd{padding:12px 14px; display:grid; grid-template-columns: 200px 1fr; gap:14px; align-items:center; min-height:0;}
     @media(max-width:980px){.comboBd{grid-template-columns:1fr}}
 
-    .legend{display:grid;gap:8px; min-height:0;}
+    .legend{display:grid;gap:8px; min-height:0; max-height: 46vh; overflow:auto; padding-right:6px;}
     .legRow{display:flex;align-items:center;justify-content:space-between;gap:10px; padding:8px 0; border-bottom:1px dashed rgba(125,125,155,.22); cursor:pointer;}
     .legRow:last-child{border-bottom:none}
     .legRow:hover .legName{color:var(--text)}
@@ -200,11 +213,7 @@
     .legName{color:var(--muted);font-weight:950; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
     .legVal{font-weight:950; white-space:nowrap;}
 
-    .totals{
-      display:grid;
-      gap:10px;
-      margin-top:10px;
-    }
+    .totals{display:grid;gap:10px;margin-top:10px;}
 
     .totalBox{
       border-radius: 14px;
@@ -236,7 +245,7 @@
     .crumb{display:flex; align-items:center; gap:8px; font-weight:980; min-width:0;}
     .crumb span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
-    .list{padding:10px 14px; overflow:auto; min-height:0;}
+    .list{padding:10px 14px; overflow:auto; min-height:0; max-height: 40vh;}
 
     .item{
       display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -259,7 +268,7 @@
 
     /* Modal */
     .modalBg{position:fixed;inset:0;background: rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:50;}
-    .modal{width:min(900px, 100%);max-height: min(86vh, 900px);overflow:auto;border-radius: 18px;border:1px solid var(--line);background: var(--panel);box-shadow: var(--shadow);backdrop-filter: blur(12px);}
+    .modal{width:min(920px, 100%);max-height: min(86vh, 900px);overflow:auto;border-radius: 18px;border:1px solid var(--line);background: var(--panel);box-shadow: var(--shadow);backdrop-filter: blur(12px);}
     .modal .mhd{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;background: var(--panel2);}
     .modal .mbd{padding:14px 16px;}
 
@@ -268,12 +277,30 @@
     .pageText{color:var(--text); line-height:1.55}
     .muted{color:var(--muted)}
 
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .tab{padding:8px 10px;border-radius:12px;border:1px solid var(--line);background: rgba(255,255,255,.06);font-weight:900;font-size:12px;cursor:pointer}
+    .tab.active{background: rgba(79,70,229,.16);border-color: rgba(79,70,229,.35)}
+
+    .codeBox{
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.22);
+      border-radius:14px;
+      padding:10px 12px;
+      white-space:pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      line-height:1.45;
+      max-height: 52vh;
+      overflow:auto;
+    }
+
     .foot{padding:0 14px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--muted);font-size:11px;font-weight:800;}
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
 
-    /* clickable slices */
     .slice{cursor:pointer; transition: opacity .15s ease;}
     .slice:hover{opacity:.86}
+
+    .contact{color:var(--muted);font-size:11px;font-weight:900}
   </style>
 </head>
 <body>
@@ -291,14 +318,12 @@
         </div>
         <div class="brandTitle">
           <div>Extracteur CA</div>
-          <small class="mono" id="ver"></small>
+          <button class="verBtn" id="btnVer">v0.5.0</button>
         </div>
       </div>
 
       <div class="actions">
-        <span class="chip">Lues: <span class="mono" id="metaLines">0</span></span>
-        <span class="chip">Utilisées: <span class="mono" id="metaUsed">0</span></span>
-        <span class="chip">Erreurs: <span class="mono" id="metaErr">0</span></span>
+        <button class="chipBtn" id="btnStats">Lues: <span class="mono" id="metaLines">0</span> • Utilisées: <span class="mono" id="metaUsed">0</span> • Erreurs: <span class="mono" id="metaErr">0</span></button>
         <button class="btnTutor" id="btnTut">Tutoriel</button>
         <button class="btnGear" id="btnSettings">Paramètres</button>
       </div>
@@ -320,7 +345,6 @@
           <div class="field">
             <div class="label">Licences TCG (virgules)</div>
             <input id="licenses" value="Pokémon, Lorcana, One Piece, Magic, Altered, Flesh and Blood, Star Wars Unlimited, Riftbound, Yu-Gi-Oh, Naruto" />
-            <div class="help">La détection TCG se fait si le nom de la licence apparaît dans le nom de catégorie.</div>
           </div>
         </div>
       </section>
@@ -334,15 +358,18 @@
           </div>
         </div>
 
-        <div class="bd rightGrid" id="rightBody">
-          <div class="alert" id="warnTwo">⚠️ Deux boutiques détectées. On affiche uniquement les totaux GLOBAL par catégories (pas de détails boutique).</div>
-          <!-- dynamic -->
+        <div class="bd" style="padding:0">
+          <div class="rightScroll" id="rightBody">
+            <div class="alert" id="warnTwo">⚠️ Deux boutiques détectées. On affiche uniquement les totaux GLOBAL par catégories (pas de détails boutique).</div>
+            <!-- dynamic -->
+          </div>
         </div>
       </section>
     </div>
 
     <div class="foot">
-      <div class="mono">LGDJ — <span id="ver2"></span></div>
+      <div class="mono">LGDJ — <span id="ver2">v0.5.0</span></div>
+      <div class="contact">Si problème ou suggestion d’amélioration : contacter Zao</div>
       <div>Offline • Drilldown • <span id="unitLabel">HT</span></div>
     </div>
   </div>
@@ -379,13 +406,13 @@
             <option value="HT">HT</option>
             <option value="TTC">TTC</option>
           </select>
-          <div class="help">TTC = HT × (1 + TVA). La TVA ne vient pas du fichier : tu peux la régler ci-dessous.</div>
+          <div class="muted" style="margin-top:6px;font-size:12px;line-height:1.45">TTC = HT × (1 + TVA). La TVA ne vient pas du fichier : tu peux la régler ci-dessous.</div>
         </div>
 
         <div class="field">
           <div class="label">TVA (si TTC)</div>
           <input id="vat" value="20" />
-          <div class="help">Ex : 20 = 20% • 5.5 = 5,5%</div>
+          <div class="muted" style="margin-top:6px;font-size:12px">Ex : 20 = 20% • 5.5 = 5,5%</div>
         </div>
 
         <div class="field">
@@ -405,10 +432,44 @@
     </div>
   </div>
 
-<script>
-  const VERSION = "v0.4.0";
+  <!-- Version / Changelog modal -->
+  <div class="modalBg" id="verBg" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" aria-label="Changelog">
+      <div class="mhd">
+        <div style="font-weight:980">Changelog</div>
+        <button id="btnCloseVer">Fermer</button>
+      </div>
+      <div class="mbd" id="verContent"></div>
+    </div>
+  </div>
 
-  // --- Rules ---
+  <!-- Stats debug modal -->
+  <div class="modalBg" id="statsBg" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" aria-label="Détails des lignes">
+      <div class="mhd">
+        <div style="font-weight:980">Détails des lignes</div>
+        <button id="btnCloseStats">Fermer</button>
+      </div>
+      <div class="mbd">
+        <div class="tabs">
+          <div class="tab active" data-tab="used">Utilisées</div>
+          <div class="tab" data-tab="err">Erreurs</div>
+          <div class="tab" data-tab="ignored">Ignorées</div>
+        </div>
+
+        <div class="muted" id="statsHint" style="margin-bottom:10px;font-size:12px"></div>
+        <div class="codeBox" id="statsBox">—</div>
+
+        <div class="pager" style="justify-content:flex-end">
+          <button id="btnCopyStats" class="btnPrimary">Copier</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const VERSION = "v0.5.0";
+
   const ACCESSORY_KEYWORDS = [
     "accessoire","accessoires","protege","protège","sleeve","deck box","classeur","portfolio",
     "des","dés","piste","pistes","protections acryliques","grenier ludique","booknooks",
@@ -420,10 +481,8 @@
     { key: "PIGALLE", label: "LGDJ Pigalle", needles: ["lgdj pigalle","pigalle"] }
   ];
 
-  // --- Elements ---
   const el = (id) => document.getElementById(id);
   const els = {
-    ver: el('ver'), ver2: el('ver2'),
     metaLines: el('metaLines'), metaUsed: el('metaUsed'), metaErr: el('metaErr'),
     unitLabel: el('unitLabel'),
 
@@ -451,20 +510,38 @@
     vat: el('vat'),
     showQty: el('showQty'),
     btnSaveSet: el('btnSaveSet'),
+
+    // version
+    btnVer: el('btnVer'),
+    verBg: el('verBg'),
+    btnCloseVer: el('btnCloseVer'),
+    verContent: el('verContent'),
+
+    // stats
+    btnStats: el('btnStats'),
+    statsBg: el('statsBg'),
+    btnCloseStats: el('btnCloseStats'),
+    statsHint: el('statsHint'),
+    statsBox: el('statsBox'),
+    btnCopyStats: el('btnCopyStats'),
   };
 
-  // --- Settings state ---
   const settings = {
     mode: localStorage.getItem('lgdj_mode') || 'HT',
     vat: Number(localStorage.getItem('lgdj_vat') || '20'),
     showQty: (localStorage.getItem('lgdj_qty') || 'OFF')
   };
 
-  // --- App State ---
   let parsed = null;
   let view = { level: 'dashboard', category: null, tcgLicense: null, globalOnly: false };
 
-  // ===== helpers =====
+  // Debug lists
+  let debug = {
+    used: [],
+    err: [],
+    ignored: []
+  };
+
   function normalize(s){
     return (s||"").toString().normalize("NFD").replace(/\p{Diacritic}/gu,"").toLowerCase();
   }
@@ -496,13 +573,11 @@
   }
 
   function extractQtyFromLine(line){
-    // expects tab-separated export; qty is typically 4th col: Boutique | ID | Cat | Qty | ...
     const parts = line.split("\t").map(p=>p.trim());
     if(parts.length >= 5){
       const q = Number(parts[3]);
       return Number.isFinite(q) ? q : null;
     }
-    // fallback: try to capture qty right after category id/name (weak)
     return null;
   }
 
@@ -523,16 +598,6 @@
 
   function isAccessory(catNorm){
     return ACCESSORY_KEYWORDS.some(k => catNorm.includes(normalize(k)));
-  }
-
-  function sortEntriesDesc(map){
-    return [...map.entries()].sort((a,b)=> b[1].value - a[1].value);
-  }
-
-  function sumMap(map){
-    let t = 0;
-    for(const v of map.values()) t += v.value;
-    return t;
   }
 
   function pickLicense(catNorm, tcgNeedlesNorm){
@@ -572,7 +637,7 @@
     return ht * mult;
   }
 
-  // ----- Color utilities: base color -> shades -----
+  // ----- Color utilities -----
   function hexToRgb(hex){
     const h = hex.replace('#','').trim();
     const full = h.length===3 ? h.split('').map(c=>c+c).join('') : h;
@@ -583,15 +648,11 @@
     const to = (x)=> x.toString(16).padStart(2,'0');
     return `#${to(r)}${to(g)}${to(b)}`;
   }
-  function mix(a,b,t){
-    return Math.round(a + (b-a)*t);
-  }
+  function mix(a,b,t){ return Math.round(a + (b-a)*t); }
   function shadeHex(baseHex, t){
-    // t in [0..1], 0=darken, 1=lighten
     const base = hexToRgb(baseHex);
     const dark = { r: 20, g: 30, b: 55 };
     const light = { r: 235, g: 242, b: 255 };
-    // create a span from dark->base->light
     if(t < 0.5){
       const tt = t/0.5;
       return rgbToHex(mix(dark.r, base.r, tt), mix(dark.g, base.g, tt), mix(dark.b, base.b, tt));
@@ -600,12 +661,11 @@
       return rgbToHex(mix(base.r, light.r, tt), mix(base.g, light.g, tt), mix(base.b, light.b, tt));
     }
   }
-
   function getVar(name){
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
-  // ===== pie svg (clickable slices) =====
+  // ===== pie svg =====
   function polarToCartesian(cx, cy, r, angle){
     const rad = (angle - 90) * Math.PI / 180.0;
     return { x: cx + (r * Math.cos(rad)), y: cy + (r * Math.sin(rad)) };
@@ -618,7 +678,6 @@
   }
 
   function renderComboPieAndTotals(data, title, totals, onPick){
-    // data: [{key,name,value}]
     const total = data.reduce((a,b)=>a + (b.value||0), 0);
 
     const wrap = document.createElement('div');
@@ -632,7 +691,6 @@
     const bd = document.createElement('div');
     bd.className = 'comboBd';
 
-    // pie
     const size = 200;
     const cx = size/2;
     const cy = size/2;
@@ -657,12 +715,12 @@
 
     let angle = 0;
     items.forEach((d, i) => {
-      const slice = (d.value / total) * 360;
+      const slice = total > 0 ? (d.value / total) * 360 : 0;
       const start = angle;
       const end = angle + slice;
       angle = end;
 
-      const t = items.length <= 1 ? 0.6 : (0.25 + (i/(items.length-1))*0.6); // spread shades
+      const t = items.length <= 1 ? 0.6 : (0.25 + (i/(items.length-1))*0.6);
       const color = shadeHex(base, t);
       d._color = color;
 
@@ -672,7 +730,7 @@
       path.setAttribute('stroke', 'rgba(0,0,0,.12)');
       path.setAttribute('stroke-width', '1');
       path.classList.add('slice');
-      path.addEventListener('click', () => onPick?.(d));
+      if(onPick) path.addEventListener('click', () => onPick(d));
       svg.appendChild(path);
     });
 
@@ -706,7 +764,6 @@
     svg.appendChild(t1);
     svg.appendChild(t2);
 
-    // legend (clickable)
     const legend = document.createElement('div');
     legend.className = 'legend';
 
@@ -724,14 +781,13 @@
           </div>
           <div class="legVal">${formatEUR(d.value)} <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span></div>
         `;
-        row.addEventListener('click', () => onPick?.(d));
+        if(onPick) row.addEventListener('click', () => onPick(d));
         legend.appendChild(row);
       });
 
     const right = document.createElement('div');
     right.appendChild(legend);
 
-    // totals
     const totalsWrap = document.createElement('div');
     totalsWrap.className = 'totals';
     totalsWrap.innerHTML = `
@@ -764,13 +820,28 @@
     const rows = [];
     let used = 0, err = 0;
 
+    debug = { used: [], err: [], ignored: [] };
+
     for(const line of lines){
+      const l = (line||'').trim();
+      if(!l){
+        debug.ignored.push({reason:'Ligne vide', line});
+        continue;
+      }
+
       const ln = normalize(line);
       const boutiqueKey = detectBoutique(ln);
-      if(!boutiqueKey) continue;
+      if(!boutiqueKey){
+        debug.ignored.push({reason:'Boutique non détectée', line});
+        continue;
+      }
 
       const ht = extractHTFromLine(line);
-      if(ht === null){ err++; continue; }
+      if(ht === null){
+        err++;
+        debug.err.push({reason:'Montant HT introuvable', line});
+        continue;
+      }
 
       const qty = extractQtyFromLine(line);
       const cat = extractCategoryName(line);
@@ -781,21 +852,20 @@
       const acc = !tcg && isAccessory(catNorm);
       const top = tcg ? 'TCG' : (acc ? 'Accessoires' : 'Jeux');
 
-      rows.push({ boutiqueKey, top, category: cat, categoryNorm: catNorm, ht, qty, license });
+      const rec = { boutiqueKey, top, category: cat, categoryNorm: catNorm, ht, qty, license, rawLine: line };
+      rows.push(rec);
       used++;
+      debug.used.push({reason:'OK', line});
     }
 
-    // meta
     els.metaLines.textContent = String(lines.length);
     els.metaUsed.textContent  = String(used);
     els.metaErr.textContent   = String(err);
 
-    // boutiques present
     const present = BOUTIQUES.filter(b => rows.some(r => r.boutiqueKey === b.key));
     const two = present.length >= 2;
     els.warnTwo.style.display = two ? 'block' : 'none';
 
-    // Aggregate per boutique + global
     const byBoutique = {};
     for(const b of BOUTIQUES){
       byBoutique[b.key] = makeBucket();
@@ -813,9 +883,7 @@
     const activeKey = (!two && present.length===1) ? present[0].key : 'GLOBAL';
 
     parsed = { rows, present, two, activeKey, byBoutique, global };
-
     view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: two };
-
     render();
   }
 
@@ -868,18 +936,19 @@
     }
   }
 
-  // ===== render =====
   function currentBucket(){
     if(!parsed) return null;
     if(parsed.activeKey === 'GLOBAL') return parsed.global;
     return parsed.byBoutique[parsed.activeKey];
   }
 
+  function clearDyn(){
+    els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove());
+  }
+
   function render(){
     els.unitLabel.textContent = settings.mode;
-
-    // remove dynamic nodes
-    els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove());
+    clearDyn();
 
     if(!parsed){
       els.rightTitle.textContent = 'Résultats';
@@ -896,6 +965,9 @@
     if(view.level === 'dashboard') renderDashboard();
     else if(view.level === 'category') renderCategory();
     else if(view.level === 'tcgLicense') renderTcgLicense();
+
+    // always keep warning at top if needed
+    els.warnTwo.style.display = parsed.two ? 'block' : 'none';
   }
 
   function renderDashboard(){
@@ -919,52 +991,48 @@
       ],
       'Répartition (catégories) — clic pour ouvrir',
       { total: t.total, sansTCG: t.sansTCG },
-      (d) => {
-        // if global only, we still allow drilldown within global
-        view = { level:'category', category:d.key, tcgLicense:null, globalOnly: parsed.two };
-        render();
-      }
+      (d) => { view = { level:'category', category:d.key, tcgLicense:null, globalOnly: parsed.two }; render(); }
     );
 
     els.rightBody.appendChild(combo);
-
-    // In dashboard, if globalOnly warning is on, we keep drilldown but it's based on global.
   }
 
   function renderCategory(){
     const b = currentBucket();
     const cat = view.category;
-    const title = `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — ${cat}`;
-    els.rightTitle.textContent = title;
 
-    const listPanel = document.createElement('div');
-    listPanel.className = 'listPanel dyn';
+    els.rightTitle.textContent = `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — ${cat}`;
 
-    const lhd = document.createElement('div');
-    lhd.className = 'lhd';
-    lhd.innerHTML = `
-      <div class="crumb"><span>${escapeHtml(cat)}</span></div>
-      <div class="actions"><button id="btnHome">Accueil</button></div>
-    `;
-
-    const list = document.createElement('div');
-    list.className = 'list';
-
-    let entries = [];
-    let pieData = [];
-
+    // pieData now includes ALL subcategories (no Top10)
     if(cat === 'Jeux' || cat === 'Accessoires'){
       const map = b.sub[cat];
-      entries = [...map.entries()].map(([name, obj]) => [name, { value: applyTax(obj.value), qty: obj.qty }]);
+      const entries = [...map.entries()].map(([name, obj]) => [name, { value: applyTax(obj.value), qty: obj.qty }]);
       entries.sort((a,b)=> b[1].value - a[1].value);
 
-      // pie top10
-      const total = entries.reduce((s,e)=>s+e[1].value,0);
-      pieData = entries.slice(0,10).map(([name, obj]) => ({ key:name, name, value: obj.value }));
-      if(entries.length>10){
-        const topSum = pieData.reduce((s,e)=>s+e.value,0);
-        pieData.push({ key:'Autres', name:'Autres', value: Math.max(0,total-topSum) });
-      }
+      const pieData = entries.map(([name, obj]) => ({ key:name, name, value: obj.value }));
+
+      const totals = { total: applyTax(b.totalsHT.total), sansTCG: applyTax(b.totalsHT.sansTCG) };
+      const combo = renderComboPieAndTotals(
+        pieData,
+        `Répartition — ${cat} (toutes les sous-catégories)`,
+        totals,
+        (d) => {
+          const found = entries.find(e => e[0]===d.key);
+          if(found) renderLeaf(cat, d.key, found[1].value, found[1].qty);
+        }
+      );
+      els.rightBody.appendChild(combo);
+
+      const listPanel = document.createElement('div');
+      listPanel.className = 'listPanel dyn';
+      listPanel.innerHTML = `
+        <div class="lhd">
+          <div class="crumb"><span>${escapeHtml(cat)}</span></div>
+          <div class="actions"><button id="btnHome">Accueil</button></div>
+        </div>
+        <div class="list" id="subList"></div>
+      `;
+      const list = listPanel.querySelector('#subList');
 
       if(entries.length===0) list.innerHTML = `<div class="empty">Aucune sous-catégorie</div>`;
       else {
@@ -978,64 +1046,42 @@
               <span>${formatEUR(obj.value)} €</span>
             </div>
           `;
-          // leaf focus
-          it.addEventListener('click', () => {
-            view = { level:'category', category: cat, tcgLicense:null, leaf:{name, value: obj.value, qty: obj.qty} };
-            renderLeaf(cat, name, obj.value, obj.qty);
-          });
+          it.addEventListener('click', () => renderLeaf(cat, name, obj.value, obj.qty));
           list.appendChild(it);
         });
       }
 
-      // combo block for this level
-      const totals = {
-        total: applyTax(b.totalsHT.total),
-        sansTCG: applyTax(b.totalsHT.sansTCG)
-      };
-
-      const combo = renderComboPieAndTotals(
-        pieData.map(x=>({key:x.key, name:x.name, value:x.value})),
-        `Répartition — ${cat} (Top 10)`,
-        totals,
-        (d) => {
-          // clicking a subcategory focuses it
-          if(d.key==='Autres') return;
-          const found = entries.find(e => e[0]===d.key);
-          if(found) renderLeaf(cat, d.key, found[1].value, found[1].qty);
-        }
-      );
-      els.rightBody.appendChild(combo);
+      els.rightBody.appendChild(listPanel);
+      listPanel.querySelector('#btnHome').addEventListener('click', () => { view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed.two }; render(); });
 
     } else {
       // TCG licenses
       const map = b.sub.TCG.licenses;
-      entries = [...map.entries()].map(([lic, obj]) => [lic, { value: applyTax(obj.value), qty: obj.qty }]);
+      const entries = [...map.entries()].map(([lic, obj]) => [lic, { value: applyTax(obj.value), qty: obj.qty }]);
       entries.sort((a,b)=> b[1].value - a[1].value);
 
-      const total = entries.reduce((s,e)=>s+e[1].value,0);
-      pieData = entries.slice(0,10).map(([lic,obj]) => ({ key:lic, name:prettyLicense(lic), value: obj.value }));
-      if(entries.length>10){
-        const topSum = pieData.reduce((s,e)=>s+e.value,0);
-        pieData.push({ key:'Autres', name:'Autres', value: Math.max(0,total-topSum) });
-      }
-
-      const totals = {
-        total: applyTax(b.totalsHT.total),
-        sansTCG: applyTax(b.totalsHT.sansTCG)
-      };
+      const pieData = entries.map(([lic,obj]) => ({ key:lic, name:prettyLicense(lic), value: obj.value }));
+      const totals = { total: applyTax(b.totalsHT.total), sansTCG: applyTax(b.totalsHT.sansTCG) };
 
       const combo = renderComboPieAndTotals(
-        pieData.map(x=>({key:x.key, name:x.name, value:x.value})),
+        pieData,
         `Répartition — TCG (licences)`,
         totals,
-        (d) => {
-          if(d.key==='Autres') return;
-          view = { level:'tcgLicense', category:'TCG', tcgLicense:d.key, globalOnly: parsed.two };
-          render();
-        }
+        (d) => { view = { level:'tcgLicense', category:'TCG', tcgLicense:d.key, globalOnly: parsed.two }; render(); }
       );
       els.rightBody.appendChild(combo);
 
+      const listPanel = document.createElement('div');
+      listPanel.className = 'listPanel dyn';
+      listPanel.innerHTML = `
+        <div class="lhd">
+          <div class="crumb"><span>TCG</span></div>
+          <div class="actions"><button id="btnHome">Accueil</button></div>
+        </div>
+        <div class="list" id="licList"></div>
+      `;
+
+      const list = listPanel.querySelector('#licList');
       if(entries.length===0) list.innerHTML = `<div class="empty">Aucune licence TCG détectée</div>`;
       else {
         entries.forEach(([lic, obj]) => {
@@ -1048,34 +1094,21 @@
               <span>${formatEUR(obj.value)} €</span>
             </div>
           `;
-          it.addEventListener('click', () => {
-            view = { level:'tcgLicense', category:'TCG', tcgLicense: lic, globalOnly: parsed.two };
-            render();
-          });
+          it.addEventListener('click', () => { view = { level:'tcgLicense', category:'TCG', tcgLicense: lic, globalOnly: parsed.two }; render(); });
           list.appendChild(it);
         });
       }
+
+      els.rightBody.appendChild(listPanel);
+      listPanel.querySelector('#btnHome').addEventListener('click', () => { view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed.two }; render(); });
     }
-
-    listPanel.appendChild(lhd);
-    listPanel.appendChild(list);
-    els.rightBody.appendChild(listPanel);
-
-    listPanel.querySelector('#btnHome').addEventListener('click', () => {
-      view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed.two };
-      render();
-    });
   }
 
   function renderLeaf(cat, name, value, qty){
-    // wipe dyn
-    els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove());
+    clearDyn();
 
     const b = currentBucket();
-    const totals = {
-      total: applyTax(b.totalsHT.total),
-      sansTCG: applyTax(b.totalsHT.sansTCG)
-    };
+    const totals = { total: applyTax(b.totalsHT.total), sansTCG: applyTax(b.totalsHT.sansTCG) };
 
     const combo = renderComboPieAndTotals(
       [{key:name, name, value}],
@@ -1104,34 +1137,22 @@
     `;
     els.rightBody.appendChild(panel);
 
-    panel.querySelector('#btnUp').addEventListener('click', () => {
-      view = { level:'category', category: cat, tcgLicense:null, globalOnly: parsed.two };
-      render();
-    });
+    panel.querySelector('#btnUp').addEventListener('click', () => { view = { level:'category', category: cat, tcgLicense:null, globalOnly: parsed.two }; render(); });
   }
 
   function renderTcgLicense(){
     const b = currentBucket();
     const lic = view.tcgLicense;
 
-    const title = `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — TCG — ${prettyLicense(lic)}`;
-    els.rightTitle.textContent = title;
+    els.rightTitle.textContent = `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — TCG — ${prettyLicense(lic)}`;
 
     const seriesMap = b.sub.TCG.seriesByLicense.get(lic) || new Map();
     const entries = [...seriesMap.entries()].map(([name,obj]) => [name, { value: applyTax(obj.value), qty: obj.qty }]);
     entries.sort((a,b)=> b[1].value - a[1].value);
 
-    const total = entries.reduce((s,e)=>s+e[1].value,0);
-    const pieData = entries.slice(0,10).map(([name,obj]) => ({ key:name, name, value: obj.value }));
-    if(entries.length>10){
-      const topSum = pieData.reduce((s,e)=>s+e.value,0);
-      pieData.push({ key:'Autres', name:'Autres', value: Math.max(0,total-topSum) });
-    }
+    const pieData = entries.map(([name,obj]) => ({ key:name, name, value: obj.value }));
 
-    const totals = {
-      total: applyTax(b.totalsHT.total),
-      sansTCG: applyTax(b.totalsHT.sansTCG)
-    };
+    const totals = { total: applyTax(b.totalsHT.total), sansTCG: applyTax(b.totalsHT.sansTCG) };
 
     const combo = renderComboPieAndTotals(
       pieData,
@@ -1171,14 +1192,10 @@
     }
 
     els.rightBody.appendChild(listPanel);
-
-    listPanel.querySelector('#btnUp').addEventListener('click', () => {
-      view = { level:'category', category:'TCG', tcgLicense:null, globalOnly: parsed.two };
-      render();
-    });
+    listPanel.querySelector('#btnUp').addEventListener('click', () => { view = { level:'category', category:'TCG', tcgLicense:null, globalOnly: parsed.two }; render(); });
   }
 
-  // ===== back =====
+  // ===== Back button =====
   els.btnBack.addEventListener('click', () => {
     if(view.level === 'tcgLicense') view = { level:'category', category:'TCG', tcgLicense:null, globalOnly: parsed?.two || false };
     else if(view.level === 'category') view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed?.two || false };
@@ -1188,70 +1205,34 @@
 
   // ===== tutoriel pages =====
   const tutorialPages = [
-    {
-      title: "1) Choisir la boutique",
-      text: "Dans PrestaShop, sélectionne la boutique Pigalle OU Gambetta depuis un onglet (ex : Tableau de bord). L’app est prévue pour une boutique à la fois."
-    },
-    {
-      title: "2) Accéder au rapport",
-      text: "Va dans Commandes → Rapport Commandes TVA Bénéfices."
-    },
-    {
-      title: "3) Paramétrer l’export",
-      text: "Préférences d’export : Type de rapport = Catégories ; Format = html (souvent déjà sélectionné)."
-    },
-    {
-      title: "4) Définir la période",
-      text: "Filtres par Dates et Références : dans Par date de commande, choisis date début et date fin. Pour une analyse journalière : même date en début et fin."
-    },
-    {
-      title: "5) Statuts à sélectionner",
-      text: "Filtre par statuts de commande : tout décocher, puis cocher uniquement Store - Sale."
-    },
-    {
-      title: "6) Exporter + copier",
-      text: "Clique sur Exporter. Le tableau apparaît : fais Ctrl+A puis Ctrl+C sur la page du tableau."
-    },
-    {
-      title: "7) Coller ici",
-      text: "Reviens dans cette app : clique dans la zone de collage puis Ctrl+V. Clique sur Analyser : les résultats s’affichent."
-    }
+    { title: "1) Choisir la boutique", text: "Dans PrestaShop, sélectionne la boutique Pigalle OU Gambetta depuis un onglet (ex : Tableau de bord). L’app est prévue pour une boutique à la fois." },
+    { title: "2) Accéder au rapport", text: "Va dans Commandes → Rapport Commandes TVA Bénéfices." },
+    { title: "3) Paramétrer l’export", text: "Préférences d’export : Type de rapport = Catégories ; Format = html (souvent déjà sélectionné)." },
+    { title: "4) Définir la période", text: "Filtres par Dates et Références : dans Par date de commande, choisis date début et date fin. Pour une analyse journalière : même date en début et fin." },
+    { title: "5) Statuts à sélectionner", text: "Filtre par statuts de commande : tout décocher, puis cocher uniquement Store - Sale." },
+    { title: "6) Exporter + copier", text: "Clique sur Exporter. Le tableau apparaît : fais Ctrl+A puis Ctrl+C sur la page du tableau." },
+    { title: "7) Coller ici", text: "Reviens dans cette app : clique dans la zone de collage puis Ctrl+V. Clique sur Analyser : les résultats s’affichent." }
   ];
   let tutPage = 0;
-
   function renderTut(){
     const p = tutorialPages[tutPage];
     els.tutContent.innerHTML = `
       <h3 class="pageTitle">${escapeHtml(p.title)}</h3>
       <div class="pageText">${escapeHtml(p.text)}</div>
-      <div class="muted" style="margin-top:10px">Astuce : si 2 boutiques sont collées, l’app passe en mode GLOBAL.</div>
+      <div class="muted" style="margin-top:10px">Astuce : si 2 boutiques sont collées, l’app passe en mode GLOBAL (catégories uniquement).</div>
     `;
-    els.tutIdx.textContent = String(tutPage+1);
-    els.tutTotal.textContent = String(tutorialPages.length);
-    els.tutPrev.disabled = tutPage === 0;
-    els.tutNext.textContent = (tutPage === tutorialPages.length-1) ? 'Terminer' : 'Suivant';
+    el('tutIdx').textContent = String(tutPage+1);
+    el('tutTotal').textContent = String(tutorialPages.length);
+    el('tutPrev').disabled = tutPage === 0;
+    el('tutNext').textContent = (tutPage === tutorialPages.length-1) ? 'Terminer' : 'Suivant';
   }
-
-  function openTut(){
-    tutPage = 0;
-    renderTut();
-    els.tutBg.style.display = 'flex';
-    els.tutBg.setAttribute('aria-hidden','false');
-  }
-  function closeTut(){
-    els.tutBg.style.display = 'none';
-    els.tutBg.setAttribute('aria-hidden','true');
-  }
-
+  function openTut(){ tutPage = 0; renderTut(); el('tutBg').style.display='flex'; el('tutBg').setAttribute('aria-hidden','false'); }
+  function closeTut(){ el('tutBg').style.display='none'; el('tutBg').setAttribute('aria-hidden','true'); }
   els.btnTut.addEventListener('click', openTut);
   els.btnCloseTut.addEventListener('click', closeTut);
-  els.tutBg.addEventListener('click', (e)=>{ if(e.target === els.tutBg) closeTut(); });
-
-  els.tutPrev.addEventListener('click', ()=>{ if(tutPage>0){ tutPage--; renderTut(); } });
-  els.tutNext.addEventListener('click', ()=>{
-    if(tutPage < tutorialPages.length-1){ tutPage++; renderTut(); }
-    else closeTut();
-  });
+  el('tutBg').addEventListener('click', (e)=>{ if(e.target === el('tutBg')) closeTut(); });
+  el('tutPrev').addEventListener('click', ()=>{ if(tutPage>0){ tutPage--; renderTut(); } });
+  el('tutNext').addEventListener('click', ()=>{ if(tutPage < tutorialPages.length-1){ tutPage++; renderTut(); } else closeTut(); });
 
   // ===== settings =====
   function openSet(){
@@ -1265,22 +1246,99 @@
     els.setBg.style.display = 'none';
     els.setBg.setAttribute('aria-hidden','true');
   }
-
   els.btnSettings.addEventListener('click', openSet);
   els.btnCloseSet.addEventListener('click', closeSet);
   els.setBg.addEventListener('click', (e)=>{ if(e.target === els.setBg) closeSet(); });
-
   els.btnSaveSet.addEventListener('click', ()=>{
     settings.mode = els.modeTax.value;
     settings.vat = Number(String(els.vat.value).replace(',','.'));
     settings.showQty = els.showQty.value;
-
     localStorage.setItem('lgdj_mode', settings.mode);
     localStorage.setItem('lgdj_vat', String(settings.vat));
     localStorage.setItem('lgdj_qty', settings.showQty);
-
     closeSet();
     render();
+  });
+
+  // ===== Changelog =====
+  function openVer(){
+    els.verContent.innerHTML = `
+      <h3 class="pageTitle">${VERSION}</h3>
+      <div class="pageText">
+        <ul>
+          <li>Version cliquable : ouverture du changelog</li>
+          <li>Zone de collage réduite à ~1/3 écran</li>
+          <li>Résultats : zone scrollable (plus de contenu sans être coupé)</li>
+          <li>Camembert : toutes les sous-catégories (plus de Top10)</li>
+          <li>Stats cliquables : détails des lignes utilisées/erreurs/ignorées</li>
+          <li>Suppression du texte d’aide sous “Licences TCG”</li>
+          <li>Footer : message “contacter Zao”</li>
+        </ul>
+      </div>
+      <div class="muted" style="margin-top:10px">Astuce : utilise “Détails des lignes” pour comprendre pourquoi une ligne n’est pas prise en compte.</div>
+    `;
+    els.verBg.style.display='flex';
+    els.verBg.setAttribute('aria-hidden','false');
+  }
+  function closeVer(){
+    els.verBg.style.display='none';
+    els.verBg.setAttribute('aria-hidden','true');
+  }
+  els.btnVer.addEventListener('click', openVer);
+  els.btnCloseVer.addEventListener('click', closeVer);
+  els.verBg.addEventListener('click', (e)=>{ if(e.target === els.verBg) closeVer(); });
+
+  // ===== Stats debug =====
+  let activeTab = 'used';
+  function statsText(tab){
+    const arr = debug[tab] || [];
+    const head = tab === 'used' ? 'Lignes utilisées (prises en compte)' : (tab === 'err' ? 'Erreurs (boutique détectée mais montant HT introuvable)' : 'Ignorées (non pertinentes / hors tableau)');
+    els.statsHint.textContent = `${head} — ${arr.length}`;
+    return arr.map((x,i)=>`#${i+1} • ${x.reason}\n${x.line}`).join("\n\n");
+  }
+  function renderStats(){
+    els.statsBox.textContent = parsed ? (statsText(activeTab) || '—') : 'Analyse un export pour afficher les détails.';
+  }
+  function openStats(){
+    activeTab = 'used';
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===activeTab));
+    renderStats();
+    els.statsBg.style.display='flex';
+    els.statsBg.setAttribute('aria-hidden','false');
+  }
+  function closeStats(){
+    els.statsBg.style.display='none';
+    els.statsBg.setAttribute('aria-hidden','true');
+  }
+
+  els.btnStats.addEventListener('click', openStats);
+  els.btnCloseStats.addEventListener('click', closeStats);
+  els.statsBg.addEventListener('click', (e)=>{ if(e.target === els.statsBg) closeStats(); });
+
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      activeTab = t.dataset.tab;
+      document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active', x.dataset.tab===activeTab));
+      renderStats();
+    });
+  });
+
+  els.btnCopyStats.addEventListener('click', async ()=>{
+    try{
+      await navigator.clipboard.writeText(els.statsBox.textContent || '');
+      els.btnCopyStats.textContent = 'Copié';
+      setTimeout(()=> els.btnCopyStats.textContent='Copier', 900);
+    } catch {
+      // fallback
+      const ta = document.createElement('textarea');
+      ta.value = els.statsBox.textContent || '';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      els.btnCopyStats.textContent = 'Copié';
+      setTimeout(()=> els.btnCopyStats.textContent='Copier', 900);
+    }
   });
 
   // Esc closes modals
@@ -1288,6 +1346,8 @@
     if(e.key === 'Escape'){
       closeTut();
       closeSet();
+      closeVer();
+      closeStats();
     }
   });
 
@@ -1297,6 +1357,7 @@
     els.raw.value = '';
     parsed = null;
     view = { level:'dashboard', category:null, tcgLicense:null, globalOnly:false };
+    debug = { used: [], err: [], ignored: [] };
     els.metaLines.textContent = '0';
     els.metaUsed.textContent = '0';
     els.metaErr.textContent = '0';
@@ -1306,8 +1367,8 @@
   });
 
   // init
-  els.ver.textContent = VERSION;
-  els.ver2.textContent = VERSION;
+  el('btnVer').textContent = VERSION;
+  el('ver2').textContent = VERSION;
   els.unitLabel.textContent = settings.mode;
   render();
 </script>
