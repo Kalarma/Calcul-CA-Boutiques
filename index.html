@@ -5,51 +5,30 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>LGDJ — Extracteur CA (Offline)</title>
   <style>
-    /* ====== THEME TOKENS ====== */
     :root{
-      --ver: "v0.3.0";
+      --ver: "v0.4.0";
 
-      /* dark defaults */
       --bg0:#0b1020;
       --bg1:#0c1426;
       --panel: rgba(255,255,255,.06);
-      --panel2: rgba(0,0,0,.18);
+      --panel2: rgba(0,0,0,.20);
       --text:#eef2ff;
       --muted:#aab3c7;
       --line:rgba(255,255,255,.10);
       --shadow: 0 18px 55px rgba(0,0,0,.45);
 
-      /* palette */
-      --pri:#4f46e5;   /* indigo */
-      --pri2:#22c55e;  /* green */
-      --warn:#f59e0b;  /* amber */
-      --danger:#ef4444;/* red */
+      --pri:#4f46e5;
+      --pri2:#22c55e;
+      --warn:#f59e0b;
 
-      --jeux:#60a5fa;  /* blue */
-      --acc:#fb7185;   /* rose */
-      --tcg:#a78bfa;   /* purple */
+      /* base hue for pies */
+      --pieBase:#60a5fa; /* will be re-used with light/dark variants */
 
       --r:18px;
       --btn: rgba(255,255,255,.08);
       --btnH: rgba(255,255,255,.12);
       --chip: rgba(255,255,255,.06);
-
       --input: rgba(0,0,0,.18);
-    }
-
-    [data-theme="light"]{
-      --bg0:#f5f7ff;
-      --bg1:#eef2ff;
-      --panel: rgba(255,255,255,.80);
-      --panel2: rgba(255,255,255,.65);
-      --text:#0b1020;
-      --muted:#54607a;
-      --line:rgba(11,16,32,.12);
-      --shadow: 0 18px 55px rgba(11,16,32,.16);
-      --btn: rgba(11,16,32,.06);
-      --btnH: rgba(11,16,32,.10);
-      --chip: rgba(11,16,32,.05);
-      --input: rgba(11,16,32,.05);
     }
 
     *{box-sizing:border-box}
@@ -62,7 +41,7 @@
         radial-gradient(900px 520px at 18% 12%, rgba(79,70,229,.20), transparent 60%),
         radial-gradient(900px 520px at 80% 14%, rgba(34,197,94,.14), transparent 60%),
         linear-gradient(180deg, var(--bg1), var(--bg0));
-      overflow:hidden; /* no page scroll */
+      overflow:hidden;
     }
 
     .app{height:100vh; display:flex; flex-direction:column;}
@@ -115,6 +94,9 @@
     .btnTutor{border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.12)}
     .btnTutor:hover{background: rgba(34,197,94,.18)}
 
+    .btnGear{border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.10)}
+    .btnGear:hover{background: rgba(245,158,11,.16)}
+
     .main{
       flex:1;
       padding:0 14px 14px;
@@ -150,28 +132,23 @@
 
     .bd{padding:12px; min-height:0;}
 
-    textarea, input{
+    textarea, input, select{
       width:100%;
       border-radius: 14px;
       border:1px solid var(--line);
       background: var(--input);
       color:var(--text);
-      padding:11px 12px;
+      padding:10px 12px;
       outline:none;
       font-size:13px;
       line-height:1.35;
     }
 
-    textarea{
-      resize:none;
-      min-height:0;
-      height:100%;
-      overflow:auto;
-    }
+    textarea{resize:none; min-height:0; overflow:auto;}
 
     .inputGrid{
       display:grid;
-      grid-template-rows: 1fr auto;
+      grid-template-rows: 240px auto; /* smaller paste zone */
       gap:10px;
       height:100%;
       min-height:0;
@@ -183,7 +160,7 @@
 
     .rightGrid{
       display:grid;
-      grid-template-rows: auto auto 1fr;
+      grid-template-rows: auto 1fr;
       gap:12px;
       height:100%;
       min-height:0;
@@ -192,7 +169,6 @@
     .alert{
       border:1px solid rgba(245,158,11,.40);
       background: rgba(245,158,11,.10);
-      color: var(--text);
       border-radius: 14px;
       padding:10px 12px;
       font-weight:850;
@@ -200,7 +176,7 @@
       display:none;
     }
 
-    .card{
+    .combo{
       border-radius: var(--r);
       border:1px solid var(--line);
       background: var(--panel);
@@ -210,38 +186,25 @@
       min-height:0;
       backdrop-filter: blur(10px);
     }
+    .comboHd{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;background: var(--panel2);}
+    .comboBd{padding:12px 14px; display:grid; grid-template-columns: 200px 1fr; gap:14px; align-items:center; min-height:0;}
+    @media(max-width:980px){.comboBd{grid-template-columns:1fr}}
 
-    .card .chd{
-      padding:14px;
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      border-bottom:1px solid var(--line);
-      background: var(--panel2);
+    .legend{display:grid;gap:8px; min-height:0;}
+    .legRow{display:flex;align-items:center;justify-content:space-between;gap:10px; padding:8px 0; border-bottom:1px dashed rgba(125,125,155,.22); cursor:pointer;}
+    .legRow:last-child{border-bottom:none}
+    .legRow:hover .legName{color:var(--text)}
+
+    .legL{display:flex;align-items:center;gap:10px; min-width:0;}
+    .sw{width:10px;height:10px;border-radius:4px; flex:0 0 auto;}
+    .legName{color:var(--muted);font-weight:950; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .legVal{font-weight:950; white-space:nowrap;}
+
+    .totals{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
     }
-
-    .card .cbd{padding:12px 14px; min-height:0;}
-
-    .row{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:11px 0;
-      border-bottom:1px dashed rgba(125,125,155,.22);
-    }
-    [data-theme="light"] .row{border-bottom:1px dashed rgba(11,16,32,.16)}
-
-    .row:last-child{border-bottom:none}
-    .row.clickable{cursor:pointer}
-    .row.clickable:hover .k{color:var(--text)}
-
-    .k{display:flex;align-items:center;gap:10px;color:var(--muted);font-weight:900}
-
-    .badge{
-      width:10px;height:10px;border-radius:4px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.18);
-    }
-
-    .v{font-weight:980; letter-spacing:.2px}
-
-    .divider{height:1px;background: var(--line);margin:10px 0 8px}
 
     .totalBox{
       border-radius: 14px;
@@ -249,13 +212,10 @@
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       border:1px solid var(--line);
       background: var(--panel2);
-      margin-top:10px;
     }
-
-    .totalLabel{font-weight:980;letter-spacing:.25px}
+    .totalLabel{font-weight:980;letter-spacing:.15px}
     .totalValue{font-weight:980;font-size:18px}
 
-    /* List panel */
     .listPanel{
       border-radius: var(--r);
       border:1px solid var(--line);
@@ -276,11 +236,7 @@
     .crumb{display:flex; align-items:center; gap:8px; font-weight:980; min-width:0;}
     .crumb span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
-    .list{
-      padding:10px 14px;
-      overflow:auto;
-      min-height:0;
-    }
+    .list{padding:10px 14px; overflow:auto; min-height:0;}
 
     .item{
       display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -288,94 +244,36 @@
       border-bottom:1px dashed rgba(125,125,155,.22);
       cursor:pointer;
     }
-    [data-theme="light"] .item{border-bottom:1px dashed rgba(11,16,32,.16)}
-
     .item:last-child{border-bottom:none}
     .item:hover .name{color:var(--text)}
 
-    .name{color:var(--muted); font-weight:900; display:flex; align-items:center; gap:10px; min-width:0;}
+    .name{color:var(--muted); font-weight:950; display:flex; align-items:center; gap:10px; min-width:0;}
     .name span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
-    .marker{
-      width:18px;height:18px;border-radius:8px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.10);
-      display:grid;place-items:center;
-      font-size:12px;
-      flex:0 0 auto;
-    }
+    .marker{width:18px;height:18px;border-radius:8px;border:1px solid var(--line);background: rgba(255,255,255,.10);display:grid;place-items:center;font-size:12px;flex:0 0 auto;}
 
-    .amt{font-weight:980}
+    .amt{font-weight:980; display:flex; gap:10px; align-items:center; white-space:nowrap;}
+    .qty{color:var(--muted); font-weight:850; font-size:12px;}
 
     .empty{padding:22px;color:var(--muted);text-align:center;font-weight:900}
 
-    /* Pie */
-    .pieWrap{
-      border-radius: var(--r);
-      border:1px solid var(--line);
-      background: var(--panel);
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-      backdrop-filter: blur(10px);
-    }
-    .pieHd{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;background: var(--panel2);}
-    .pieBd{padding:12px 14px; display:grid; grid-template-columns: 180px 1fr; gap:14px; align-items:center;}
-    @media(max-width:980px){.pieBd{grid-template-columns:1fr}}
-
-    .legend{display:grid;gap:8px;}
-    .legRow{display:flex;align-items:center;justify-content:space-between;gap:10px;}
-    .legL{display:flex;align-items:center;gap:10px; min-width:0;}
-    .sw{width:10px;height:10px;border-radius:4px; flex:0 0 auto;}
-    .legName{color:var(--muted);font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-    .legVal{font-weight:950}
-
     /* Modal */
-    .modalBg{
-      position:fixed;inset:0;
-      background: rgba(0,0,0,.45);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:16px;
-      z-index:50;
-    }
-    [data-theme="light"] .modalBg{background: rgba(11,16,32,.22)}
+    .modalBg{position:fixed;inset:0;background: rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:50;}
+    .modal{width:min(900px, 100%);max-height: min(86vh, 900px);overflow:auto;border-radius: 18px;border:1px solid var(--line);background: var(--panel);box-shadow: var(--shadow);backdrop-filter: blur(12px);}
+    .modal .mhd{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;background: var(--panel2);}
+    .modal .mbd{padding:14px 16px;}
 
-    .modal{
-      width:min(860px, 100%);
-      max-height: min(86vh, 860px);
-      overflow:auto;
-      border-radius: 18px;
-      border:1px solid var(--line);
-      background: var(--panel);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-    }
-
-    .modal .mhd{
-      padding:14px 16px;
-      border-bottom:1px solid var(--line);
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      background: var(--panel2);
-    }
-
-    .modal .mbd{padding:14px 16px; color:var(--text)}
-    .modal h3{margin:0 0 10px 0; font-size:16px}
-    .modal ol{margin:0; padding-left:18px}
-    .modal li{margin:8px 0; color:var(--text)}
+    .pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;}
+    .pageTitle{font-weight:980;font-size:16px;margin:0 0 6px 0}
+    .pageText{color:var(--text); line-height:1.55}
     .muted{color:var(--muted)}
 
-    .foot{
-      padding:0 14px 14px;
-      display:flex;justify-content:space-between;align-items:center;gap:10px;
-      color:var(--muted);
-      font-size:11px;
-      font-weight:800;
-    }
-
+    .foot{padding:0 14px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--muted);font-size:11px;font-weight:800;}
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+
+    /* clickable slices */
+    .slice{cursor:pointer; transition: opacity .15s ease;}
+    .slice:hover{opacity:.86}
   </style>
 </head>
 <body>
@@ -402,7 +300,7 @@
         <span class="chip">Utilisées: <span class="mono" id="metaUsed">0</span></span>
         <span class="chip">Erreurs: <span class="mono" id="metaErr">0</span></span>
         <button class="btnTutor" id="btnTut">Tutoriel</button>
-        <button id="btnTheme">Clair</button>
+        <button class="btnGear" id="btnSettings">Paramètres</button>
       </div>
     </div>
 
@@ -417,12 +315,12 @@
           </div>
         </div>
         <div class="bd inputGrid">
-          <textarea id="raw" placeholder="Colle ici le tableau HTML PrestaShop (Ctrl+V).\n\nAstuce : reste sur la page du tableau, fais Ctrl+A puis Ctrl+C, puis ici Ctrl+V."></textarea>
+          <textarea id="raw" placeholder="Colle ici le tableau PrestaShop (Ctrl+V).\n\nRaccourci : sur le tableau PrestaShop → Ctrl+A → Ctrl+C → ici Ctrl+V."></textarea>
 
           <div class="field">
             <div class="label">Licences TCG (virgules)</div>
             <input id="licenses" value="Pokémon, Lorcana, One Piece, Magic, Altered, Flesh and Blood, Star Wars Unlimited, Riftbound, Yu-Gi-Oh, Naruto" />
-            <div class="help">La détection TCG se fait par présence du nom de la licence dans la catégorie.</div>
+            <div class="help">La détection TCG se fait si le nom de la licence apparaît dans le nom de catégorie.</div>
           </div>
         </div>
       </section>
@@ -437,7 +335,7 @@
         </div>
 
         <div class="bd rightGrid" id="rightBody">
-          <div class="alert" id="warnTwo">⚠️ Deux boutiques détectées. Cette application est pensée pour 1 boutique à la fois : les résultats peuvent être erronés.</div>
+          <div class="alert" id="warnTwo">⚠️ Deux boutiques détectées. On affiche uniquement les totaux GLOBAL par catégories (pas de détails boutique).</div>
           <!-- dynamic -->
         </div>
       </section>
@@ -445,51 +343,70 @@
 
     <div class="foot">
       <div class="mono">LGDJ — <span id="ver2"></span></div>
-      <div>Offline • HT • Drilldown</div>
+      <div>Offline • Drilldown • <span id="unitLabel">HT</span></div>
     </div>
   </div>
 
-  <!-- Tutoriel modal -->
-  <div class="modalBg" id="modalBg" role="dialog" aria-modal="true" aria-hidden="true">
+  <!-- Tutoriel modal (multi-pages) -->
+  <div class="modalBg" id="tutBg" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" aria-label="Tutoriel">
       <div class="mhd">
-        <div style="font-weight:980">Tutoriel — Export PrestaShop</div>
+        <div style="font-weight:980">Tutoriel</div>
         <button id="btnCloseTut">Fermer</button>
       </div>
       <div class="mbd">
-        <h3>Marche à suivre</h3>
-        <ol>
-          <li>Dans PrestaShop, sélectionne la boutique <b>Pigalle</b> ou <b>Gambetta</b> depuis n’importe quelle page (ex : <span class="muted">Tableau de bord</span>).</li>
-          <li>Va dans <b>Commandes</b> → <b>Rapport Commandes TVA Bénéfices</b>.</li>
-          <li>Dans <b>Préférences d'export</b> :
-            <ul>
-              <li><b>Type de rapport</b> : <b>Catégories</b></li>
-              <li><b>Format de sortie</b> : <b>html</b> (normalement déjà sélectionné)</li>
-            </ul>
-          </li>
-          <li>Dans <b>Filtres par Dates et Références</b> :
-            <ul>
-              <li>Dans <b>Par date de commande</b>, choisis la plage d’analyse (début/fin).</li>
-              <li>Pour une analyse <b>journalière</b> : mets la <b>même date</b> en début et fin.</li>
-            </ul>
-          </li>
-          <li>Dans <b>Filtre par statuts de commande</b> :
-            <ul>
-              <li>Tout décocher</li>
-              <li>Cocher uniquement <b>Store - Sale</b></li>
-            </ul>
-          </li>
-          <li>Clique sur le bouton vert <b>Exporter</b>.</li>
-          <li>Le tableau apparaît : reste sur la page, fais <b>Ctrl+A</b>, puis <b>Ctrl+C</b>.</li>
-          <li>Reviens ici et fais <b>Ctrl+V</b> dans la zone de collage : les résultats s’affichent.</li>
-        </ol>
-        <p class="muted" style="margin-top:12px">Astuce : l’app est conçue pour analyser une seule boutique à la fois (Pigalle OU Gambetta).</p>
+        <div id="tutContent"></div>
+        <div class="pager">
+          <button id="tutPrev">Précédent</button>
+          <div class="muted"><span id="tutIdx">1</span>/<span id="tutTotal">1</span></div>
+          <button id="tutNext" class="btnPrimary">Suivant</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings modal -->
+  <div class="modalBg" id="setBg" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" aria-label="Paramètres">
+      <div class="mhd">
+        <div style="font-weight:980">Paramètres</div>
+        <button id="btnCloseSet">Fermer</button>
+      </div>
+      <div class="mbd">
+        <div class="field" style="margin-top:0">
+          <div class="label">Affichage</div>
+          <select id="modeTax">
+            <option value="HT">HT</option>
+            <option value="TTC">TTC</option>
+          </select>
+          <div class="help">TTC = HT × (1 + TVA). La TVA ne vient pas du fichier : tu peux la régler ci-dessous.</div>
+        </div>
+
+        <div class="field">
+          <div class="label">TVA (si TTC)</div>
+          <input id="vat" value="20" />
+          <div class="help">Ex : 20 = 20% • 5.5 = 5,5%</div>
+        </div>
+
+        <div class="field">
+          <div class="label">Quantités</div>
+          <select id="showQty">
+            <option value="OFF">Masquées</option>
+            <option value="ON">Afficher</option>
+          </select>
+        </div>
+
+        <div class="pager" style="justify-content:flex-end">
+          <button id="btnSaveSet" class="btnPrimary">Enregistrer</button>
+        </div>
+
+        <p class="muted" style="margin-top:10px">Note : si la colonne Quantité n’est pas présente, l’app affiche “—”.</p>
       </div>
     </div>
   </div>
 
 <script>
-  const VERSION = "v0.3.0";
+  const VERSION = "v0.4.0";
 
   // --- Rules ---
   const ACCESSORY_KEYWORDS = [
@@ -506,35 +423,46 @@
   // --- Elements ---
   const el = (id) => document.getElementById(id);
   const els = {
-    app: el('app'),
-    ver: el('ver'),
-    ver2: el('ver2'),
+    ver: el('ver'), ver2: el('ver2'),
+    metaLines: el('metaLines'), metaUsed: el('metaUsed'), metaErr: el('metaErr'),
+    unitLabel: el('unitLabel'),
 
-    raw: el('raw'),
-    licenses: el('licenses'),
+    raw: el('raw'), licenses: el('licenses'),
+    btnParse: el('btnParse'), btnClear: el('btnClear'), btnBack: el('btnBack'),
 
-    metaLines: el('metaLines'),
-    metaUsed: el('metaUsed'),
-    metaErr: el('metaErr'),
-
-    btnParse: el('btnParse'),
-    btnClear: el('btnClear'),
-    btnBack: el('btnBack'),
-
-    rightTitle: el('rightTitle'),
-    rightBody: el('rightBody'),
-
+    rightTitle: el('rightTitle'), rightBody: el('rightBody'),
     warnTwo: el('warnTwo'),
 
-    btnTheme: el('btnTheme'),
+    // tutoriel
     btnTut: el('btnTut'),
-    modalBg: el('modalBg'),
+    tutBg: el('tutBg'),
     btnCloseTut: el('btnCloseTut'),
+    tutContent: el('tutContent'),
+    tutPrev: el('tutPrev'),
+    tutNext: el('tutNext'),
+    tutIdx: el('tutIdx'),
+    tutTotal: el('tutTotal'),
+
+    // settings
+    btnSettings: el('btnSettings'),
+    setBg: el('setBg'),
+    btnCloseSet: el('btnCloseSet'),
+    modeTax: el('modeTax'),
+    vat: el('vat'),
+    showQty: el('showQty'),
+    btnSaveSet: el('btnSaveSet'),
   };
 
-  // --- State ---
+  // --- Settings state ---
+  const settings = {
+    mode: localStorage.getItem('lgdj_mode') || 'HT',
+    vat: Number(localStorage.getItem('lgdj_vat') || '20'),
+    showQty: (localStorage.getItem('lgdj_qty') || 'OFF')
+  };
+
+  // --- App State ---
   let parsed = null;
-  let view = { level: 'dashboard', category: null, tcgLicense: null };
+  let view = { level: 'dashboard', category: null, tcgLicense: null, globalOnly: false };
 
   // ===== helpers =====
   function normalize(s){
@@ -567,6 +495,17 @@
     return nums.length ? nums[nums.length - 1] : null;
   }
 
+  function extractQtyFromLine(line){
+    // expects tab-separated export; qty is typically 4th col: Boutique | ID | Cat | Qty | ...
+    const parts = line.split("\t").map(p=>p.trim());
+    if(parts.length >= 5){
+      const q = Number(parts[3]);
+      return Number.isFinite(q) ? q : null;
+    }
+    // fallback: try to capture qty right after category id/name (weak)
+    return null;
+  }
+
   function extractCategoryName(line){
     const parts = line.split("\t").map(p=>p.trim()).filter(Boolean);
     if(parts.length >= 4) return parts[2];
@@ -586,18 +525,13 @@
     return ACCESSORY_KEYWORDS.some(k => catNorm.includes(normalize(k)));
   }
 
-  function formatEUR(n){
-    const v = Number.isFinite(n) ? n : 0;
-    return v.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2});
-  }
-
   function sortEntriesDesc(map){
-    return [...map.entries()].sort((a,b)=> b[1]-a[1]);
+    return [...map.entries()].sort((a,b)=> b[1].value - a[1].value);
   }
 
   function sumMap(map){
     let t = 0;
-    for(const v of map.values()) t += v;
+    for(const v of map.values()) t += v.value;
     return t;
   }
 
@@ -626,16 +560,56 @@
       .replaceAll("'",'&#039;');
   }
 
+  function formatEUR(n){
+    const v = Number.isFinite(n) ? n : 0;
+    return v.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function applyTax(ht){
+    if(settings.mode === 'HT') return ht;
+    const rate = Number(settings.vat);
+    const mult = 1 + (Number.isFinite(rate) ? (rate/100) : 0.20);
+    return ht * mult;
+  }
+
+  // ----- Color utilities: base color -> shades -----
+  function hexToRgb(hex){
+    const h = hex.replace('#','').trim();
+    const full = h.length===3 ? h.split('').map(c=>c+c).join('') : h;
+    const n = parseInt(full, 16);
+    return { r: (n>>16)&255, g: (n>>8)&255, b: n&255 };
+  }
+  function rgbToHex(r,g,b){
+    const to = (x)=> x.toString(16).padStart(2,'0');
+    return `#${to(r)}${to(g)}${to(b)}`;
+  }
+  function mix(a,b,t){
+    return Math.round(a + (b-a)*t);
+  }
+  function shadeHex(baseHex, t){
+    // t in [0..1], 0=darken, 1=lighten
+    const base = hexToRgb(baseHex);
+    const dark = { r: 20, g: 30, b: 55 };
+    const light = { r: 235, g: 242, b: 255 };
+    // create a span from dark->base->light
+    if(t < 0.5){
+      const tt = t/0.5;
+      return rgbToHex(mix(dark.r, base.r, tt), mix(dark.g, base.g, tt), mix(dark.b, base.b, tt));
+    } else {
+      const tt = (t-0.5)/0.5;
+      return rgbToHex(mix(base.r, light.r, tt), mix(base.g, light.g, tt), mix(base.b, light.b, tt));
+    }
+  }
+
   function getVar(name){
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
-  // ===== pie svg =====
+  // ===== pie svg (clickable slices) =====
   function polarToCartesian(cx, cy, r, angle){
     const rad = (angle - 90) * Math.PI / 180.0;
     return { x: cx + (r * Math.cos(rad)), y: cy + (r * Math.sin(rad)) };
   }
-
   function arcPath(cx, cy, r, startAngle, endAngle){
     const start = polarToCartesian(cx, cy, r, endAngle);
     const end = polarToCartesian(cx, cy, r, startAngle);
@@ -643,39 +617,32 @@
     return ['M', cx, cy,'L', start.x, start.y,'A', r, r, 0, largeArc, 0, end.x, end.y,'Z'].join(' ');
   }
 
-  function renderPie(data, title){
+  function renderComboPieAndTotals(data, title, totals, onPick){
+    // data: [{key,name,value}]
     const total = data.reduce((a,b)=>a + (b.value||0), 0);
-    const safe = data.filter(d => d.value > 0);
 
     const wrap = document.createElement('div');
-    wrap.className = 'pieWrap';
+    wrap.className = 'combo dyn';
 
     const hd = document.createElement('div');
-    hd.className = 'pieHd';
+    hd.className = 'comboHd';
     hd.innerHTML = `<div class="crumb"><span>${escapeHtml(title)}</span></div>`;
     wrap.appendChild(hd);
 
     const bd = document.createElement('div');
-    bd.className = 'pieBd';
+    bd.className = 'comboBd';
 
-    if(total <= 0 || safe.length === 0){
-      bd.innerHTML = `<div class="empty">Aucune donnée</div>`;
-      wrap.appendChild(bd);
-      return wrap;
-    }
-
-    const size = 180;
+    // pie
+    const size = 200;
     const cx = size/2;
     const cy = size/2;
-    const r = 82;
+    const r = 88;
 
-    let angle = 0;
     const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.setAttribute('width', String(size));
     svg.setAttribute('height', String(size));
     svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
 
-    // background
     const bg = document.createElementNS('http://www.w3.org/2000/svg','circle');
     bg.setAttribute('cx', cx);
     bg.setAttribute('cy', cy);
@@ -685,24 +652,34 @@
     bg.setAttribute('stroke-width', '1');
     svg.appendChild(bg);
 
-    safe.forEach(d => {
+    const base = getVar('--pieBase') || '#60a5fa';
+    const items = data.filter(d => d.value > 0);
+
+    let angle = 0;
+    items.forEach((d, i) => {
       const slice = (d.value / total) * 360;
       const start = angle;
       const end = angle + slice;
       angle = end;
 
+      const t = items.length <= 1 ? 0.6 : (0.25 + (i/(items.length-1))*0.6); // spread shades
+      const color = shadeHex(base, t);
+      d._color = color;
+
       const path = document.createElementNS('http://www.w3.org/2000/svg','path');
       path.setAttribute('d', arcPath(cx, cy, r, start, end));
-      path.setAttribute('fill', d.color || 'white');
+      path.setAttribute('fill', color);
       path.setAttribute('stroke', 'rgba(0,0,0,.12)');
       path.setAttribute('stroke-width', '1');
+      path.classList.add('slice');
+      path.addEventListener('click', () => onPick?.(d));
       svg.appendChild(path);
     });
 
     const hole = document.createElementNS('http://www.w3.org/2000/svg','circle');
     hole.setAttribute('cx', cx);
     hole.setAttribute('cy', cy);
-    hole.setAttribute('r', 46);
+    hole.setAttribute('r', 50);
     hole.setAttribute('fill', getVar('--bg0'));
     hole.setAttribute('stroke', getVar('--line'));
     hole.setAttribute('stroke-width', '1');
@@ -713,26 +690,27 @@
     t1.setAttribute('y', cy - 4);
     t1.setAttribute('text-anchor','middle');
     t1.setAttribute('fill', getVar('--text'));
-    t1.setAttribute('font-size','12');
+    t1.setAttribute('font-size','13');
     t1.setAttribute('font-weight','900');
     t1.textContent = formatEUR(total);
 
     const t2 = document.createElementNS('http://www.w3.org/2000/svg','text');
     t2.setAttribute('x', cx);
-    t2.setAttribute('y', cy + 14);
+    t2.setAttribute('y', cy + 16);
     t2.setAttribute('text-anchor','middle');
     t2.setAttribute('fill', getVar('--muted'));
     t2.setAttribute('font-size','10');
     t2.setAttribute('font-weight','800');
-    t2.textContent = '€ HT';
+    t2.textContent = `€ ${settings.mode}`;
 
     svg.appendChild(t1);
     svg.appendChild(t2);
 
+    // legend (clickable)
     const legend = document.createElement('div');
     legend.className = 'legend';
 
-    safe
+    items
       .slice()
       .sort((a,b)=>b.value-a.value)
       .forEach(d => {
@@ -741,16 +719,36 @@
         row.className = 'legRow';
         row.innerHTML = `
           <div class="legL">
-            <span class="sw" style="background:${d.color}"></span>
+            <span class="sw" style="background:${d._color}"></span>
             <span class="legName">${escapeHtml(d.name)}</span>
           </div>
           <div class="legVal">${formatEUR(d.value)} <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span></div>
         `;
+        row.addEventListener('click', () => onPick?.(d));
         legend.appendChild(row);
       });
 
+    const right = document.createElement('div');
+    right.appendChild(legend);
+
+    // totals
+    const totalsWrap = document.createElement('div');
+    totalsWrap.className = 'totals';
+    totalsWrap.innerHTML = `
+      <div class="totalBox">
+        <div class="totalLabel">CA Total (sans TCG)</div>
+        <div class="totalValue" style="color:${getVar('--pri2')}">${formatEUR(totals.sansTCG)} €</div>
+      </div>
+      <div class="totalBox">
+        <div class="totalLabel">CA TOTAL GLOBAL</div>
+        <div class="totalValue">${formatEUR(totals.total)} €</div>
+      </div>
+    `;
+    right.appendChild(totalsWrap);
+
     bd.appendChild(svg);
-    bd.appendChild(legend);
+    bd.appendChild(right);
+
     wrap.appendChild(bd);
     return wrap;
   }
@@ -774,6 +772,7 @@
       const ht = extractHTFromLine(line);
       if(ht === null){ err++; continue; }
 
+      const qty = extractQtyFromLine(line);
       const cat = extractCategoryName(line);
       const catNorm = normalize(cat);
 
@@ -782,49 +781,8 @@
       const acc = !tcg && isAccessory(catNorm);
       const top = tcg ? 'TCG' : (acc ? 'Accessoires' : 'Jeux');
 
-      rows.push({ boutiqueKey, top, category: cat, categoryNorm: catNorm, ht, license });
+      rows.push({ boutiqueKey, top, category: cat, categoryNorm: catNorm, ht, qty, license });
       used++;
-    }
-
-    // aggregate per boutique
-    const byBoutique = {};
-    for(const b of BOUTIQUES){
-      byBoutique[b.key] = {
-        totals: { Jeux:0, Accessoires:0, TCG:0, total:0, sansTCG:0 },
-        sub: {
-          Jeux: new Map(),
-          Accessoires: new Map(),
-          TCG: {
-            licenses: new Map(),
-            seriesByLicense: new Map(),
-          }
-        },
-        used: 0
-      };
-    }
-
-    for(const r of rows){
-      const b = byBoutique[r.boutiqueKey];
-      b.used += 1;
-      b.totals.total += r.ht;
-      if(r.top === 'Jeux'){
-        b.totals.Jeux += r.ht;
-        b.sub.Jeux.set(r.category, (b.sub.Jeux.get(r.category)||0) + r.ht);
-      } else if(r.top === 'Accessoires'){
-        b.totals.Accessoires += r.ht;
-        b.sub.Accessoires.set(r.category, (b.sub.Accessoires.get(r.category)||0) + r.ht);
-      } else {
-        b.totals.TCG += r.ht;
-        const lic = r.license || 'tcg';
-        b.sub.TCG.licenses.set(lic, (b.sub.TCG.licenses.get(lic)||0) + r.ht);
-        if(!b.sub.TCG.seriesByLicense.has(lic)) b.sub.TCG.seriesByLicense.set(lic, new Map());
-        const seriesMap = b.sub.TCG.seriesByLicense.get(lic);
-        seriesMap.set(r.category, (seriesMap.get(r.category)||0) + r.ht);
-      }
-    }
-
-    for(const b of BOUTIQUES){
-      byBoutique[b.key].totals.sansTCG = byBoutique[b.key].totals.total - byBoutique[b.key].totals.TCG;
     }
 
     // meta
@@ -832,32 +790,100 @@
     els.metaUsed.textContent  = String(used);
     els.metaErr.textContent   = String(err);
 
-    // Determine detected boutiques
-    const present = BOUTIQUES.filter(b => byBoutique[b.key].used > 0);
+    // boutiques present
+    const present = BOUTIQUES.filter(b => rows.some(r => r.boutiqueKey === b.key));
+    const two = present.length >= 2;
+    els.warnTwo.style.display = two ? 'block' : 'none';
 
-    // Warning if 2 boutiques
-    els.warnTwo.style.display = (present.length >= 2) ? 'block' : 'none';
+    // Aggregate per boutique + global
+    const byBoutique = {};
+    for(const b of BOUTIQUES){
+      byBoutique[b.key] = makeBucket();
+    }
+    const global = makeBucket();
 
-    // Choose active boutique (expect 1)
-    let activeKey = null;
-    if(present.length === 1) activeKey = present[0].key;
-    else if(present.length >= 2) activeKey = present[0].key; // fallback
+    for(const r of rows){
+      addRow(byBoutique[r.boutiqueKey], r);
+      addRow(global, r);
+    }
 
-    parsed = { rows, byBoutique, present, activeKey, meta: { lines: lines.length, used, err } };
+    finalizeBucket(byBoutique);
+    finalizeBucket({GLOBAL:global});
 
-    // reset view
-    view = { level: 'dashboard', category: null, tcgLicense: null };
+    const activeKey = (!two && present.length===1) ? present[0].key : 'GLOBAL';
+
+    parsed = { rows, present, two, activeKey, byBoutique, global };
+
+    view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: two };
+
     render();
   }
 
+  function makeBucket(){
+    return {
+      totalsHT: { Jeux:0, Accessoires:0, TCG:0, total:0 },
+      totalsQty: { Jeux:0, Accessoires:0, TCG:0, total:0 },
+      sub: {
+        Jeux: new Map(),
+        Accessoires: new Map(),
+        TCG: { licenses: new Map(), seriesByLicense: new Map() }
+      }
+    };
+  }
+
+  function addToMap(map, key, ht, qty){
+    if(!map.has(key)) map.set(key, { value:0, qty:0 });
+    const cur = map.get(key);
+    cur.value += ht;
+    cur.qty += (Number.isFinite(qty) ? qty : 0);
+  }
+
+  function addRow(bucket, r){
+    bucket.totalsHT.total += r.ht;
+    bucket.totalsQty.total += (Number.isFinite(r.qty) ? r.qty : 0);
+
+    if(r.top === 'Jeux'){
+      bucket.totalsHT.Jeux += r.ht;
+      bucket.totalsQty.Jeux += (Number.isFinite(r.qty) ? r.qty : 0);
+      addToMap(bucket.sub.Jeux, r.category, r.ht, r.qty);
+    } else if(r.top === 'Accessoires'){
+      bucket.totalsHT.Accessoires += r.ht;
+      bucket.totalsQty.Accessoires += (Number.isFinite(r.qty) ? r.qty : 0);
+      addToMap(bucket.sub.Accessoires, r.category, r.ht, r.qty);
+    } else {
+      bucket.totalsHT.TCG += r.ht;
+      bucket.totalsQty.TCG += (Number.isFinite(r.qty) ? r.qty : 0);
+      const lic = r.license || 'tcg';
+      addToMap(bucket.sub.TCG.licenses, lic, r.ht, r.qty);
+      if(!bucket.sub.TCG.seriesByLicense.has(lic)) bucket.sub.TCG.seriesByLicense.set(lic, new Map());
+      addToMap(bucket.sub.TCG.seriesByLicense.get(lic), r.category, r.ht, r.qty);
+    }
+  }
+
+  function finalizeBucket(obj){
+    for(const k in obj){
+      const b = obj[k];
+      b.totalsHT.sansTCG = b.totalsHT.total - b.totalsHT.TCG;
+      b.totalsQty.sansTCG = b.totalsQty.total - b.totalsQty.TCG;
+    }
+  }
+
   // ===== render =====
+  function currentBucket(){
+    if(!parsed) return null;
+    if(parsed.activeKey === 'GLOBAL') return parsed.global;
+    return parsed.byBoutique[parsed.activeKey];
+  }
+
   function render(){
+    els.unitLabel.textContent = settings.mode;
+
+    // remove dynamic nodes
     els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove());
 
-    if(!parsed || !parsed.activeKey){
+    if(!parsed){
       els.rightTitle.textContent = 'Résultats';
       els.btnBack.style.display = 'none';
-
       const empty = document.createElement('div');
       empty.className = 'empty dyn';
       empty.innerHTML = 'Colle un export puis clique <b>Analyser</b>.';
@@ -873,82 +899,43 @@
   }
 
   function renderDashboard(){
-    const bKey = parsed.activeKey;
-    const label = BOUTIQUES.find(b=>b.key===bKey)?.label || bKey;
-    const t = parsed.byBoutique[bKey].totals;
+    const b = currentBucket();
+    const title = parsed.activeKey === 'GLOBAL' ? 'GLOBAL (catégories)' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey);
+    els.rightTitle.textContent = title;
 
-    els.rightTitle.textContent = label;
-
-    const colors = {
-      Jeux: getVar('--jeux'),
-      Accessoires: getVar('--acc'),
-      TCG: getVar('--tcg')
+    const t = {
+      Jeux: applyTax(b.totalsHT.Jeux),
+      Accessoires: applyTax(b.totalsHT.Accessoires),
+      TCG: applyTax(b.totalsHT.TCG),
+      total: applyTax(b.totalsHT.total),
+      sansTCG: applyTax(b.totalsHT.sansTCG),
     };
 
-    const pie = renderPie([
-      {name:'Jeux de société', value:t.Jeux, color: colors.Jeux},
-      {name:'Accessoires', value:t.Accessoires, color: colors.Accessoires},
-      {name:'TCG', value:t.TCG, color: colors.TCG},
-    ], 'Répartition (catégories)');
-    pie.classList.add('dyn');
-
-    const card = document.createElement('div');
-    card.className = 'card dyn';
-    card.innerHTML = `
-      <div class="chd">
-        <div class="hdTitle">Sous-totaux</div>
-      </div>
-      <div class="cbd">
-        <div class="row clickable" data-cat="Jeux">
-          <div class="k"><span class="badge" style="background:${colors.Jeux}"></span> Jeux de société</div>
-          <div class="v" style="color:${colors.Jeux}">${formatEUR(t.Jeux)} €</div>
-        </div>
-        <div class="row clickable" data-cat="Accessoires">
-          <div class="k"><span class="badge" style="background:${colors.Accessoires}"></span> Accessoires</div>
-          <div class="v" style="color:${colors.Accessoires}">${formatEUR(t.Accessoires)} €</div>
-        </div>
-        <div class="row clickable" data-cat="TCG">
-          <div class="k"><span class="badge" style="background:${colors.TCG}"></span> TCG</div>
-          <div class="v" style="color:${colors.TCG}">${formatEUR(t.TCG)} €</div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="totalBox">
-          <div class="totalLabel">CA Total (sans TCG)</div>
-          <div class="totalValue" style="color:${getVar('--pri2')}">${formatEUR(t.sansTCG)} €</div>
-        </div>
-        <div class="totalBox">
-          <div class="totalLabel">CA TOTAL GLOBAL</div>
-          <div class="totalValue">${formatEUR(t.total)} €</div>
-        </div>
-      </div>
-    `;
-
-    // click to enter category
-    card.querySelectorAll('.row.clickable').forEach(n => {
-      n.addEventListener('click', () => {
-        view = { level:'category', category: n.getAttribute('data-cat'), tcgLicense:null };
+    const combo = renderComboPieAndTotals(
+      [
+        { key:'Jeux', name:'Jeux de société', value:t.Jeux },
+        { key:'Accessoires', name:'Accessoires', value:t.Accessoires },
+        { key:'TCG', name:'TCG', value:t.TCG },
+      ],
+      'Répartition (catégories) — clic pour ouvrir',
+      { total: t.total, sansTCG: t.sansTCG },
+      (d) => {
+        // if global only, we still allow drilldown within global
+        view = { level:'category', category:d.key, tcgLicense:null, globalOnly: parsed.two };
         render();
-      });
-    });
+      }
+    );
 
-    els.rightBody.appendChild(pie);
-    els.rightBody.appendChild(card);
+    els.rightBody.appendChild(combo);
+
+    // In dashboard, if globalOnly warning is on, we keep drilldown but it's based on global.
   }
 
   function renderCategory(){
-    const bKey = parsed.activeKey;
-    const label = BOUTIQUES.find(b=>b.key===bKey)?.label || bKey;
+    const b = currentBucket();
     const cat = view.category;
-
-    const colors = {
-      Jeux: getVar('--jeux'),
-      Accessoires: getVar('--acc'),
-      TCG: getVar('--tcg')
-    };
-
-    els.rightTitle.textContent = `${label} — ${cat}`;
+    const title = `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — ${cat}`;
+    els.rightTitle.textContent = title;
 
     const listPanel = document.createElement('div');
     listPanel.className = 'listPanel dyn';
@@ -963,61 +950,106 @@
     const list = document.createElement('div');
     list.className = 'list';
 
+    let entries = [];
     let pieData = [];
 
     if(cat === 'Jeux' || cat === 'Accessoires'){
-      const map = parsed.byBoutique[bKey].sub[cat];
-      const entries = sortEntriesDesc(map);
-      const total = sumMap(map);
+      const map = b.sub[cat];
+      entries = [...map.entries()].map(([name, obj]) => [name, { value: applyTax(obj.value), qty: obj.qty }]);
+      entries.sort((a,b)=> b[1].value - a[1].value);
 
-      // pie = top 10 + autres
-      pieData = entries.slice(0,10).map(([name,value]) => ({ name, value, color: colors[cat] }));
-      if(entries.length > 10){
-        const topSum = entries.slice(0,10).reduce((a,e)=>a+e[1],0);
-        pieData.push({ name:'Autres', value: Math.max(0, total-topSum), color: 'rgba(125,125,155,.35)' });
+      // pie top10
+      const total = entries.reduce((s,e)=>s+e[1].value,0);
+      pieData = entries.slice(0,10).map(([name, obj]) => ({ key:name, name, value: obj.value }));
+      if(entries.length>10){
+        const topSum = pieData.reduce((s,e)=>s+e.value,0);
+        pieData.push({ key:'Autres', name:'Autres', value: Math.max(0,total-topSum) });
       }
 
-      if(entries.length === 0) list.innerHTML = `<div class="empty">Aucune sous-catégorie</div>`;
+      if(entries.length===0) list.innerHTML = `<div class="empty">Aucune sous-catégorie</div>`;
       else {
-        entries.forEach(([name,value]) => {
+        entries.forEach(([name, obj]) => {
           const it = document.createElement('div');
           it.className = 'item';
           it.innerHTML = `
             <div class="name"><span class="marker">›</span><span>${escapeHtml(name)}</span></div>
-            <div class="amt">${formatEUR(value)} €</div>
+            <div class="amt">
+              ${settings.showQty==='ON' ? `<span class="qty">Qté: ${obj.qty || '—'}</span>` : ''}
+              <span>${formatEUR(obj.value)} €</span>
+            </div>
           `;
+          // leaf focus
           it.addEventListener('click', () => {
-            // focus this item (like navigating), but no deeper hierarchy
-            view = { level:'category', category: cat, tcgLicense:null, leaf:{name, value} };
-            renderLeaf(cat, name, value, colors[cat]);
+            view = { level:'category', category: cat, tcgLicense:null, leaf:{name, value: obj.value, qty: obj.qty} };
+            renderLeaf(cat, name, obj.value, obj.qty);
           });
           list.appendChild(it);
         });
       }
 
+      // combo block for this level
+      const totals = {
+        total: applyTax(b.totalsHT.total),
+        sansTCG: applyTax(b.totalsHT.sansTCG)
+      };
+
+      const combo = renderComboPieAndTotals(
+        pieData.map(x=>({key:x.key, name:x.name, value:x.value})),
+        `Répartition — ${cat} (Top 10)`,
+        totals,
+        (d) => {
+          // clicking a subcategory focuses it
+          if(d.key==='Autres') return;
+          const found = entries.find(e => e[0]===d.key);
+          if(found) renderLeaf(cat, d.key, found[1].value, found[1].qty);
+        }
+      );
+      els.rightBody.appendChild(combo);
+
     } else {
       // TCG licenses
-      const licMap = parsed.byBoutique[bKey].sub.TCG.licenses;
-      const entries = sortEntriesDesc(licMap);
-      const total = sumMap(licMap);
+      const map = b.sub.TCG.licenses;
+      entries = [...map.entries()].map(([lic, obj]) => [lic, { value: applyTax(obj.value), qty: obj.qty }]);
+      entries.sort((a,b)=> b[1].value - a[1].value);
 
-      pieData = entries.slice(0,10).map(([lic,value]) => ({ name: prettyLicense(lic), value, color: colors.TCG }));
-      if(entries.length > 10){
-        const topSum = entries.slice(0,10).reduce((a,e)=>a+e[1],0);
-        pieData.push({ name:'Autres', value: Math.max(0, total-topSum), color: 'rgba(125,125,155,.35)' });
+      const total = entries.reduce((s,e)=>s+e[1].value,0);
+      pieData = entries.slice(0,10).map(([lic,obj]) => ({ key:lic, name:prettyLicense(lic), value: obj.value }));
+      if(entries.length>10){
+        const topSum = pieData.reduce((s,e)=>s+e.value,0);
+        pieData.push({ key:'Autres', name:'Autres', value: Math.max(0,total-topSum) });
       }
 
-      if(entries.length === 0) list.innerHTML = `<div class="empty">Aucune licence TCG détectée</div>`;
+      const totals = {
+        total: applyTax(b.totalsHT.total),
+        sansTCG: applyTax(b.totalsHT.sansTCG)
+      };
+
+      const combo = renderComboPieAndTotals(
+        pieData.map(x=>({key:x.key, name:x.name, value:x.value})),
+        `Répartition — TCG (licences)`,
+        totals,
+        (d) => {
+          if(d.key==='Autres') return;
+          view = { level:'tcgLicense', category:'TCG', tcgLicense:d.key, globalOnly: parsed.two };
+          render();
+        }
+      );
+      els.rightBody.appendChild(combo);
+
+      if(entries.length===0) list.innerHTML = `<div class="empty">Aucune licence TCG détectée</div>`;
       else {
-        entries.forEach(([lic,value]) => {
+        entries.forEach(([lic, obj]) => {
           const it = document.createElement('div');
           it.className = 'item';
           it.innerHTML = `
             <div class="name"><span class="marker">›</span><span>${escapeHtml(prettyLicense(lic))}</span></div>
-            <div class="amt">${formatEUR(value)} €</div>
+            <div class="amt">
+              ${settings.showQty==='ON' ? `<span class="qty">Qté: ${obj.qty || '—'}</span>` : ''}
+              <span>${formatEUR(obj.value)} €</span>
+            </div>
           `;
           it.addEventListener('click', () => {
-            view = { level:'tcgLicense', category:'TCG', tcgLicense: lic };
+            view = { level:'tcgLicense', category:'TCG', tcgLicense: lic, globalOnly: parsed.two };
             render();
           });
           list.appendChild(it);
@@ -1027,25 +1059,31 @@
 
     listPanel.appendChild(lhd);
     listPanel.appendChild(list);
-
-    const pie = renderPie(pieData, (cat==='TCG' ? 'Répartition (licences)' : 'Répartition (sous-catégories)'));
-    pie.classList.add('dyn');
-
-    els.rightBody.appendChild(pie);
     els.rightBody.appendChild(listPanel);
 
     listPanel.querySelector('#btnHome').addEventListener('click', () => {
-      view = { level:'dashboard', category:null, tcgLicense:null };
+      view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed.two };
       render();
     });
   }
 
-  function renderLeaf(cat, name, value, color){
-    // replace right panel dynamic content
+  function renderLeaf(cat, name, value, qty){
+    // wipe dyn
     els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove());
 
-    const pie = renderPie([{name, value, color}], 'Répartition (sélection)');
-    pie.classList.add('dyn');
+    const b = currentBucket();
+    const totals = {
+      total: applyTax(b.totalsHT.total),
+      sansTCG: applyTax(b.totalsHT.sansTCG)
+    };
+
+    const combo = renderComboPieAndTotals(
+      [{key:name, name, value}],
+      `Sélection — ${cat}`,
+      totals,
+      null
+    );
+    els.rightBody.appendChild(combo);
 
     const panel = document.createElement('div');
     panel.className = 'listPanel dyn';
@@ -1057,41 +1095,51 @@
       <div class="list">
         <div class="item" style="cursor:default">
           <div class="name"><span class="marker">•</span><span>${escapeHtml(name)}</span></div>
-          <div class="amt" style="color:${color}">${formatEUR(value)} €</div>
+          <div class="amt">
+            ${settings.showQty==='ON' ? `<span class="qty">Qté: ${qty || '—'}</span>` : ''}
+            <span>${formatEUR(value)} €</span>
+          </div>
         </div>
       </div>
     `;
-
-    els.rightBody.appendChild(pie);
     els.rightBody.appendChild(panel);
 
     panel.querySelector('#btnUp').addEventListener('click', () => {
-      view = { level:'category', category: cat, tcgLicense:null };
+      view = { level:'category', category: cat, tcgLicense:null, globalOnly: parsed.two };
       render();
     });
   }
 
   function renderTcgLicense(){
-    const bKey = parsed.activeKey;
-    const label = BOUTIQUES.find(b=>b.key===bKey)?.label || bKey;
+    const b = currentBucket();
     const lic = view.tcgLicense;
 
-    els.rightTitle.textContent = `${label} — TCG — ${prettyLicense(lic)}`;
+    const title = `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — TCG — ${prettyLicense(lic)}`;
+    els.rightTitle.textContent = title;
 
-    const seriesMap = parsed.byBoutique[bKey].sub.TCG.seriesByLicense.get(lic) || new Map();
-    const entries = sortEntriesDesc(seriesMap);
-    const total = sumMap(seriesMap);
+    const seriesMap = b.sub.TCG.seriesByLicense.get(lic) || new Map();
+    const entries = [...seriesMap.entries()].map(([name,obj]) => [name, { value: applyTax(obj.value), qty: obj.qty }]);
+    entries.sort((a,b)=> b[1].value - a[1].value);
 
-    const color = getVar('--tcg');
-
-    const pieData = entries.slice(0,10).map(([name,value]) => ({name, value, color}));
-    if(entries.length > 10){
-      const topSum = entries.slice(0,10).reduce((a,e)=>a+e[1],0);
-      pieData.push({ name:'Autres', value: Math.max(0, total-topSum), color: 'rgba(125,125,155,.35)' });
+    const total = entries.reduce((s,e)=>s+e[1].value,0);
+    const pieData = entries.slice(0,10).map(([name,obj]) => ({ key:name, name, value: obj.value }));
+    if(entries.length>10){
+      const topSum = pieData.reduce((s,e)=>s+e.value,0);
+      pieData.push({ key:'Autres', name:'Autres', value: Math.max(0,total-topSum) });
     }
 
-    const pie = renderPie(pieData, 'Répartition (séries)');
-    pie.classList.add('dyn');
+    const totals = {
+      total: applyTax(b.totalsHT.total),
+      sansTCG: applyTax(b.totalsHT.sansTCG)
+    };
+
+    const combo = renderComboPieAndTotals(
+      pieData,
+      `Répartition — ${prettyLicense(lic)} (séries)`,
+      totals,
+      null
+    );
+    els.rightBody.appendChild(combo);
 
     const listPanel = document.createElement('div');
     listPanel.className = 'listPanel dyn';
@@ -1107,71 +1155,148 @@
     if(entries.length === 0){
       list.innerHTML = `<div class="empty">Aucune série trouvée</div>`;
     } else {
-      entries.forEach(([name,value]) => {
+      entries.forEach(([name,obj]) => {
         const it = document.createElement('div');
         it.className = 'item';
         it.style.cursor = 'default';
         it.innerHTML = `
           <div class="name"><span class="marker">•</span><span>${escapeHtml(name)}</span></div>
-          <div class="amt">${formatEUR(value)} €</div>
+          <div class="amt">
+            ${settings.showQty==='ON' ? `<span class="qty">Qté: ${obj.qty || '—'}</span>` : ''}
+            <span>${formatEUR(obj.value)} €</span>
+          </div>
         `;
         list.appendChild(it);
       });
     }
 
-    els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove());
-    els.rightBody.appendChild(pie);
     els.rightBody.appendChild(listPanel);
 
     listPanel.querySelector('#btnUp').addEventListener('click', () => {
-      view = { level:'category', category:'TCG', tcgLicense:null };
+      view = { level:'category', category:'TCG', tcgLicense:null, globalOnly: parsed.two };
       render();
     });
   }
 
-  // ===== back btn =====
+  // ===== back =====
   els.btnBack.addEventListener('click', () => {
-    if(view.level === 'tcgLicense') view = { level:'category', category:'TCG', tcgLicense:null };
-    else if(view.level === 'category') view = { level:'dashboard', category:null, tcgLicense:null };
-    else view = { level:'dashboard', category:null, tcgLicense:null };
+    if(view.level === 'tcgLicense') view = { level:'category', category:'TCG', tcgLicense:null, globalOnly: parsed?.two || false };
+    else if(view.level === 'category') view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed?.two || false };
+    else view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed?.two || false };
     render();
   });
 
-  // ===== theme =====
-  function setTheme(theme){
-    els.app.setAttribute('data-theme', theme);
-    localStorage.setItem('lgdj_theme', theme);
-    els.btnTheme.textContent = (theme === 'light') ? 'Sombre' : 'Clair';
-    // re-render pie colors
-    if(parsed) render();
+  // ===== tutoriel pages =====
+  const tutorialPages = [
+    {
+      title: "1) Choisir la boutique",
+      text: "Dans PrestaShop, sélectionne la boutique Pigalle OU Gambetta depuis un onglet (ex : Tableau de bord). L’app est prévue pour une boutique à la fois."
+    },
+    {
+      title: "2) Accéder au rapport",
+      text: "Va dans Commandes → Rapport Commandes TVA Bénéfices."
+    },
+    {
+      title: "3) Paramétrer l’export",
+      text: "Préférences d’export : Type de rapport = Catégories ; Format = html (souvent déjà sélectionné)."
+    },
+    {
+      title: "4) Définir la période",
+      text: "Filtres par Dates et Références : dans Par date de commande, choisis date début et date fin. Pour une analyse journalière : même date en début et fin."
+    },
+    {
+      title: "5) Statuts à sélectionner",
+      text: "Filtre par statuts de commande : tout décocher, puis cocher uniquement Store - Sale."
+    },
+    {
+      title: "6) Exporter + copier",
+      text: "Clique sur Exporter. Le tableau apparaît : fais Ctrl+A puis Ctrl+C sur la page du tableau."
+    },
+    {
+      title: "7) Coller ici",
+      text: "Reviens dans cette app : clique dans la zone de collage puis Ctrl+V. Clique sur Analyser : les résultats s’affichent."
+    }
+  ];
+  let tutPage = 0;
+
+  function renderTut(){
+    const p = tutorialPages[tutPage];
+    els.tutContent.innerHTML = `
+      <h3 class="pageTitle">${escapeHtml(p.title)}</h3>
+      <div class="pageText">${escapeHtml(p.text)}</div>
+      <div class="muted" style="margin-top:10px">Astuce : si 2 boutiques sont collées, l’app passe en mode GLOBAL.</div>
+    `;
+    els.tutIdx.textContent = String(tutPage+1);
+    els.tutTotal.textContent = String(tutorialPages.length);
+    els.tutPrev.disabled = tutPage === 0;
+    els.tutNext.textContent = (tutPage === tutorialPages.length-1) ? 'Terminer' : 'Suivant';
   }
 
-  els.btnTheme.addEventListener('click', () => {
-    const cur = els.app.getAttribute('data-theme') || 'dark';
-    setTheme(cur === 'dark' ? 'light' : 'dark');
-  });
-
-  // ===== tutoriel =====
   function openTut(){
-    els.modalBg.style.display = 'flex';
-    els.modalBg.setAttribute('aria-hidden','false');
+    tutPage = 0;
+    renderTut();
+    els.tutBg.style.display = 'flex';
+    els.tutBg.setAttribute('aria-hidden','false');
   }
   function closeTut(){
-    els.modalBg.style.display = 'none';
-    els.modalBg.setAttribute('aria-hidden','true');
+    els.tutBg.style.display = 'none';
+    els.tutBg.setAttribute('aria-hidden','true');
   }
 
   els.btnTut.addEventListener('click', openTut);
   els.btnCloseTut.addEventListener('click', closeTut);
-  els.modalBg.addEventListener('click', (e)=>{ if(e.target === els.modalBg) closeTut(); });
-  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeTut(); });
+  els.tutBg.addEventListener('click', (e)=>{ if(e.target === els.tutBg) closeTut(); });
+
+  els.tutPrev.addEventListener('click', ()=>{ if(tutPage>0){ tutPage--; renderTut(); } });
+  els.tutNext.addEventListener('click', ()=>{
+    if(tutPage < tutorialPages.length-1){ tutPage++; renderTut(); }
+    else closeTut();
+  });
+
+  // ===== settings =====
+  function openSet(){
+    els.modeTax.value = settings.mode;
+    els.vat.value = String(settings.vat);
+    els.showQty.value = settings.showQty;
+    els.setBg.style.display = 'flex';
+    els.setBg.setAttribute('aria-hidden','false');
+  }
+  function closeSet(){
+    els.setBg.style.display = 'none';
+    els.setBg.setAttribute('aria-hidden','true');
+  }
+
+  els.btnSettings.addEventListener('click', openSet);
+  els.btnCloseSet.addEventListener('click', closeSet);
+  els.setBg.addEventListener('click', (e)=>{ if(e.target === els.setBg) closeSet(); });
+
+  els.btnSaveSet.addEventListener('click', ()=>{
+    settings.mode = els.modeTax.value;
+    settings.vat = Number(String(els.vat.value).replace(',','.'));
+    settings.showQty = els.showQty.value;
+
+    localStorage.setItem('lgdj_mode', settings.mode);
+    localStorage.setItem('lgdj_vat', String(settings.vat));
+    localStorage.setItem('lgdj_qty', settings.showQty);
+
+    closeSet();
+    render();
+  });
+
+  // Esc closes modals
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape'){
+      closeTut();
+      closeSet();
+    }
+  });
 
   // ===== buttons =====
   els.btnParse.addEventListener('click', parseAll);
   els.btnClear.addEventListener('click', () => {
     els.raw.value = '';
     parsed = null;
-    view = { level:'dashboard', category:null, tcgLicense:null };
+    view = { level:'dashboard', category:null, tcgLicense:null, globalOnly:false };
     els.metaLines.textContent = '0';
     els.metaUsed.textContent = '0';
     els.metaErr.textContent = '0';
@@ -1183,8 +1308,7 @@
   // init
   els.ver.textContent = VERSION;
   els.ver2.textContent = VERSION;
-  const savedTheme = localStorage.getItem('lgdj_theme') || 'dark';
-  setTheme(savedTheme);
+  els.unitLabel.textContent = settings.mode;
   render();
 </script>
 </body>
