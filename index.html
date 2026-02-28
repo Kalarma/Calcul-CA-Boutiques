@@ -6,8 +6,15 @@
   <title>LGDJ — Extracteur CA (Offline)</title>
   <style>
     :root{
-      --ver:"v0.7.2";
+      --ver:"v0.7.7";
 
+      /* THEME (dynamique) */
+      --acc1: rgba(79,70,229,.20);
+      --acc2: rgba(34,197,94,.14);
+      --pieBase:#60a5fa;
+      --pri:#4f46e5;
+
+      /* UI */
       --bg0:#0b1020;
       --bg1:#0c1426;
       --panel: rgba(255,255,255,.06);
@@ -17,12 +24,9 @@
       --line:rgba(255,255,255,.10);
       --shadow: 0 18px 55px rgba(0,0,0,.45);
 
-      --pri:#4f46e5;
       --pri2:#22c55e;
       --warn:#f59e0b;
       --bad:#fb7185;
-
-      --pieBase:#60a5fa;
 
       --r:18px;
       --btn: rgba(255,255,255,.08);
@@ -32,19 +36,44 @@
 
       --hoverGlow: 0 0 0 2px rgba(255,255,255,.10) inset;
       --hoverStroke: rgba(255,255,255,.22);
+
+      /* empty (dark + “argenté”) */
+      --emptyAcc1: rgba(255,255,255,.08);
+      --emptyAcc2: rgba(255,255,255,.04);
+      --emptyPanelBoost: rgba(255,255,255,.02);
+
+      /* history button colors */
+      --blueBtn: rgba(79,70,229,.18);
+      --orangeBtn: rgba(249,115,22,.18);
+      --greenBtn: rgba(34,197,94,.18);
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
+
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color:var(--text);
       background:
-        radial-gradient(900px 520px at 18% 12%, rgba(79,70,229,.20), transparent 60%),
-        radial-gradient(900px 520px at 80% 14%, rgba(34,197,94,.14), transparent 60%),
+        radial-gradient(900px 520px at 18% 12%, var(--acc1), transparent 60%),
+        radial-gradient(900px 520px at 80% 14%, var(--acc2), transparent 60%),
         linear-gradient(180deg, var(--bg1), var(--bg0));
       overflow:hidden;
+      transition: background .25s ease;
+    }
+
+    /* empty stays DARK, just more “silvery” */
+    body.emptyState{
+      background:
+        radial-gradient(900px 520px at 18% 12%, var(--emptyAcc1), transparent 60%),
+        radial-gradient(900px 520px at 80% 14%, var(--emptyAcc2), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+    }
+    body.emptyState .panel,
+    body.emptyState .combo,
+    body.emptyState .modal{
+      background: color-mix(in oklab, var(--panel) 88%, var(--emptyPanelBoost));
     }
 
     .app{height:100vh; display:flex; flex-direction:column;}
@@ -60,11 +89,12 @@
     .logo{
       width:36px;height:36px;border-radius:14px;
       border:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(79,70,229,.18), rgba(34,197,94,.10));
+      background: linear-gradient(180deg, color-mix(in oklab, var(--pri) 28%, transparent), rgba(34,197,94,.10));
       display:grid;place-items:center;
       box-shadow: var(--shadow);
       flex:0 0 auto;
     }
+
     .brandTitle{display:flex;flex-direction:column;line-height:1.05;min-width:0}
     .brandTitle .ttl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
@@ -81,6 +111,7 @@
       white-space:nowrap;
     }
     .verBtn:hover{color:var(--text)}
+
     .dateInfo{
       font-size:11px;
       color:var(--muted);
@@ -112,7 +143,7 @@
       border-radius: 12px;
       font-weight:900;
       font-size:12px;
-      transition: background .15s ease, transform .04s ease;
+      transition: background .15s ease, transform .04s ease, border-color .15s ease;
       user-select:none;
     }
     button:hover{background:var(--btnH)}
@@ -123,8 +154,8 @@
     .btnTutor:hover{background: rgba(34,197,94,.18)}
     .btnGear{border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.10)}
     .btnGear:hover{background: rgba(245,158,11,.16)}
-    .btnPrimary{border-color: rgba(79,70,229,.35); background: rgba(79,70,229,.14)}
-    .btnPrimary:hover{background: rgba(79,70,229,.20)}
+    .btnPrimary{border-color: color-mix(in oklab, var(--pri) 40%, rgba(255,255,255,.10)); background: color-mix(in oklab, var(--pri) 20%, transparent)}
+    .btnPrimary:hover{background: color-mix(in oklab, var(--pri) 28%, transparent)}
     .btnDanger{border-color: rgba(251,113,133,.35); background: rgba(251,113,133,.12)}
     .btnDanger:hover{background: rgba(251,113,133,.18)}
 
@@ -149,14 +180,16 @@
       flex-direction:column;
       backdrop-filter: blur(10px);
     }
+
     .panel .hd{
       padding:12px;
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       border-bottom:1px solid var(--line);
       background: var(--panel2);
+      position:relative;
     }
-    .hdTitle{font-weight:950;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+    .hdTitle{font-weight:950;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .rightHdRow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-width:0}
     .rightDate{font-size:12px;color:var(--muted);font-weight:950;white-space:nowrap;flex:0 0 auto}
 
@@ -211,6 +244,7 @@
       min-height:0;
       backdrop-filter: blur(10px);
     }
+
     .comboHd{
       padding:12px 14px;
       border-bottom:1px solid var(--line);
@@ -220,6 +254,7 @@
       gap:10px;
       background: var(--panel2);
     }
+
     .comboBd{
       padding:12px 14px;
       display:grid;
@@ -232,13 +267,12 @@
 
     .crumb{display:flex;align-items:center;gap:8px;font-weight:980;min-width:0}
     .crumb span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .hint{color:var(--muted);font-weight:850;font-size:12px;white-space:nowrap}
 
     .legend{
       display:grid;
       gap:8px;
       min-height:0;
-      max-height: 52vh;
+      max-height: 60vh;
       overflow:auto;
       padding-right:6px;
       scroll-behavior:smooth;
@@ -303,7 +337,7 @@
     }
     .tutTop{
       padding:12px 14px;
-      background: linear-gradient(180deg, rgba(79,70,229,.14), rgba(0,0,0,.10));
+      background: linear-gradient(180deg, color-mix(in oklab, var(--pri) 18%, transparent), rgba(0,0,0,.10));
       border-bottom:1px solid rgba(255,255,255,.08);
       display:flex;align-items:center;justify-content:space-between;gap:12px;
     }
@@ -315,11 +349,10 @@
     .pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;}
     .muted{color:var(--muted)}
 
-    /* Settings */
     .label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.2px;margin:10px 0 8px}
     .seg{display:flex;gap:8px;flex-wrap:wrap;}
     .seg button{border-radius:999px;padding:8px 12px;font-size:12px;font-weight:950;}
-    .seg button.active{border-color: rgba(79,70,229,.45);background: rgba(79,70,229,.18);}
+    .seg button.active{border-color: color-mix(in oklab, var(--pri) 55%, rgba(255,255,255,.10));background: color-mix(in oklab, var(--pri) 22%, transparent);}
 
     .slice{cursor:pointer; transition: opacity .15s ease, filter .15s ease;}
     .slice:hover{opacity:.90}
@@ -337,10 +370,53 @@
     }
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
     .contact{color:var(--muted);font-size:11px;font-weight:900}
+
+    /* History popover */
+    .histWrap{position:relative; display:inline-flex; align-items:center;}
+    .pop{
+      position:absolute;
+      top:40px;
+      right:0;
+      width:min(420px, 78vw);
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.42);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      border-radius: 14px;
+      padding:10px;
+      display:none;
+      z-index:30;
+    }
+    .popTitle{font-weight:980;font-size:12px;color:var(--text);margin:0 0 8px 0}
+    .popEmpty{color:var(--muted);font-weight:900;font-size:12px;padding:10px 8px}
+    .histBtn{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 10px;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      text-align:left;
+      font-weight:950;
+      margin-bottom:8px;
+    }
+    .histBtn:last-child{margin-bottom:0}
+    .histLeft{display:flex;align-items:center;gap:10px;min-width:0}
+    .histDot{width:10px;height:10px;border-radius:4px;flex:0 0 auto;background: rgba(255,255,255,.30)}
+    .histName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .histDate{color:var(--muted);font-weight:900;font-size:12px;white-space:nowrap;flex:0 0 auto}
+
+    .histBtn.pigalle{background: color-mix(in oklab, var(--blueBtn) 70%, rgba(255,255,255,.06)); border-color: rgba(79,70,229,.28)}
+    .histBtn.gambetta{background: color-mix(in oklab, var(--orangeBtn) 70%, rgba(255,255,255,.06)); border-color: rgba(249,115,22,.28)}
+    .histBtn.both{background: color-mix(in oklab, var(--greenBtn) 70%, rgba(255,255,255,.06)); border-color: rgba(34,197,94,.28)}
+    .histBtn:hover{box-shadow: var(--hoverGlow);}
   </style>
 </head>
 
-<body>
+<body class="emptyState">
   <div class="app" id="app">
     <div class="topbar">
       <div class="brand">
@@ -356,7 +432,7 @@
         <div class="brandTitle">
           <div class="ttl">Extracteur CA</div>
           <div class="verRow">
-            <button class="verBtn" id="btnVer">v0.7.2</button>
+            <button class="verBtn" id="btnVer">v0.7.7</button>
             <div class="dateInfo" id="dateInfo">—</div>
           </div>
         </div>
@@ -375,6 +451,13 @@
         <div class="hd">
           <div class="hdTitle">Copier-coller PrestaShop</div>
           <div class="actions">
+            <div class="histWrap" id="histWrap">
+              <button id="btnHist">Historique</button>
+              <div class="pop" id="histPop" aria-hidden="true">
+                <div class="popTitle">5 derniers collages</div>
+                <div id="histList"></div>
+              </div>
+            </div>
             <button class="btnPrimary" id="btnPaste">Coller</button>
             <button id="btnClear">Vider</button>
           </div>
@@ -383,15 +466,15 @@
         <div class="bd inputGrid">
           <textarea id="raw" placeholder="Colle ici le tableau PrestaShop (Ctrl+V)."></textarea>
 
-          <!-- Totals (left) -->
+          <!-- Totals (left only) -->
           <div class="totals" id="leftTotals">
             <div class="totalBox">
               <div class="totalLabel">CA TOTAL (hors TCG)</div>
-              <div class="totalValue" style="color:var(--pri2)"><span id="leftSansTCG">0,00</span> €</div>
+              <div class="totalValue" style="color:var(--pri2)"><span id="leftSansTCG">0,00</span><span class="eur"> €</span></div>
             </div>
             <div class="totalBox">
               <div class="totalLabel">CA TOTAL GLOBAL</div>
-              <div class="totalValue"><span id="leftTotal">0,00</span> €</div>
+              <div class="totalValue"><span id="leftTotal">0,00</span><span class="eur"> €</span></div>
             </div>
           </div>
 
@@ -422,7 +505,7 @@
     </div>
 
     <div class="foot">
-      <div class="mono">LGDJ — <span id="ver2">v0.7.2</span></div>
+      <div class="mono">LGDJ — <span id="ver2">v0.7.7</span></div>
       <div class="contact">Si problème ou suggestion d’amélioration : contacter Zao</div>
       <div>Offline • Drilldown • HT</div>
     </div>
@@ -466,6 +549,15 @@
           <button id="qtyOn">Visibles</button>
         </div>
 
+        <div class="label">Symbole €</div>
+        <div class="muted" style="font-size:12px;margin-bottom:8px;line-height:1.4">
+          Applique l’affichage du symbole euro à tous les résultats.
+        </div>
+        <div class="seg" role="group" aria-label="Euro">
+          <button id="eurOff">Caché</button>
+          <button id="eurOn">Visible</button>
+        </div>
+
         <div class="label">Escape Game indépendant ?</div>
         <div class="muted" style="font-size:12px;margin-bottom:8px;line-height:1.4">
           Oui = catégorie “Escape Game”. Non = rangé dans “Autre”.
@@ -501,7 +593,7 @@
 
         <div class="label">Accessoires TCG rangés dans leur TCG ?</div>
         <div class="muted" style="font-size:12px;margin-bottom:8px;line-height:1.4">
-          Oui = “Accessoires Pokémon” va dans “Pokémon”. Non = va dans “Accessoires”.
+          Oui = “Accessoires : Pokémon” va dans “Pokémon”. Non = va dans “Accessoires”.
         </div>
         <div class="seg" role="group" aria-label="Accessoires TCG">
           <button id="tcgAccNo">Non</button>
@@ -565,82 +657,100 @@
   </div>
 
 <script>
-  const VERSION = "v0.7.2";
+  const VERSION = "v0.7.7";
+  const TODAY_ISO = "2026-02-28"; // (info projet)
 
-  // === Changelog (with dates + older = shorter) ===
+  // === Changelog (complete from v0.7.7 to v0.1.0) ===
   const CHANGELOG = [
-    {
-      ver: "v0.7.2",
-      date: "2026-02-27",
-      items: [
-        "Changelog multi-versions avec dates, plus concis sur les anciennes versions",
-        "Totaux (hors TCG / global) affichés aussi à gauche",
-        "Paramètres: ajout Escape Game indépendant + bouton Réinitialiser (avec confirmation)",
-        "Confort: survol d’une part du camembert -> scroll auto vers la catégorie associée",
-        "Catégories: “Jeux enfants” devient un sous-dossier de “Jeux de société” (détail par “Jeux X ans”)",
-        "Catégories: “Autre” affiche le détail au clic"
-      ]
-    },
-    {
-      ver: "v0.7.1",
-      date: "2026-02-27",
-      items: [
-        "Nouvelles catégories + paramètres de regroupement",
-        "Mode GLOBAL si 2 boutiques collées (catégories uniquement)",
-        "Camembert + liste cliquables, drilldown TCG"
-      ]
-    },
-    {
-      ver: "v0.6.x",
-      date: "2026-02-26",
-      items: [
-        "HUD/scroll, tutoriel multi-pages, stats lues/utilisées/erreurs"
-      ]
-    }
+    { ver:"v0.7.7", date:"2026-02-28", items:[
+      "Totaux affichés uniquement à gauche (plus de doublon dans les résultats)",
+      "Paramètre : afficher/cacher le symbole € sur tous les résultats",
+      "Historique (hover) : 5 derniers collages, boutons colorés (Pigalle / Gambetta / 2 boutiques) + dates ; clic = recharge le collage"
+    ]},
+    { ver:"v0.7.6", date:"2026-02-28", items:[
+      "Fix catégorisation: une série TCG (EV/ME/OP/EB/Chapitre/Altered X…) ne peut plus tomber en Accessoires",
+      "Accessoires TCG: en mode “NON”, seuls les libellés 'Accessoires : X' (ou 'Accessoire : X') basculent en Accessoires",
+      "État vide: fond sombre + teinte argentée (pas de thème clair)"
+    ]},
+    { ver:"v0.7.5", date:"2026-02-28", items:[
+      "Fix Catégorie supprimée: détection robuste (multi-occurrences + lignes décalées) + sous-groupe cliquable dans Autre",
+      "Accessoires TCG (mode NON): s’appuie sur le prefix 'Accessoires : X' pour éviter les faux positifs",
+      "Fond 'argenté' tant qu’aucune donnée n’est collée"
+    ]},
+    { ver:"v0.7.4", date:"2026-02-28", items:[
+      "Fix catégories: Catégorie supprimée → Autre ; Chroniques Oubliées → Jeux de rôles ; Carte Cadeau → Autre ; Escape Puzzle → Puzzles ; Jeux de Dessin → Jeux de société",
+      "Thème couleur selon boutique: Pigalle (bleu) / Gambetta (orange) / 2 boutiques (vert) — fond + camembert"
+    ]},
+    { ver:"v0.7.3", date:"2026-02-28", items:[
+      "Bugfix catégories TCG: détection par motifs (Chapitre X, EV/ME, OP/EB, Altered X) même si la licence n’est pas écrite",
+      "Cas particuliers: Gravitrax → Casse-têtes ; Donjons & Dragons → Jeux de rôles ; Catégorie supprimée → Autre",
+      "Suppression du texte d’aide dans l’en-tête du camembert"
+    ]},
+    { ver:"v0.7.2", date:"2026-02-27", items:[
+      "Totaux affichés à gauche (hors TCG / global)",
+      "Paramètres: reset + Escape Game indépendant",
+      "Confort: survol camembert → scroll auto vers catégorie"
+    ]},
+    { ver:"v0.7.1", date:"2026-02-27", items:["Refonte catégories + options (événements, JDR, puzzles/casse-têtes, accessoires TCG)"]},
+    { ver:"v0.6.3", date:"2026-02-27", items:["Hover camembert ↔ liste, date visible côté résultats, corrections qté"]},
+    { ver:"v0.6.2", date:"2026-02-27", items:["Tutoriel (ancienne forme), qté toggle, corrections doubles blocs"]},
+    { ver:"v0.6.0", date:"2026-02-26", items:["HUD, tutoriel multi-pages, stats lues/utilisées/erreurs"]},
+    { ver:"v0.5.0", date:"2026-02-26", items:["Camembert + drilldown, zone collage réduite"]},
+    { ver:"v0.4.0", date:"2026-02-26", items:["Premiers totaux + navigation catégories"]},
+    { ver:"v0.3.0", date:"2026-02-26", items:["Parsing export PrestaShop (HTML copié/collé)"]},
+    { ver:"v0.2.0", date:"2026-02-25", items:["Prototype interface offline"]},
+    { ver:"v0.1.0", date:"2026-02-25", items:["Initialisation projet"]},
   ];
 
-  // === Licences (tu me diras quand ajouter/retirer) ===
+  // Licences (liste cachée)
   const TCG_LICENSES = [
     "Pokémon","Lorcana","One Piece","Magic","Altered","Flesh and Blood",
     "Star Wars Unlimited","Riftbound","Yu-Gi-Oh","Naruto"
   ];
 
+  // safer accessory keywords
   const ACCESSORY_KEYWORDS = [
-    "accessoire","accessoires","accessoires cartes","protège-carte","protege-carte","sleeve","sleeves",
-    "deck box","classeur","portfolio","binder",
-    "des","dés","piste de des","piste de dés","pistes de des","pistes de dés",
-    "protections acryliques","grenier ludique","booknooks","tapis","playmat"
+    "accessoire","accessoires","accessoires cartes",
+    "protege-carte","protège-carte","protege carte","protège carte",
+    "sleeve","sleeves","toploader","top loaders","top loader",
+    "deck box","deckbox","classeur","portfolio","binder",
+    "piste de des","piste de dés","pistes de des","pistes de dés",
+    "tapis","playmat",
+    "protections acryliques",
+    "produits le grenier ludique","grenier ludique",
+    "booknook","booknooks"
   ];
 
   const PUZZLE_KEYWORDS = [
     "puzzle","puzzles","logique et puzzles",
     "cavallini",
     "jour ferie","jours feries","jour férié","jours fériés",
-    "puzzle 100p","puzzle 500p","puzzle 1000p","puzzle 3d"
+    "puzzle 100p","puzzle 500p","puzzle 1000p","puzzle 3d",
+    "escape puzzle"
   ];
 
   const CASSE_KEYWORDS = [
     "casse-tete","casse-têtes","casse tete","casse tetes",
-    "smart games","smartgame","perplexus"
+    "smart games","smartgame","perplexus",
+    "gravitrax"
   ];
 
   const JDR_KEYWORDS = [
+    "chroniques oubliees","chroniques oubliées",
     "donjons et chatons",
+    "donjons et dragons","dungeons & dragons","dungeons and dragons","d&d",
     "jeux de roles","jeux de rôle","jeux de rôles","jeu de roles","jeu de rôle",
     "jeux de roles solo","jeux de rôles solo","jdr",
     "manuels"
   ];
 
-  const ESCAPE_KEYWORDS = [
-    "escape game","escape","4escape","4-escape"
-  ];
-
+  const ESCAPE_KEYWORDS = ["escape game","escape","4escape","4-escape"];
   const OTHER_KEYWORDS = [
     "categorie supprimee","catégorie supprimée","categorie supprimée",
     "accueil","livraison","acompte","tests","test",
-    "totaux (","totaux("
+    "totaux (","totaux(",
+    "carte cadeau - les gentlemen du jeu"
   ];
-
   const EVENT_KEYWORDS = ["evenement","évènement","evenements","évènements"];
 
   const BOUTIQUES = [
@@ -653,24 +763,27 @@
     "-commande en attente de retrait - pigalle"
   ];
 
+  // generalized TCG patterns (name missing)
+  const LICENSE_PATTERN_RULES = [
+    { lic: "Lorcana", re: /\b(chapitre|chapter)\s*\d+\b/i },
+    { lic: "Pokémon", re: /\b(me|ev)\s*\d+(?:\.\d+)?\b/i },
+    { lic: "One Piece", re: /\b(op|eb)\s*\d+\b/i },
+    { lic: "Altered", re: /\baltered\s*\d+\b/i },
+  ];
+
   const el = (id) => document.getElementById(id);
   const els = {
     metaLines: el('metaLines'), metaUsed: el('metaUsed'), metaErr: el('metaErr'),
-    dateInfo: el('dateInfo'),
-    rightDate: el('rightDate'),
-
+    dateInfo: el('dateInfo'), rightDate: el('rightDate'),
     raw: el('raw'),
     btnPaste: el('btnPaste'),
     btnClear: el('btnClear'),
     btnBack: el('btnBack'),
-
     rightTitle: el('rightTitle'),
     rightBody: el('rightBody'),
     warnTwo: el('warnTwo'),
-
     leftSansTCG: el('leftSansTCG'),
     leftTotal: el('leftTotal'),
-
     // tutoriel
     btnTut: el('btnTut'),
     tutBg: el('tutBg'),
@@ -681,13 +794,14 @@
     tutNext: el('tutNext'),
     tutIdx: el('tutIdx'),
     tutTotal: el('tutTotal'),
-
     // settings
     btnSettings: el('btnSettings'),
     setBg: el('setBg'),
     btnCloseSet: el('btnCloseSet'),
     qtyOff: el('qtyOff'),
     qtyOn: el('qtyOn'),
+    eurOff: el('eurOff'),
+    eurOn: el('eurOn'),
     escNo: el('escNo'),
     escYes: el('escYes'),
     mergePCNo: el('mergePCNo'),
@@ -699,14 +813,12 @@
     tcgAccNo: el('tcgAccNo'),
     tcgAccYes: el('tcgAccYes'),
     btnReset: el('btnReset'),
-
     // version
     btnVer: el('btnVer'),
     ver2: el('ver2'),
     verBg: el('verBg'),
     btnCloseVer: el('btnCloseVer'),
     verContent: el('verContent'),
-
     // stats
     btnStats: el('btnStats'),
     statsBg: el('statsBg'),
@@ -714,10 +826,16 @@
     statsHint: el('statsHint'),
     statsBox: el('statsBox'),
     btnCopyStats: el('btnCopyStats'),
+    // history
+    histWrap: el('histWrap'),
+    btnHist: el('btnHist'),
+    histPop: el('histPop'),
+    histList: el('histList'),
   };
 
   const DEFAULTS = {
     showQty: 'OFF',
+    showEuro: 'ON',
     escapeStandalone: 'NO',
     mergePuzzleCasse: 'NO',
     eventsStandalone: 'NO',
@@ -727,6 +845,7 @@
 
   const settings = {
     showQty: (localStorage.getItem('lgdj_qty') || DEFAULTS.showQty),
+    showEuro: (localStorage.getItem('lgdj_euro') || DEFAULTS.showEuro),
     escapeStandalone: (localStorage.getItem('lgdj_escape') || DEFAULTS.escapeStandalone),
     mergePuzzleCasse: (localStorage.getItem('lgdj_merge_pc') || DEFAULTS.mergePuzzleCasse),
     eventsStandalone: (localStorage.getItem('lgdj_evt') || DEFAULTS.eventsStandalone),
@@ -739,6 +858,32 @@
 
   let debug = { used: [], err: [], ignored: [] };
   let hover = { key:null };
+
+  let parseTimer = null;
+  let suppressHistorySave = false; // avoid re-saving when loading from history
+
+  // ===== THEME (Pigalle bleu / Gambetta orange / 2 boutiques vert) =====
+  function setCSSVar(name, value){ document.documentElement.style.setProperty(name, value); }
+  function applyTheme(mode){
+    if(mode === 'GAMBETTA'){
+      setCSSVar('--pri', '#f97316');
+      setCSSVar('--pieBase', '#fb923c');
+      setCSSVar('--acc1', 'rgba(249,115,22,.22)');
+      setCSSVar('--acc2', 'rgba(245,158,11,.14)');
+      return;
+    }
+    if(mode === 'BOTH'){
+      setCSSVar('--pri', '#22c55e');
+      setCSSVar('--pieBase', '#34d399');
+      setCSSVar('--acc1', 'rgba(34,197,94,.20)');
+      setCSSVar('--acc2', 'rgba(16,185,129,.14)');
+      return;
+    }
+    setCSSVar('--pri', '#4f46e5');
+    setCSSVar('--pieBase', '#60a5fa');
+    setCSSVar('--acc1', 'rgba(79,70,229,.20)');
+    setCSSVar('--acc2', 'rgba(34,197,94,.14)');
+  }
 
   function normalize(s){
     return (s||"").toString().normalize("NFD").replace(/\p{Diacritic}/gu,"").toLowerCase();
@@ -796,12 +941,25 @@
     return null;
   }
 
-  function pickLicense(catNorm){
+  function pickLicenseByName(catNorm){
     for(const lic of TCG_LICENSES){
       const n = normalize(lic);
       if(n && catNorm.includes(n)) return n;
     }
     return null;
+  }
+
+  function pickLicenseByPattern(catRaw){
+    const s = (catRaw||"").toString();
+    for(const rule of LICENSE_PATTERN_RULES){
+      if(rule.re.test(s)) return normalize(rule.lic);
+    }
+    return null;
+  }
+
+  function detectLicense(catRaw){
+    const catNorm = normalize(catRaw);
+    return pickLicenseByName(catNorm) || pickLicenseByPattern(catRaw);
   }
 
   function prettyLicense(licNorm){
@@ -817,6 +975,9 @@
   }
 
   function isAccessory(catNorm){ return hasAny(catNorm, ACCESSORY_KEYWORDS); }
+  function isAccessoryWord(catNorm){
+    return /\baccessoires?\b/i.test(catNorm) || /\baccessories?\b/i.test(catNorm);
+  }
   function isPuzzle(catNorm){ return hasAny(catNorm, PUZZLE_KEYWORDS); }
   function isCasse(catNorm){ return hasAny(catNorm, CASSE_KEYWORDS); }
   function isJdr(catNorm){ return hasAny(catNorm, JDR_KEYWORDS); }
@@ -828,6 +989,14 @@
     if(catNorm.includes("defis nature") || catNorm.includes("défis nature")) return true;
     if(catNorm.includes("jeux enfants")) return true;
     return /jeux\s*\d+\s*ans/.test(catNorm);
+  }
+
+  function isDeletedCategoryLike(rawLine, catName){
+    const ln = normalize(rawLine || "");
+    const cn = normalize(catName || "");
+    if(ln.includes("categorie supprimee") || ln.includes("catégorie supprimée")) return true;
+    if(cn.includes("categorie supprimee") || cn.includes("catégorie supprimée")) return true;
+    return false;
   }
 
   function escapeHtml(s){
@@ -844,6 +1013,10 @@
     return v.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2});
   }
 
+  function money(n){
+    return formatEUR(n) + (settings.showEuro === 'ON' ? " €" : "");
+  }
+
   function qtyText(q){ return Number.isFinite(q) ? String(q) : "—"; }
 
   // ----- date range -----
@@ -856,26 +1029,37 @@
   }
   function dateLabel(range){
     if(!range) return "—";
-    const today = new Date();
-    const yesterday = new Date(Date.now() - 86400000);
-    const t = toFR(today);
-    const y = toFR(yesterday);
+    const todayFR = (()=>{
+      const [y,m,d] = TODAY_ISO.split('-').map(Number);
+      return toFR(new Date(y, m-1, d));
+    })();
+    const yesterdayFR = (()=>{
+      const [y,m,d] = TODAY_ISO.split('-').map(Number);
+      const dt = new Date(y, m-1, d);
+      dt.setDate(dt.getDate()-1);
+      return toFR(dt);
+    })();
 
     const one = range.from === range.to;
     const base = one ? range.from : `${range.from} → ${range.to}`;
     const tag =
-      one && range.from === t ? " (aujourd’hui)" :
-      one && range.from === y ? " (hier)" :
+      one && range.from === todayFR ? " (aujourd’hui)" :
+      one && range.from === yesterdayFR ? " (hier)" :
       "";
     return base + tag;
   }
-
   function updateDates(){
     const raw = els.raw.value || '';
     const range = extractDateRange(raw);
     const label = dateLabel(range);
     els.dateInfo.textContent = label;
     els.rightDate.textContent = label;
+  }
+
+  // ----- Empty-state theme switching -----
+  function updateEmptyState(){
+    const has = (els.raw.value || '').trim().length > 0;
+    document.body.classList.toggle('emptyState', !has);
   }
 
   // ----- Color utilities -----
@@ -918,26 +1102,21 @@
 
   function setHover(key){
     hover.key = key;
-
     document.querySelectorAll('[data-slice-key]').forEach(p => {
       p.classList.toggle('isHover', p.getAttribute('data-slice-key') === key);
     });
     document.querySelectorAll('[data-row-key]').forEach(r => {
       r.classList.toggle('isHover', r.getAttribute('data-row-key') === key);
     });
-
-    // Auto-scroll category into view (comfort)
     const row = document.querySelector(`[data-row-key="${CSS.escape(key)}"]`);
-    if(row){
-      row.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
-    }
+    if(row) row.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
   }
   function clearHover(){
     hover.key = null;
     document.querySelectorAll('.isHover').forEach(n => n.classList.remove('isHover'));
   }
 
-  function renderComboPieAndTotals(data, title, totals, onPick){
+  function renderComboPieAndList(data, title, onPick){
     const total = data.reduce((a,b)=>a + (b.value||0), 0);
 
     const wrap = document.createElement('div');
@@ -945,10 +1124,7 @@
 
     const hd = document.createElement('div');
     hd.className = 'comboHd';
-    hd.innerHTML = `
-      <div class="crumb"><span>${escapeHtml(title)}</span></div>
-      <div class="hint">Survol = surlignage • Clic = ouvrir</div>
-    `;
+    hd.innerHTML = `<div class="crumb"><span>${escapeHtml(title)}</span></div>`;
     wrap.appendChild(hd);
 
     const bd = document.createElement('div');
@@ -1014,6 +1190,7 @@
     t1.setAttribute('font-size','13');
     t1.setAttribute('font-weight','900');
     t1.textContent = formatEUR(total);
+    svg.appendChild(t1);
 
     const t2 = document.createElementNS('http://www.w3.org/2000/svg','text');
     t2.setAttribute('x', cx);
@@ -1022,9 +1199,7 @@
     t2.setAttribute('fill', getVar('--muted'));
     t2.setAttribute('font-size','10');
     t2.setAttribute('font-weight','800');
-    t2.textContent = `€ HT`;
-
-    svg.appendChild(t1);
+    t2.textContent = (settings.showEuro === 'ON') ? `€ HT` : `HT`;
     svg.appendChild(t2);
 
     const legend = document.createElement('div');
@@ -1044,12 +1219,11 @@
             <span class="legName">${escapeHtml(d.name)}</span>
           </div>
           <div class="legVal">
-            ${formatEUR(d.value)}
+            ${formatEUR(d.value)}${settings.showEuro==='ON' ? ' €' : ''}
             <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span>
             ${settings.showQty==='ON' ? `<span class="qty">Qté: ${qtyText(d.qty)}</span>` : ''}
           </div>
         `;
-
         row.addEventListener('mouseenter', () => setHover(d.key));
         row.addEventListener('mouseleave', () => clearHover());
         if(onPick) row.addEventListener('click', () => onPick(d));
@@ -1059,20 +1233,6 @@
     const right = document.createElement('div');
     right.appendChild(legend);
 
-    const totalsWrap = document.createElement('div');
-    totalsWrap.className = 'totals';
-    totalsWrap.innerHTML = `
-      <div class="totalBox">
-        <div class="totalLabel">CA TOTAL (hors TCG)</div>
-        <div class="totalValue" style="color:${getVar('--pri2')}">${formatEUR(totals.sansTCG)} €</div>
-      </div>
-      <div class="totalBox">
-        <div class="totalLabel">CA TOTAL GLOBAL</div>
-        <div class="totalValue">${formatEUR(totals.total)} €</div>
-      </div>
-    `;
-    right.appendChild(totalsWrap);
-
     bd.appendChild(svg);
     bd.appendChild(right);
 
@@ -1080,7 +1240,7 @@
     return wrap;
   }
 
-  // ===== classification / buckets =====
+  // ===== buckets =====
   const TOP = {
     JEUX: "Jeux de société",
     PUZ: "Puzzles",
@@ -1091,14 +1251,15 @@
     TCG: "TCG",
     EVT: "Événement",
     AUTRE: "Autre",
-    PUZCASSE: "Puzzles & Casse-têtes"
+    PUZCASSE: "Puzzles & Casse-têtes",
+    AUTRE_DELETED: "Catégories supprimées"
   };
 
   function makeBucket(){
     return {
-      totalsHT: new Map(),      // topKey -> total
-      totalsQty: new Map(),     // topKey -> qty
-      sub: new Map(),           // topKey -> Map(subKey -> {value, qty, hasQty})
+      totalsHT: new Map(),
+      totalsQty: new Map(),
+      sub: new Map(),
       tcg: {
         licenses: new Map(),
         seriesByLicense: new Map()
@@ -1164,91 +1325,188 @@
     return [...new Set(order)];
   }
 
-  // Special: "Jeux enfants" is now a sub inside Jeux de société (not top).
-  function isKids(catNorm){
-    if(catNorm.includes("defis nature") || catNorm.includes("défis nature")) return true;
-    if(catNorm.includes("jeux enfants")) return true;
-    return /jeux\s*\d+\s*ans/.test(catNorm);
-  }
-
-  function classify(catName){
+  // ===== classification =====
+  function classify(catName, rawLine){
     const catNorm = normalize(catName);
-    const lic = pickLicense(catNorm);
-    const acc = isAccessory(catNorm);
-    const evt = isEvent(catNorm);
-    const other = isOther(catNorm);
-    const esc = isEscape(catNorm);
 
-    // OTHER (technique)
-    if(other){
+    if(isDeletedCategoryLike(rawLine, catName)){
+      return { top: TOP.AUTRE, sub: TOP.AUTRE_DELETED, tcgLicense:null, deletedLeaf: catName };
+    }
+
+    if(catNorm.includes("carte cadeau - les gentlemen du jeu")){
+      return { top: TOP.AUTRE, sub: catName, tcgLicense:null };
+    }
+    if(catNorm.includes("chroniques oubliees") || catNorm.includes("chroniques oubliées")){
+      if(settings.jdrStandalone === 'YES') return { top: TOP.JDR, sub: catName, tcgLicense:null };
+      return { top: TOP.JEUX, sub: catName, tcgLicense:null };
+    }
+    if(catNorm.includes("escape puzzle")){
+      const topKey = (settings.mergePuzzleCasse === 'YES') ? TOP.PUZCASSE : TOP.PUZ;
+      return { top: topKey, sub: catName, tcgLicense:null };
+    }
+    if(catNorm.includes("jeux de dessin")){
+      return { top: TOP.JEUX, sub: catName, tcgLicense:null };
+    }
+
+    if(isOther(catNorm)){
       return { top: TOP.AUTRE, sub: catName, tcgLicense:null };
     }
 
-    // Escape game -> standalone or Autre
-    if(esc){
+    if(isEscape(catNorm)){
       if(settings.escapeStandalone === 'YES'){
         return { top: TOP.ESC, sub: catName, tcgLicense:null };
       }
       return { top: TOP.AUTRE, sub: catName, tcgLicense:null };
     }
 
-    // Events -> parent if enabled
-    if(settings.eventsStandalone === 'YES' && evt){
+    if(settings.eventsStandalone === 'YES' && isEvent(catNorm)){
       return { top: TOP.EVT, sub: catName, tcgLicense:null };
     }
 
-    // Kids -> as subfolder in Jeux de société
     if(isKids(catNorm)){
-      // subKey normalized to a parent "Jeux enfants" for drilldown
       return { top: TOP.JEUX, sub: "Jeux enfants", tcgLicense:null, kidsLeaf: catName };
     }
 
-    // Casse-têtes
+    if(isJdr(catNorm) && settings.jdrStandalone === 'YES'){
+      return { top: TOP.JDR, sub: catName, tcgLicense:null };
+    }
+
     if(isCasse(catNorm)){
       const topKey = (settings.mergePuzzleCasse === 'YES') ? TOP.PUZCASSE : TOP.CASSE;
       return { top: topKey, sub: catName, tcgLicense:null };
     }
 
-    // Puzzles
     if(isPuzzle(catNorm)){
       const topKey = (settings.mergePuzzleCasse === 'YES') ? TOP.PUZCASSE : TOP.PUZ;
       return { top: topKey, sub: catName, tcgLicense:null };
     }
 
-    // JDR (standalone or inside Jeux)
-    if(isJdr(catNorm) && settings.jdrStandalone === 'YES'){
-      return { top: TOP.JDR, sub: catName, tcgLicense:null };
-    }
-
-    // TCG
+    const lic = detectLicense(catName);
     if(lic){
-      if(acc && settings.tcgAccessoriesInTcg !== 'YES'){
-        return { top: TOP.ACC, sub: catName, tcgLicense:null };
+      const isTcgAccessoryStrict = catNorm.startsWith("accessoires :") || catNorm.startsWith("accessoire :");
+      const isTcgAccessoryText = isTcgAccessoryStrict || isAccessoryWord(catNorm);
+
+      if(isTcgAccessoryText && settings.tcgAccessoriesInTcg === 'YES'){
+        return { top: TOP.TCG, sub: catName, tcgLicense: lic };
+      }
+      if(settings.tcgAccessoriesInTcg !== 'YES' && isTcgAccessoryStrict){
+        return { top: TOP.ACC, sub: catName, tcgLicense: null };
       }
       return { top: TOP.TCG, sub: catName, tcgLicense: lic };
     }
 
-    // Accessories (non TCG)
-    if(acc){
+    if(isAccessory(catNorm)){
       return { top: TOP.ACC, sub: catName, tcgLicense:null };
     }
 
-    // default -> Jeux de société
     return { top: TOP.JEUX, sub: catName, tcgLicense:null };
+  }
+
+  // ===== history (5 derniers collages) =====
+  const HISTORY_KEY = "lgdj_history_v1";
+  function loadHistory(){
+    try{
+      const arr = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+      return Array.isArray(arr) ? arr : [];
+    } catch { return []; }
+  }
+  function saveHistory(arr){
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(0,5)));
+  }
+  function summarizeMode(mode){
+    if(mode === "GAMBETTA") return "Gambetta";
+    if(mode === "PIGALLE") return "Pigalle";
+    return "2 boutiques";
+  }
+  function modeClass(mode){
+    if(mode === "GAMBETTA") return "gambetta";
+    if(mode === "PIGALLE") return "pigalle";
+    return "both";
+  }
+  function getModeFromParsed(p){
+    if(!p) return "PIGALLE";
+    if(p.two) return "BOTH";
+    if(p.activeKey === "GAMBETTA") return "GAMBETTA";
+    if(p.activeKey === "PIGALLE") return "PIGALLE";
+    return "BOTH";
+  }
+  function writeHistoryEntry(text, mode, dateLabelText){
+    if(suppressHistorySave) return;
+    const raw = (text||"").trim();
+    if(!raw) return;
+    const list = loadHistory();
+    const key = raw.slice(0, 2400); // stable enough to dedupe
+    const existingIdx = list.findIndex(x => x && x.key === key);
+    const entry = {
+      key,
+      text: raw,
+      mode,
+      dateLabel: dateLabelText || "—",
+      ts: Date.now()
+    };
+    if(existingIdx >= 0) list.splice(existingIdx, 1);
+    list.unshift(entry);
+    saveHistory(list);
+    renderHistoryPopover();
+  }
+  function renderHistoryPopover(){
+    const list = loadHistory();
+    els.histList.innerHTML = "";
+    if(!list.length){
+      els.histList.innerHTML = `<div class="popEmpty">Aucun historique pour le moment.</div>`;
+      return;
+    }
+    list.forEach((h, idx) => {
+      const btn = document.createElement("button");
+      btn.className = `histBtn ${modeClass(h.mode)}`;
+      btn.type = "button";
+      btn.innerHTML = `
+        <div class="histLeft">
+          <span class="histDot"></span>
+          <span class="histName">${escapeHtml(summarizeMode(h.mode))}</span>
+        </div>
+        <div class="histDate">${escapeHtml(h.dateLabel || "—")}</div>
+      `;
+      btn.addEventListener("click", () => {
+        suppressHistorySave = true;
+        els.raw.value = h.text;
+        scheduleParse();
+        setTimeout(()=>{ suppressHistorySave = false; }, 350);
+        hideHistPop();
+      });
+      els.histList.appendChild(btn);
+    });
+  }
+  let histHideTimer = null;
+  function showHistPop(){
+    if(histHideTimer) clearTimeout(histHideTimer);
+    renderHistoryPopover();
+    els.histPop.style.display = "block";
+    els.histPop.setAttribute("aria-hidden","false");
+  }
+  function hideHistPop(){
+    els.histPop.style.display = "none";
+    els.histPop.setAttribute("aria-hidden","true");
+  }
+  function scheduleHideHistPop(){
+    if(histHideTimer) clearTimeout(histHideTimer);
+    histHideTimer = setTimeout(()=>hideHistPop(), 180);
   }
 
   // ===== parsing / aggregation =====
   function parseAll(){
-    const raw = els.raw.value || '';
+    updateEmptyState();
     updateDates();
 
+    const raw = els.raw.value || '';
     const lines = raw.split(/\r?\n/);
     const rows = [];
     let used = 0, err = 0;
 
     debug = { used: [], err: [], ignored: [] };
 
-    for(const line of lines){
+    for(let idx=0; idx<lines.length; idx++){
+      const line = lines[idx];
       const l = (line||'').trim();
       if(!l){ debug.ignored.push({reason:'Ligne vide', line}); continue; }
 
@@ -1275,7 +1533,8 @@
       const qty = extractQtyFromLine(line);
       const cat = extractCategoryName(line);
 
-      const cls = classify(cat);
+      const cls = classify(cat, line);
+
       const rec = {
         boutiqueKey,
         top: cls.top,
@@ -1285,6 +1544,7 @@
         qty,
         license: cls.tcgLicense,
         kidsLeaf: cls.kidsLeaf || null,
+        deletedLeaf: cls.deletedLeaf || null,
         rawLine: line
       };
       rows.push(rec);
@@ -1304,14 +1564,24 @@
     for(const b of BOUTIQUES) byBoutique[b.key] = makeBucket();
     const global = makeBucket();
 
-    // kids details store separately inside bucket.sub.get("Jeux de société").get("Jeux enfants") ?
-    // We'll store leafs in a dedicated map bucket.kidsLeaves
-    for(const key of Object.keys(byBoutique)) byBoutique[key].kidsLeaves = new Map();
+    for(const key of Object.keys(byBoutique)) {
+      byBoutique[key].kidsLeaves = new Map();
+      byBoutique[key].deletedLeaves = new Map();
+    }
     global.kidsLeaves = new Map();
+    global.deletedLeaves = new Map();
 
     function addKidsLeaf(bucket, leafName, ht, qty){
       if(!bucket.kidsLeaves.has(leafName)) bucket.kidsLeaves.set(leafName, { value:0, qty:0, hasQty:false });
       const cur = bucket.kidsLeaves.get(leafName);
+      cur.value += ht;
+      if(qty != null && Number.isFinite(qty)){ cur.qty += qty; cur.hasQty = true; }
+    }
+
+    function addDeletedLeaf(bucket, leafName, ht, qty){
+      const k = (leafName && leafName.trim()) ? leafName.trim() : "Catégorie supprimée";
+      if(!bucket.deletedLeaves.has(k)) bucket.deletedLeaves.set(k, { value:0, qty:0, hasQty:false });
+      const cur = bucket.deletedLeaves.get(k);
       cur.value += ht;
       if(qty != null && Number.isFinite(qty)){ cur.qty += qty; cur.hasQty = true; }
     }
@@ -1324,32 +1594,53 @@
         addKidsLeaf(byBoutique[r.boutiqueKey], r.kidsLeaf, r.ht, r.qty);
         addKidsLeaf(global, r.kidsLeaf, r.ht, r.qty);
       }
+
+      if(r.sub === TOP.AUTRE_DELETED){
+        addDeletedLeaf(byBoutique[r.boutiqueKey], r.deletedLeaf || r.category, r.ht, r.qty);
+        addDeletedLeaf(global, r.deletedLeaf || r.category, r.ht, r.qty);
+      }
     }
 
     const activeKey = (!two && present.length===1) ? present[0].key : 'GLOBAL';
     parsed = { rows, present, two, activeKey, byBoutique, global };
+
+    if(parsed.two) applyTheme('BOTH');
+    else if(parsed.activeKey === 'GAMBETTA') applyTheme('GAMBETTA');
+    else if(parsed.activeKey === 'PIGALLE') applyTheme('PIGALLE');
+    else applyTheme('PIGALLE');
+
     if(view.level !== 'dashboard') view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: two };
     else view.globalOnly = two;
 
     updateLeftTotals();
     render();
+
+    // v0.7.7: auto-save to history
+    if(rows.length && (raw||"").trim()){
+      const mode = getModeFromParsed(parsed);
+      const range = extractDateRange(raw);
+      const dLabel = dateLabel(range);
+      writeHistoryEntry(raw, mode, dLabel);
+    }
+  }
+
+  function currentBucket(){
+    if(!parsed) return null;
+    return parsed.activeKey === 'GLOBAL' ? parsed.global : parsed.byBoutique[parsed.activeKey];
   }
 
   function updateLeftTotals(){
+    const eurSpans = document.querySelectorAll(".eur");
+    eurSpans.forEach(s => s.style.display = (settings.showEuro === 'ON') ? "" : "none");
+
     if(!parsed){
       els.leftSansTCG.textContent = "0,00";
       els.leftTotal.textContent = "0,00";
       return;
     }
     const b = currentBucket();
-    const sans = calcSansTCG(b);
-    els.leftSansTCG.textContent = formatEUR(sans);
+    els.leftSansTCG.textContent = formatEUR(calcSansTCG(b));
     els.leftTotal.textContent = formatEUR(b.total);
-  }
-
-  function currentBucket(){
-    if(!parsed) return null;
-    return parsed.activeKey === 'GLOBAL' ? parsed.global : parsed.byBoutique[parsed.activeKey];
   }
 
   function clearDyn(){
@@ -1359,6 +1650,8 @@
   function render(){
     clearDyn();
     clearHover();
+    updateEmptyState();
+    updateLeftTotals();
 
     if(!parsed || !parsed.rows.length){
       els.rightTitle.textContent = 'Résultats';
@@ -1368,11 +1661,10 @@
       empty.innerHTML = 'Colle un export PrestaShop : les résultats apparaissent automatiquement.';
       els.rightBody.appendChild(empty);
       els.warnTwo.style.display = 'none';
-      updateLeftTotals();
+      applyTheme('PIGALLE');
+      renderHistoryPopover();
       return;
     }
-
-    updateLeftTotals();
 
     els.btnBack.style.display = (view.level === 'dashboard') ? 'none' : 'inline-flex';
 
@@ -1380,8 +1672,10 @@
     else if(view.level === 'category') renderCategory();
     else if(view.level === 'tcgLicense') renderTcgLicense();
     else if(view.level === 'kids') renderKids();
+    else if(view.level === 'deletedCats') renderDeletedCats();
 
     els.warnTwo.style.display = parsed.two ? 'block' : 'none';
+    renderHistoryPopover();
   }
 
   function renderDashboard(){
@@ -1401,16 +1695,10 @@
       }))
       .filter(x => x.value > 0);
 
-    const totals = { total: b.total, sansTCG: calcSansTCG(b) };
-
-    const combo = renderComboPieAndTotals(
+    const combo = renderComboPieAndList(
       data,
       'Répartition (catégories)',
-      totals,
-      (d) => {
-        view = { level:'category', category: d.key, tcgLicense:null, globalOnly: parsed.two };
-        render();
-      }
+      (d) => { view = { level:'category', category: d.key, tcgLicense:null, globalOnly: parsed.two }; render(); }
     );
 
     els.rightBody.appendChild(combo);
@@ -1423,7 +1711,6 @@
     els.rightTitle.textContent =
       `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — ${cat}`;
 
-    // Special: Jeux de société contains "Jeux enfants" as a subfolder
     if(cat === TOP.JEUX){
       const subMap = b.sub.get(TOP.JEUX) || new Map();
       const entries = [...subMap.entries()].map(([name,obj]) => ({
@@ -1432,12 +1719,9 @@
         qty: obj.hasQty ? obj.qty : null
       })).sort((a,b)=> b.value - a.value);
 
-      const totals = { total: b.total, sansTCG: calcSansTCG(b) };
-
-      const combo = renderComboPieAndTotals(
+      const combo = renderComboPieAndList(
         entries,
         `Répartition — ${TOP.JEUX} (sous-catégories)`,
-        totals,
         (d) => {
           if(d.key === "Jeux enfants"){
             view = { level:'kids', category: TOP.JEUX, tcgLicense:null, globalOnly: parsed.two };
@@ -1455,47 +1739,43 @@
         .map(([lic, obj]) => ({ key: lic, name: prettyLicense(lic), value: obj.value, qty: obj.hasQty ? obj.qty : null }))
         .sort((a,b)=> b.value - a.value);
 
-      const totals = { total: b.total, sansTCG: calcSansTCG(b) };
-
-      const combo = renderComboPieAndTotals(
+      const combo = renderComboPieAndList(
         entries,
         `Répartition — TCG (licences)`,
-        totals,
         (d) => { view = { level:'tcgLicense', category: TOP.TCG, tcgLicense:d.key, globalOnly: parsed.two }; render(); }
       );
       els.rightBody.appendChild(combo);
       return;
     }
 
-    // Autre => detail (default already)
     if(cat === TOP.AUTRE){
       const subMap = b.sub.get(TOP.AUTRE) || new Map();
       const entries = [...subMap.entries()].map(([name,obj]) => ({
         key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null
       })).sort((a,b)=> b.value - a.value);
 
-      const totals = { total: b.total, sansTCG: calcSansTCG(b) };
-      const combo = renderComboPieAndTotals(
+      const combo = renderComboPieAndList(
         entries,
         `Détail — ${TOP.AUTRE}`,
-        totals,
-        null
+        (d) => {
+          if(d.key === TOP.AUTRE_DELETED){
+            view = { level:'deletedCats', category: TOP.AUTRE, tcgLicense:null, globalOnly: parsed.two };
+            render();
+          }
+        }
       );
       els.rightBody.appendChild(combo);
       return;
     }
 
-    // Generic category
     const subMap = b.sub.get(cat) || new Map();
     const entries = [...subMap.entries()]
       .map(([name, obj]) => ({ key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null }))
       .sort((a,b)=> b.value - a.value);
 
-    const totals = { total: b.total, sansTCG: calcSansTCG(b) };
-    const combo = renderComboPieAndTotals(
+    const combo = renderComboPieAndList(
       entries,
       `Répartition — ${cat} (toutes les sous-catégories)`,
-      totals,
       null
     );
     els.rightBody.appendChild(combo);
@@ -1510,12 +1790,26 @@
       .map(([name,obj]) => ({ key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null }))
       .sort((a,b)=> b.value - a.value);
 
-    const totals = { total: b.total, sansTCG: calcSansTCG(b) };
-
-    const combo = renderComboPieAndTotals(
+    const combo = renderComboPieAndList(
       entries,
       `Détail — Jeux enfants (Jeux X ans / Défis Nature)`,
-      totals,
+      null
+    );
+    els.rightBody.appendChild(combo);
+  }
+
+  function renderDeletedCats(){
+    const b = currentBucket();
+    els.rightTitle.textContent =
+      `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — Autre — Catégories supprimées`;
+
+    const entries = [...(b.deletedLeaves || new Map()).entries()]
+      .map(([name,obj]) => ({ key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null }))
+      .sort((a,b)=> b.value - a.value);
+
+    const combo = renderComboPieAndList(
+      entries,
+      `Détail — Catégories supprimées`,
       null
     );
     els.rightBody.appendChild(combo);
@@ -1533,11 +1827,9 @@
       .map(([name,obj]) => ({ key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null }))
       .sort((a,b)=> b.value - a.value);
 
-    const totals = { total: b.total, sansTCG: calcSansTCG(b) };
-    const combo = renderComboPieAndTotals(
+    const combo = renderComboPieAndList(
       entries,
       `Répartition — ${prettyLicense(lic)} (séries)`,
-      totals,
       null
     );
     els.rightBody.appendChild(combo);
@@ -1547,6 +1839,7 @@
   els.btnBack.addEventListener('click', () => {
     if(view.level === 'tcgLicense') view = { level:'category', category: TOP.TCG, tcgLicense:null, globalOnly: parsed?.two || false };
     else if(view.level === 'kids') view = { level:'category', category: TOP.JEUX, tcgLicense:null, globalOnly: parsed?.two || false };
+    else if(view.level === 'deletedCats') view = { level:'category', category: TOP.AUTRE, tcgLicense:null, globalOnly: parsed?.two || false };
     else if(view.level === 'category') view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed?.two || false };
     else view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed?.two || false };
     render();
@@ -1586,13 +1879,14 @@
   els.tutPrev.addEventListener('click', ()=>{ if(tutPage>0){ tutPage--; renderTut(); } });
   els.tutNext.addEventListener('click', ()=>{ if(tutPage < tutorialPages.length-1){ tutPage++; renderTut(); } else closeTut(); });
 
-  // ===== settings (do NOT auto-close on click) =====
+  // ===== settings =====
   function setActivePair(noBtn, yesBtn, isYes){
     noBtn.classList.toggle('active', !isYes);
     yesBtn.classList.toggle('active', isYes);
   }
   function syncSettingsButtons(){
     setActivePair(els.qtyOff, els.qtyOn, settings.showQty==='ON');
+    setActivePair(els.eurOff, els.eurOn, settings.showEuro==='ON');
     setActivePair(els.escNo, els.escYes, settings.escapeStandalone==='YES');
     setActivePair(els.mergePCNo, els.mergePCYes, settings.mergePuzzleCasse==='YES');
     setActivePair(els.evtNo, els.evtYes, settings.eventsStandalone==='YES');
@@ -1602,6 +1896,7 @@
 
   function persistSettings(){
     localStorage.setItem('lgdj_qty', settings.showQty);
+    localStorage.setItem('lgdj_euro', settings.showEuro);
     localStorage.setItem('lgdj_escape', settings.escapeStandalone);
     localStorage.setItem('lgdj_merge_pc', settings.mergePuzzleCasse);
     localStorage.setItem('lgdj_evt', settings.eventsStandalone);
@@ -1625,13 +1920,16 @@
   function applySettingsNoClose(){
     persistSettings();
     syncSettingsButtons();
-    // Reparse to reclassify with new rules
+    updateLeftTotals();
     if((els.raw.value||'').trim()) parseAll();
     else render();
   }
 
   els.qtyOff.addEventListener('click', ()=>{ settings.showQty='OFF'; applySettingsNoClose(); });
   els.qtyOn.addEventListener('click', ()=>{ settings.showQty='ON'; applySettingsNoClose(); });
+
+  els.eurOff.addEventListener('click', ()=>{ settings.showEuro='OFF'; applySettingsNoClose(); });
+  els.eurOn.addEventListener('click', ()=>{ settings.showEuro='ON'; applySettingsNoClose(); });
 
   els.escNo.addEventListener('click', ()=>{ settings.escapeStandalone='NO'; applySettingsNoClose(); });
   els.escYes.addEventListener('click', ()=>{ settings.escapeStandalone='YES'; applySettingsNoClose(); });
@@ -1648,22 +1946,21 @@
   els.tcgAccNo.addEventListener('click', ()=>{ settings.tcgAccessoriesInTcg='NO'; applySettingsNoClose(); });
   els.tcgAccYes.addEventListener('click', ()=>{ settings.tcgAccessoriesInTcg='YES'; applySettingsNoClose(); });
 
-  // Reset with confirmation
   els.btnReset.addEventListener('click', ()=>{
     const ok = confirm("Réinitialiser les paramètres par défaut ?");
     if(!ok) return;
     Object.assign(settings, DEFAULTS);
     persistSettings();
     syncSettingsButtons();
+    updateLeftTotals();
     if((els.raw.value||'').trim()) parseAll(); else render();
   });
 
   // ===== Changelog modal =====
   function openVer(){
-    // newest first; older = shorter list
     const parts = CHANGELOG.map((c, idx) => {
-      const short = idx >= 2;
-      const items = short ? c.items.slice(0, 1) : c.items;
+      const old = idx >= 7;
+      const items = old ? c.items.slice(0, 1) : c.items;
       return `
         <div style="padding:12px 0;border-bottom:1px dashed rgba(255,255,255,.12)">
           <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline">
@@ -1679,7 +1976,7 @@
 
     els.verContent.innerHTML = `
       <div style="font-weight:980;font-size:16px;margin-bottom:8px">Historique des versions</div>
-      <div class="muted" style="font-size:12px;margin-bottom:10px">Plus la version est ancienne, plus le résumé est compact.</div>
+      <div class="muted" style="font-size:12px;margin-bottom:10px">Toutes les MAJ sont listées (v0.7.7 → v0.1.0). Les plus anciennes sont résumées.</div>
       ${parts}
     `;
     els.verBg.style.display='flex';
@@ -1748,23 +2045,25 @@
     }
   });
 
-  // Esc closes modals
+  // Esc closes modals + popover
   document.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape'){
       closeTut();
       closeSet();
       closeVer();
       closeStats();
+      hideHistPop();
     }
   });
 
   // ===== paste / clear / auto-parse =====
-  let parseTimer = null;
   function scheduleParse(){
+    updateEmptyState();
     if(parseTimer) clearTimeout(parseTimer);
     parseTimer = setTimeout(()=> {
       parseTimer = null;
-      parseAll();
+      if((els.raw.value||'').trim()) parseAll();
+      else render();
     }, 140);
   }
   els.raw.addEventListener('input', scheduleParse);
@@ -1792,15 +2091,31 @@
     els.warnTwo.style.display = 'none';
     els.dateInfo.textContent = '—';
     els.rightDate.textContent = '—';
+    applyTheme('PIGALLE');
     updateLeftTotals();
+    updateEmptyState();
     render();
     els.raw.focus();
+  });
+
+  // ===== History hover behaviors =====
+  els.histWrap.addEventListener("mouseenter", showHistPop);
+  els.histWrap.addEventListener("mouseleave", scheduleHideHistPop);
+  els.histPop.addEventListener("mouseenter", showHistPop);
+  els.histPop.addEventListener("mouseleave", scheduleHideHistPop);
+
+  // click outside closes popover
+  document.addEventListener("click", (e)=>{
+    if(!els.histWrap.contains(e.target)) hideHistPop();
   });
 
   // init
   els.btnVer.textContent = VERSION;
   els.ver2.textContent = VERSION;
   syncSettingsButtons();
+  applyTheme('PIGALLE');
+  updateEmptyState();
+  renderHistoryPopover();
   render();
 </script>
 </body>
