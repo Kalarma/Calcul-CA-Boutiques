@@ -6,100 +6,62 @@
   <title>LGDJ — Extracteur CA (Offline)</title>
   <style>
     :root{
-      --ver:"v0.7.7";
+      --ver:"v0.7.8";
 
-      /* THEME (dynamique) */
-      --acc1: rgba(79,70,229,.20);
-      --acc2: rgba(34,197,94,.14);
-      --pieBase:#60a5fa;
-      --pri:#4f46e5;
-
-      /* UI */
       --bg0:#0b1020;
       --bg1:#0c1426;
       --panel: rgba(255,255,255,.06);
-      --panel2: rgba(0,0,0,.20);
+      --panel2: rgba(0,0,0,.22);
       --text:#eef2ff;
       --muted:#aab3c7;
       --line:rgba(255,255,255,.10);
       --shadow: 0 18px 55px rgba(0,0,0,.45);
 
-      --pri2:#22c55e;
+      --pri:#4f46e5;
+      --ok:#22c55e;
       --warn:#f59e0b;
       --bad:#fb7185;
+
+      --pieBase:#60a5fa;
 
       --r:18px;
       --btn: rgba(255,255,255,.08);
       --btnH: rgba(255,255,255,.12);
       --chip: rgba(255,255,255,.06);
       --input: rgba(0,0,0,.18);
-
-      --hoverGlow: 0 0 0 2px rgba(255,255,255,.10) inset;
-      --hoverStroke: rgba(255,255,255,.22);
-
-      /* empty (dark + “argenté”) */
-      --emptyAcc1: rgba(255,255,255,.08);
-      --emptyAcc2: rgba(255,255,255,.04);
-      --emptyPanelBoost: rgba(255,255,255,.02);
-
-      /* history button colors */
-      --blueBtn: rgba(79,70,229,.18);
-      --orangeBtn: rgba(249,115,22,.18);
-      --greenBtn: rgba(34,197,94,.18);
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
-
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color:var(--text);
       background:
-        radial-gradient(900px 520px at 18% 12%, var(--acc1), transparent 60%),
-        radial-gradient(900px 520px at 80% 14%, var(--acc2), transparent 60%),
+        radial-gradient(900px 520px at 18% 12%, rgba(79,70,229,.20), transparent 60%),
+        radial-gradient(900px 520px at 80% 14%, rgba(34,197,94,.14), transparent 60%),
         linear-gradient(180deg, var(--bg1), var(--bg0));
       overflow:hidden;
-      transition: background .25s ease;
-    }
-
-    /* empty stays DARK, just more “silvery” */
-    body.emptyState{
-      background:
-        radial-gradient(900px 520px at 18% 12%, var(--emptyAcc1), transparent 60%),
-        radial-gradient(900px 520px at 80% 14%, var(--emptyAcc2), transparent 60%),
-        linear-gradient(180deg, var(--bg1), var(--bg0));
-    }
-    body.emptyState .panel,
-    body.emptyState .combo,
-    body.emptyState .modal{
-      background: color-mix(in oklab, var(--panel) 88%, var(--emptyPanelBoost));
     }
 
     .app{height:100vh; display:flex; flex-direction:column;}
 
     .topbar{
       padding:12px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
     }
-    .brand{display:flex;align-items:center;gap:10px;font-weight:950;letter-spacing:.2px;min-width:0}
+
+    .brand{display:flex;align-items:center;gap:10px;font-weight:950;letter-spacing:.2px}
     .logo{
       width:36px;height:36px;border-radius:14px;
       border:1px solid var(--line);
-      background: linear-gradient(180deg, color-mix(in oklab, var(--pri) 28%, transparent), rgba(34,197,94,.10));
+      background: linear-gradient(180deg, rgba(79,70,229,.18), rgba(34,197,94,.10));
       display:grid;place-items:center;
       box-shadow: var(--shadow);
-      flex:0 0 auto;
     }
-
-    .brandTitle{display:flex;flex-direction:column;line-height:1.05;min-width:0}
-    .brandTitle .ttl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-    .verRow{display:flex;align-items:center;gap:10px;margin-top:2px;min-width:0}
+    .brandTitle{display:flex;flex-direction:column;line-height:1.05}
     .verBtn{
+      margin-top:2px;
       font-size:11px;
       color:var(--muted);
       font-weight:900;
@@ -108,18 +70,8 @@
       padding:0;
       text-align:left;
       cursor:pointer;
-      white-space:nowrap;
     }
     .verBtn:hover{color:var(--text)}
-
-    .dateInfo{
-      font-size:11px;
-      color:var(--muted);
-      font-weight:900;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
 
     .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 
@@ -143,31 +95,32 @@
       border-radius: 12px;
       font-weight:900;
       font-size:12px;
-      transition: background .15s ease, transform .04s ease, border-color .15s ease;
+      transition: background .15s ease, transform .04s ease;
       user-select:none;
     }
     button:hover{background:var(--btnH)}
     button:active{transform: translateY(1px)}
-    button:disabled{opacity:.55; cursor:not-allowed}
 
     .btnTutor{border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.12)}
     .btnTutor:hover{background: rgba(34,197,94,.18)}
     .btnGear{border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.10)}
     .btnGear:hover{background: rgba(245,158,11,.16)}
-    .btnPrimary{border-color: color-mix(in oklab, var(--pri) 40%, rgba(255,255,255,.10)); background: color-mix(in oklab, var(--pri) 20%, transparent)}
-    .btnPrimary:hover{background: color-mix(in oklab, var(--pri) 28%, transparent)}
-    .btnDanger{border-color: rgba(251,113,133,.35); background: rgba(251,113,133,.12)}
-    .btnDanger:hover{background: rgba(251,113,133,.18)}
+    .btnPrimary{border-color: rgba(79,70,229,.35); background: rgba(79,70,229,.14)}
+    .btnPrimary:hover{background: rgba(79,70,229,.20)}
 
+    /* Layout */
     .main{
       flex:1;
       padding:0 14px 14px;
       display:grid;
-      grid-template-columns: .60fr 1.40fr; /* left slim */
+      grid-template-columns: .72fr 1.28fr; /* LEFT more slim */
       gap:12px;
       min-height:0;
     }
-    @media(max-width:980px){ .main{grid-template-columns:1fr;} }
+    @media(max-width:980px){
+      .main{grid-template-columns:1fr;}
+      body{overflow:auto}
+    }
 
     .panel{
       border:1px solid var(--line);
@@ -186,13 +139,9 @@
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       border-bottom:1px solid var(--line);
       background: var(--panel2);
-      position:relative;
     }
 
     .hdTitle{font-weight:950;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .rightHdRow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-width:0}
-    .rightDate{font-size:12px;color:var(--muted);font-weight:950;white-space:nowrap;flex:0 0 auto}
-
     .bd{padding:12px; min-height:0;}
 
     textarea, input{
@@ -206,7 +155,14 @@
       font-size:13px;
       line-height:1.35;
     }
-    textarea{resize:none; min-height:0; overflow:auto; height: 33vh;} /* ~1/3 écran */
+
+    /* Smaller paste zone */
+    textarea{
+      resize:none;
+      overflow:auto;
+      height: 22vh; /* reduced */
+      min-height: 140px;
+    }
 
     .inputGrid{
       display:grid;
@@ -216,6 +172,62 @@
       min-height:0;
     }
 
+    .label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.2px}
+
+    .miniTotals{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(0,0,0,.16);
+      padding:10px;
+      display:grid;
+      gap:8px;
+    }
+
+    .totalRow{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:10px 10px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      background: rgba(0,0,0,.20);
+    }
+    .totalRow .lbl{font-weight:950; letter-spacing:.15px}
+    .totalRow .val{font-weight:980; font-size:16px}
+    .valGreen{color:var(--ok)}
+
+    /* Micro history interface (5 last) */
+    .microHist{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      padding:2px 2px 0;
+    }
+    .histBtn{
+      display:flex; align-items:center; gap:8px;
+      border-radius: 999px;
+      padding:7px 10px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      font-weight:950;
+      cursor:pointer;
+      user-select:none;
+      max-width: 100%;
+    }
+    .histBtn:hover{background: rgba(255,255,255,.10)}
+    .dot{
+      width:10px;height:10px;border-radius:6px;flex:0 0 auto;
+      border:1px solid rgba(255,255,255,.18);
+    }
+    .histTxt{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 260px;
+    }
+
+    /* Right side */
     .rightScroll{
       height:100%;
       overflow:auto;
@@ -234,6 +246,7 @@
       display:none;
     }
 
+    /* Combined pie + list only (NO totals on right) */
     .combo{
       border-radius: var(--r);
       border:1px solid var(--line);
@@ -244,15 +257,23 @@
       min-height:0;
       backdrop-filter: blur(10px);
     }
-
     .comboHd{
-      padding:12px 14px;
-      border-bottom:1px solid var(--line);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      padding:12px 14px;border-bottom:1px solid var(--line);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
       background: var(--panel2);
+    }
+    .comboTitle{
+      display:flex; align-items:center; gap:10px;
+      min-width:0;
+      font-weight:980;
+    }
+    .comboTitle span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .comboMeta{
+      display:flex; align-items:center; gap:10px;
+      color:var(--muted);
+      font-weight:900;
+      font-size:12px;
+      white-space:nowrap;
     }
 
     .comboBd{
@@ -260,57 +281,46 @@
       display:grid;
       grid-template-columns: 200px 1fr;
       gap:14px;
-      align-items:start;
+      align-items:center;
       min-height:0;
     }
-    @media(max-width:980px){ .comboBd{grid-template-columns:1fr} }
-
-    .crumb{display:flex;align-items:center;gap:8px;font-weight:980;min-width:0}
-    .crumb span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    @media(max-width:980px){
+      .comboBd{grid-template-columns:1fr}
+    }
 
     .legend{
-      display:grid;
-      gap:8px;
+      display:grid;gap:8px;
       min-height:0;
-      max-height: 60vh;
+      max-height: 56vh;
       overflow:auto;
       padding-right:6px;
-      scroll-behavior:smooth;
     }
     .legRow{
       display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:8px 8px; border-bottom:1px dashed rgba(125,125,155,.22);
+      padding:8px 0;
+      border-bottom:1px dashed rgba(125,125,155,.22);
       cursor:pointer;
-      border-radius:10px;
     }
     .legRow:last-child{border-bottom:none}
-    .legRow:hover{box-shadow: var(--hoverGlow);}
     .legRow:hover .legName{color:var(--text)}
-    .legRow.isHover{box-shadow: var(--hoverGlow);}
-
     .legL{display:flex;align-items:center;gap:10px; min-width:0;}
     .sw{width:10px;height:10px;border-radius:4px; flex:0 0 auto;}
-    .legName{color:var(--muted);font-weight:950; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-    .legVal{font-weight:950; white-space:nowrap;}
-    .qty{color:var(--muted); font-weight:850; font-size:12px; margin-left:8px;}
-
-    .totals{display:grid;gap:10px;margin-top:10px;}
-    .totalBox{
-      border-radius: 14px;
-      padding:12px;
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      border:1px solid var(--line);
-      background: var(--panel2);
+    .legName{
+      color:var(--muted);font-weight:950;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .totalLabel{font-weight:980;letter-spacing:.15px}
-    .totalValue{font-weight:980;font-size:18px}
+    .legVal{font-weight:950; white-space:nowrap;}
+
+    .slice{cursor:pointer; transition: opacity .15s ease;}
+    .slice:hover{opacity:.86}
 
     .empty{padding:22px;color:var(--muted);text-align:center;font-weight:900}
 
     /* Modals */
     .modalBg{
       position:fixed;inset:0;background: rgba(0,0,0,.45);
-      display:none;align-items:center;justify-content:center;padding:16px;z-index:50;
+      display:none;align-items:center;justify-content:center;
+      padding:16px;z-index:50;
     }
     .modal{
       width:min(920px, 100%);
@@ -329,38 +339,30 @@
     }
     .modal .mbd{padding:14px 16px;}
 
-    .tutShell{
-      border:1px solid var(--line);
-      background: rgba(0,0,0,.18);
-      border-radius: 16px;
-      overflow:hidden;
-    }
-    .tutTop{
-      padding:12px 14px;
-      background: linear-gradient(180deg, color-mix(in oklab, var(--pri) 18%, transparent), rgba(0,0,0,.10));
-      border-bottom:1px solid rgba(255,255,255,.08);
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-    }
-    .tutTitle{font-weight:980;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .tutStep{color:var(--muted);font-weight:900;font-size:12px;white-space:nowrap;}
-    .tutBody{padding:12px 14px}
-    .tutBody h3{margin:0 0 8px 0; font-size:15px}
-    .tutBody p{margin:0; color:var(--text); line-height:1.55}
-    .pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;}
+    .pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;}
+    .pageTitle{font-weight:980;font-size:16px;margin:0 0 6px 0}
+    .pageText{color:var(--text); line-height:1.55}
     .muted{color:var(--muted)}
 
-    .label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.2px;margin:10px 0 8px}
-    .seg{display:flex;gap:8px;flex-wrap:wrap;}
-    .seg button{border-radius:999px;padding:8px 12px;font-size:12px;font-weight:950;}
-    .seg button.active{border-color: color-mix(in oklab, var(--pri) 55%, rgba(255,255,255,.10));background: color-mix(in oklab, var(--pri) 22%, transparent);}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .tab{
+      padding:8px 10px;border-radius:12px;border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      font-weight:900;font-size:12px;cursor:pointer
+    }
+    .tab.active{background: rgba(79,70,229,.16);border-color: rgba(79,70,229,.35)}
 
-    .slice{cursor:pointer; transition: opacity .15s ease, filter .15s ease;}
-    .slice:hover{opacity:.90}
-    .slice.isHover{
-      filter: drop-shadow(0 0 8px rgba(255,255,255,.12));
-      opacity: .96;
-      stroke: var(--hoverStroke);
-      stroke-width: 1.25;
+    .codeBox{
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.22);
+      border-radius:14px;
+      padding:10px 12px;
+      white-space:pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      line-height:1.45;
+      max-height: 52vh;
+      overflow:auto;
     }
 
     .foot{
@@ -370,53 +372,10 @@
     }
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
     .contact{color:var(--muted);font-size:11px;font-weight:900}
-
-    /* History popover */
-    .histWrap{position:relative; display:inline-flex; align-items:center;}
-    .pop{
-      position:absolute;
-      top:40px;
-      right:0;
-      width:min(420px, 78vw);
-      border:1px solid var(--line);
-      background: rgba(0,0,0,.42);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow);
-      border-radius: 14px;
-      padding:10px;
-      display:none;
-      z-index:30;
-    }
-    .popTitle{font-weight:980;font-size:12px;color:var(--text);margin:0 0 8px 0}
-    .popEmpty{color:var(--muted);font-weight:900;font-size:12px;padding:10px 8px}
-    .histBtn{
-      width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:10px 10px;
-      border-radius: 12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      text-align:left;
-      font-weight:950;
-      margin-bottom:8px;
-    }
-    .histBtn:last-child{margin-bottom:0}
-    .histLeft{display:flex;align-items:center;gap:10px;min-width:0}
-    .histDot{width:10px;height:10px;border-radius:4px;flex:0 0 auto;background: rgba(255,255,255,.30)}
-    .histName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .histDate{color:var(--muted);font-weight:900;font-size:12px;white-space:nowrap;flex:0 0 auto}
-
-    .histBtn.pigalle{background: color-mix(in oklab, var(--blueBtn) 70%, rgba(255,255,255,.06)); border-color: rgba(79,70,229,.28)}
-    .histBtn.gambetta{background: color-mix(in oklab, var(--orangeBtn) 70%, rgba(255,255,255,.06)); border-color: rgba(249,115,22,.28)}
-    .histBtn.both{background: color-mix(in oklab, var(--greenBtn) 70%, rgba(255,255,255,.06)); border-color: rgba(34,197,94,.28)}
-    .histBtn:hover{box-shadow: var(--hoverGlow);}
   </style>
 </head>
 
-<body class="emptyState">
+<body>
   <div class="app" id="app">
     <div class="topbar">
       <div class="brand">
@@ -430,82 +389,76 @@
           </svg>
         </div>
         <div class="brandTitle">
-          <div class="ttl">Extracteur CA</div>
-          <div class="verRow">
-            <button class="verBtn" id="btnVer">v0.7.7</button>
-            <div class="dateInfo" id="dateInfo">—</div>
-          </div>
+          <div>Extracteur CA</div>
+          <button class="verBtn" id="btnVer">v0.7.8</button>
         </div>
       </div>
 
       <div class="actions">
-        <button class="chipBtn" id="btnStats">Lues: <span class="mono" id="metaLines">0</span> • Utilisées: <span class="mono" id="metaUsed">0</span> • Erreurs: <span class="mono" id="metaErr">0</span></button>
+        <button class="chipBtn" id="btnStats">
+          Lues: <span class="mono" id="metaLines">0</span> •
+          Utilisées: <span class="mono" id="metaUsed">0</span> •
+          Erreurs: <span class="mono" id="metaErr">0</span>
+        </button>
         <button class="btnTutor" id="btnTut">Tutoriel</button>
         <button class="btnGear" id="btnSettings">Paramètres</button>
       </div>
     </div>
 
     <div class="main">
-      <!-- INPUT -->
+      <!-- LEFT -->
       <section class="panel">
         <div class="hd">
           <div class="hdTitle">Copier-coller PrestaShop</div>
           <div class="actions">
-            <div class="histWrap" id="histWrap">
-              <button id="btnHist">Historique</button>
-              <div class="pop" id="histPop" aria-hidden="true">
-                <div class="popTitle">5 derniers collages</div>
-                <div id="histList"></div>
-              </div>
-            </div>
             <button class="btnPrimary" id="btnPaste">Coller</button>
-            <button id="btnClear">Vider</button>
           </div>
         </div>
 
         <div class="bd inputGrid">
-          <textarea id="raw" placeholder="Colle ici le tableau PrestaShop (Ctrl+V)."></textarea>
-
-          <!-- Totals (left only) -->
-          <div class="totals" id="leftTotals">
-            <div class="totalBox">
-              <div class="totalLabel">CA TOTAL (hors TCG)</div>
-              <div class="totalValue" style="color:var(--pri2)"><span id="leftSansTCG">0,00</span><span class="eur"> €</span></div>
-            </div>
-            <div class="totalBox">
-              <div class="totalLabel">CA TOTAL GLOBAL</div>
-              <div class="totalValue"><span id="leftTotal">0,00</span><span class="eur"> €</span></div>
-            </div>
+          <div>
+            <div class="label">Colle ici (Ctrl+V) — analyse automatique</div>
+            <textarea id="raw" placeholder="Sur PrestaShop : Ctrl+A → Ctrl+C, puis ici Ctrl+V."></textarea>
           </div>
 
-          <div class="muted" style="font-size:12px;line-height:1.4">
-            Analyse automatique dès qu’il y a du texte.
+          <div class="miniTotals">
+            <div class="totalRow">
+              <div class="lbl">CA Total (hors TCG)</div>
+              <div class="val valGreen"><span id="leftSans">—</span></div>
+            </div>
+            <div class="totalRow">
+              <div class="lbl">CA TOTAL GLOBAL</div>
+              <div class="val"><span id="leftTot">—</span></div>
+            </div>
+
+            <div class="microHist" id="microHist"></div>
+          </div>
+
+          <div class="muted" style="font-size:12px;line-height:1.45">
+            Astuce : si tu colles 2 boutiques, on calcule quand même, mais seulement en GLOBAL (catégories).
           </div>
         </div>
       </section>
 
-      <!-- OUTPUT -->
+      <!-- RIGHT -->
       <section class="panel">
         <div class="hd">
-          <div class="rightHdRow">
-            <div class="hdTitle" id="rightTitle">Résultats</div>
-            <div class="rightDate" id="rightDate">—</div>
-          </div>
+          <div class="hdTitle" id="rightTitle">Résultats</div>
           <div class="actions">
             <button id="btnBack" style="display:none">Retour</button>
           </div>
         </div>
-
         <div class="bd" style="padding:0">
           <div class="rightScroll" id="rightBody">
-            <div class="alert" id="warnTwo">⚠️ Deux boutiques détectées. On affiche uniquement les totaux GLOBAL par catégories (pas de détails boutique).</div>
+            <div class="alert" id="warnTwo">⚠️ Deux boutiques détectées. Détails boutique désactivés (GLOBAL uniquement).</div>
+            <!-- dynamic -->
           </div>
         </div>
       </section>
     </div>
 
     <div class="foot">
-      <div class="mono">LGDJ — <span id="ver2">v0.7.7</span></div>
+      <div class="mono">LGDJ — <span id="ver2">v0.7.8</span></div>
       <div class="contact">Si problème ou suggestion d’amélioration : contacter Zao</div>
       <div>Offline • Drilldown • HT</div>
     </div>
@@ -513,22 +466,16 @@
 
   <!-- Tutoriel -->
   <div class="modalBg" id="tutBg" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" aria-label="Tutoriel" style="width:min(860px, 100%)">
+    <div class="modal" aria-label="Tutoriel">
       <div class="mhd">
         <div style="font-weight:980">Tutoriel</div>
         <button id="btnCloseTut">Fermer</button>
       </div>
       <div class="mbd">
-        <div class="tutShell">
-          <div class="tutTop">
-            <div class="tutTitle" id="tutHead">—</div>
-            <div class="tutStep"><span id="tutIdx">1</span>/<span id="tutTotal">1</span></div>
-          </div>
-          <div class="tutBody" id="tutContent"></div>
-        </div>
+        <div id="tutContent"></div>
         <div class="pager">
           <button id="tutPrev">Précédent</button>
-          <div class="muted" style="font-size:12px">Ctrl+A → Ctrl+C sur le tableau, puis Ctrl+V ici.</div>
+          <div class="muted"><span id="tutIdx">1</span>/<span id="tutTotal">1</span></div>
           <button id="tutNext" class="btnPrimary">Suivant</button>
         </div>
       </div>
@@ -537,81 +484,31 @@
 
   <!-- Settings -->
   <div class="modalBg" id="setBg" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" aria-label="Paramètres" style="width:min(820px, 100%)">
+    <div class="modal" aria-label="Paramètres">
       <div class="mhd">
         <div style="font-weight:980">Paramètres</div>
         <button id="btnCloseSet">Fermer</button>
       </div>
       <div class="mbd">
-        <div class="label">Quantités</div>
-        <div class="seg" role="group" aria-label="Quantités">
-          <button id="qtyOff">Cachées</button>
-          <button id="qtyOn">Visibles</button>
+        <div class="label" style="margin-bottom:8px">Affichage</div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button id="toggleQty" class="btnPrimary" type="button">Quantités : CACHÉES</button>
+          <button id="toggleEuro" type="button">Symbole € : VISIBLE</button>
         </div>
 
-        <div class="label">Symbole €</div>
-        <div class="muted" style="font-size:12px;margin-bottom:8px;line-height:1.4">
-          Applique l’affichage du symbole euro à tous les résultats.
-        </div>
-        <div class="seg" role="group" aria-label="Euro">
-          <button id="eurOff">Caché</button>
-          <button id="eurOn">Visible</button>
-        </div>
-
-        <div class="label">Escape Game indépendant ?</div>
-        <div class="muted" style="font-size:12px;margin-bottom:8px;line-height:1.4">
-          Oui = catégorie “Escape Game”. Non = rangé dans “Autre”.
-        </div>
-        <div class="seg" role="group" aria-label="Escape Game">
-          <button id="escNo">Non</button>
-          <button id="escYes">Oui</button>
-        </div>
-
-        <div class="label">Puzzles & Casse-têtes réunis ?</div>
-        <div class="seg" role="group" aria-label="Puzzles et casse-têtes">
-          <button id="mergePCNo">Non</button>
-          <button id="mergePCYes">Oui</button>
-        </div>
-
-        <div class="label">Événements indépendants ?</div>
-        <div class="muted" style="font-size:12px;margin-bottom:8px;line-height:1.4">
-          Oui = tout regrouper dans “Événement”. Non = laisser dans leur catégorie (Jeux/TCG/etc.).
-        </div>
-        <div class="seg" role="group" aria-label="Événements">
-          <button id="evtNo">Non</button>
-          <button id="evtYes">Oui</button>
-        </div>
-
-        <div class="label">Jeux de rôles indépendants ?</div>
-        <div class="muted" style="font-size:12px;margin-bottom:8px;line-height:1.4">
-          Oui = catégorie “Jeux de rôles”. Non = intégrer à “Jeux de société”.
-        </div>
-        <div class="seg" role="group" aria-label="JDR">
-          <button id="jdrNo">Non</button>
-          <button id="jdrYes">Oui</button>
-        </div>
-
-        <div class="label">Accessoires TCG rangés dans leur TCG ?</div>
-        <div class="muted" style="font-size:12px;margin-bottom:8px;line-height:1.4">
-          Oui = “Accessoires : Pokémon” va dans “Pokémon”. Non = va dans “Accessoires”.
-        </div>
-        <div class="seg" role="group" aria-label="Accessoires TCG">
-          <button id="tcgAccNo">Non</button>
-          <button id="tcgAccYes">Oui</button>
-        </div>
-
-        <div class="pager" style="justify-content:flex-end">
-          <button id="btnReset" class="btnDanger">Réinitialiser</button>
-        </div>
-
-        <div class="muted" style="margin-top:12px;font-size:12px;line-height:1.45">
+        <div class="muted" style="margin-top:10px;font-size:12px;line-height:1.45">
           Note : si la colonne Quantité n’est pas présente, l’app affiche “—”.
+        </div>
+
+        <div class="pager" style="justify-content:flex-end;margin-top:14px">
+          <button id="btnReset" style="border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.10)">Réinitialiser</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Version / Changelog -->
+  <!-- Changelog -->
   <div class="modalBg" id="verBg" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" aria-label="Changelog">
       <div class="mhd">
@@ -622,7 +519,7 @@
     </div>
   </div>
 
-  <!-- Stats debug -->
+  <!-- Stats -->
   <div class="modalBg" id="statsBg" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" aria-label="Détails des lignes">
       <div class="mhd">
@@ -630,25 +527,13 @@
         <button id="btnCloseStats">Fermer</button>
       </div>
       <div class="mbd">
-        <div class="seg" style="margin-bottom:10px">
-          <button class="tabBtn active" data-tab="used">Utilisées</button>
-          <button class="tabBtn" data-tab="err">Erreurs</button>
-          <button class="tabBtn" data-tab="ignored">Ignorées</button>
+        <div class="tabs">
+          <div class="tab active" data-tab="used">Utilisées</div>
+          <div class="tab" data-tab="err">Erreurs</div>
+          <div class="tab" data-tab="ignored">Ignorées</div>
         </div>
-
         <div class="muted" id="statsHint" style="margin-bottom:10px;font-size:12px"></div>
-        <div class="mono" id="statsBox" style="
-          border:1px solid var(--line);
-          background: rgba(0,0,0,.22);
-          border-radius:14px;
-          padding:10px 12px;
-          white-space:pre-wrap;
-          font-size:12px;
-          line-height:1.45;
-          max-height: 56vh;
-          overflow:auto;
-        ">—</div>
-
+        <div class="codeBox" id="statsBox">—</div>
         <div class="pager" style="justify-content:flex-end">
           <button id="btnCopyStats" class="btnPrimary">Copier</button>
         </div>
@@ -657,236 +542,104 @@
   </div>
 
 <script>
-  const VERSION = "v0.7.7";
-  const TODAY_ISO = "2026-02-28"; // (info projet)
-
-  // === Changelog (complete from v0.7.7 to v0.1.0) ===
-  const CHANGELOG = [
-    { ver:"v0.7.7", date:"2026-02-28", items:[
-      "Totaux affichés uniquement à gauche (plus de doublon dans les résultats)",
-      "Paramètre : afficher/cacher le symbole € sur tous les résultats",
-      "Historique (hover) : 5 derniers collages, boutons colorés (Pigalle / Gambetta / 2 boutiques) + dates ; clic = recharge le collage"
-    ]},
-    { ver:"v0.7.6", date:"2026-02-28", items:[
-      "Fix catégorisation: une série TCG (EV/ME/OP/EB/Chapitre/Altered X…) ne peut plus tomber en Accessoires",
-      "Accessoires TCG: en mode “NON”, seuls les libellés 'Accessoires : X' (ou 'Accessoire : X') basculent en Accessoires",
-      "État vide: fond sombre + teinte argentée (pas de thème clair)"
-    ]},
-    { ver:"v0.7.5", date:"2026-02-28", items:[
-      "Fix Catégorie supprimée: détection robuste (multi-occurrences + lignes décalées) + sous-groupe cliquable dans Autre",
-      "Accessoires TCG (mode NON): s’appuie sur le prefix 'Accessoires : X' pour éviter les faux positifs",
-      "Fond 'argenté' tant qu’aucune donnée n’est collée"
-    ]},
-    { ver:"v0.7.4", date:"2026-02-28", items:[
-      "Fix catégories: Catégorie supprimée → Autre ; Chroniques Oubliées → Jeux de rôles ; Carte Cadeau → Autre ; Escape Puzzle → Puzzles ; Jeux de Dessin → Jeux de société",
-      "Thème couleur selon boutique: Pigalle (bleu) / Gambetta (orange) / 2 boutiques (vert) — fond + camembert"
-    ]},
-    { ver:"v0.7.3", date:"2026-02-28", items:[
-      "Bugfix catégories TCG: détection par motifs (Chapitre X, EV/ME, OP/EB, Altered X) même si la licence n’est pas écrite",
-      "Cas particuliers: Gravitrax → Casse-têtes ; Donjons & Dragons → Jeux de rôles ; Catégorie supprimée → Autre",
-      "Suppression du texte d’aide dans l’en-tête du camembert"
-    ]},
-    { ver:"v0.7.2", date:"2026-02-27", items:[
-      "Totaux affichés à gauche (hors TCG / global)",
-      "Paramètres: reset + Escape Game indépendant",
-      "Confort: survol camembert → scroll auto vers catégorie"
-    ]},
-    { ver:"v0.7.1", date:"2026-02-27", items:["Refonte catégories + options (événements, JDR, puzzles/casse-têtes, accessoires TCG)"]},
-    { ver:"v0.6.3", date:"2026-02-27", items:["Hover camembert ↔ liste, date visible côté résultats, corrections qté"]},
-    { ver:"v0.6.2", date:"2026-02-27", items:["Tutoriel (ancienne forme), qté toggle, corrections doubles blocs"]},
-    { ver:"v0.6.0", date:"2026-02-26", items:["HUD, tutoriel multi-pages, stats lues/utilisées/erreurs"]},
-    { ver:"v0.5.0", date:"2026-02-26", items:["Camembert + drilldown, zone collage réduite"]},
-    { ver:"v0.4.0", date:"2026-02-26", items:["Premiers totaux + navigation catégories"]},
-    { ver:"v0.3.0", date:"2026-02-26", items:["Parsing export PrestaShop (HTML copié/collé)"]},
-    { ver:"v0.2.0", date:"2026-02-25", items:["Prototype interface offline"]},
-    { ver:"v0.1.0", date:"2026-02-25", items:["Initialisation projet"]},
-  ];
-
-  // Licences (liste cachée)
-  const TCG_LICENSES = [
-    "Pokémon","Lorcana","One Piece","Magic","Altered","Flesh and Blood",
-    "Star Wars Unlimited","Riftbound","Yu-Gi-Oh","Naruto"
-  ];
-
-  // safer accessory keywords
-  const ACCESSORY_KEYWORDS = [
-    "accessoire","accessoires","accessoires cartes",
-    "protege-carte","protège-carte","protege carte","protège carte",
-    "sleeve","sleeves","toploader","top loaders","top loader",
-    "deck box","deckbox","classeur","portfolio","binder",
-    "piste de des","piste de dés","pistes de des","pistes de dés",
-    "tapis","playmat",
-    "protections acryliques",
-    "produits le grenier ludique","grenier ludique",
-    "booknook","booknooks"
-  ];
-
-  const PUZZLE_KEYWORDS = [
-    "puzzle","puzzles","logique et puzzles",
-    "cavallini",
-    "jour ferie","jours feries","jour férié","jours fériés",
-    "puzzle 100p","puzzle 500p","puzzle 1000p","puzzle 3d",
-    "escape puzzle"
-  ];
-
-  const CASSE_KEYWORDS = [
-    "casse-tete","casse-têtes","casse tete","casse tetes",
-    "smart games","smartgame","perplexus",
-    "gravitrax"
-  ];
-
-  const JDR_KEYWORDS = [
-    "chroniques oubliees","chroniques oubliées",
-    "donjons et chatons",
-    "donjons et dragons","dungeons & dragons","dungeons and dragons","d&d",
-    "jeux de roles","jeux de rôle","jeux de rôles","jeu de roles","jeu de rôle",
-    "jeux de roles solo","jeux de rôles solo","jdr",
-    "manuels"
-  ];
-
-  const ESCAPE_KEYWORDS = ["escape game","escape","4escape","4-escape"];
-  const OTHER_KEYWORDS = [
-    "categorie supprimee","catégorie supprimée","categorie supprimée",
-    "accueil","livraison","acompte","tests","test",
-    "totaux (","totaux(",
-    "carte cadeau - les gentlemen du jeu"
-  ];
-  const EVENT_KEYWORDS = ["evenement","évènement","evenements","évènements"];
+  const VERSION = "v0.7.8";
 
   const BOUTIQUES = [
     { key: "GAMBETTA", label: "LGDJ Gambetta", needles: ["lgdj gambetta","gambetta"] },
     { key: "PIGALLE", label: "LGDJ Pigalle", needles: ["lgdj pigalle","pigalle"] }
   ];
 
-  const IGNORE_LINE_PATTERNS = [
-    "-commande en attente de retrait - gambetta",
-    "-commande en attente de retrait - pigalle"
+  const ACCESSORY_KEYWORDS = [
+    "accessoire","accessoires","protege","protège","sleeve","deck box","classeur","portfolio",
+    "des","dés","piste","pistes","protections acryliques","grenier ludique","booknooks",
+    "produits derives","produits dérivés","tapis"
   ];
 
-  // generalized TCG patterns (name missing)
-  const LICENSE_PATTERN_RULES = [
-    { lic: "Lorcana", re: /\b(chapitre|chapter)\s*\d+\b/i },
-    { lic: "Pokémon", re: /\b(me|ev)\s*\d+(?:\.\d+)?\b/i },
-    { lic: "One Piece", re: /\b(op|eb)\s*\d+\b/i },
-    { lic: "Altered", re: /\baltered\s*\d+\b/i },
-  ];
+  // Simple TCG detection: if any known license is present in category name (you will update via code when needed)
+  const TCG_LICENSES = [
+    "pokemon","lorcana","one piece","magic","altered","flesh and blood","star wars unlimited","riftbound","yu-gi-oh","naruto"
+  ].map(x => normalize(x));
 
   const el = (id) => document.getElementById(id);
+
   const els = {
-    metaLines: el('metaLines'), metaUsed: el('metaUsed'), metaErr: el('metaErr'),
-    dateInfo: el('dateInfo'), rightDate: el('rightDate'),
     raw: el('raw'),
     btnPaste: el('btnPaste'),
-    btnClear: el('btnClear'),
-    btnBack: el('btnBack'),
+
     rightTitle: el('rightTitle'),
     rightBody: el('rightBody'),
     warnTwo: el('warnTwo'),
-    leftSansTCG: el('leftSansTCG'),
-    leftTotal: el('leftTotal'),
-    // tutoriel
+    btnBack: el('btnBack'),
+
+    metaLines: el('metaLines'),
+    metaUsed: el('metaUsed'),
+    metaErr: el('metaErr'),
+
+    leftSans: el('leftSans'),
+    leftTot: el('leftTot'),
+    microHist: el('microHist'),
+
     btnTut: el('btnTut'),
     tutBg: el('tutBg'),
     btnCloseTut: el('btnCloseTut'),
-    tutHead: el('tutHead'),
     tutContent: el('tutContent'),
     tutPrev: el('tutPrev'),
     tutNext: el('tutNext'),
     tutIdx: el('tutIdx'),
     tutTotal: el('tutTotal'),
-    // settings
+
     btnSettings: el('btnSettings'),
     setBg: el('setBg'),
     btnCloseSet: el('btnCloseSet'),
-    qtyOff: el('qtyOff'),
-    qtyOn: el('qtyOn'),
-    eurOff: el('eurOff'),
-    eurOn: el('eurOn'),
-    escNo: el('escNo'),
-    escYes: el('escYes'),
-    mergePCNo: el('mergePCNo'),
-    mergePCYes: el('mergePCYes'),
-    evtNo: el('evtNo'),
-    evtYes: el('evtYes'),
-    jdrNo: el('jdrNo'),
-    jdrYes: el('jdrYes'),
-    tcgAccNo: el('tcgAccNo'),
-    tcgAccYes: el('tcgAccYes'),
+    toggleQty: el('toggleQty'),
+    toggleEuro: el('toggleEuro'),
     btnReset: el('btnReset'),
-    // version
+
     btnVer: el('btnVer'),
     ver2: el('ver2'),
     verBg: el('verBg'),
     btnCloseVer: el('btnCloseVer'),
     verContent: el('verContent'),
-    // stats
+
     btnStats: el('btnStats'),
     statsBg: el('statsBg'),
     btnCloseStats: el('btnCloseStats'),
     statsHint: el('statsHint'),
     statsBox: el('statsBox'),
     btnCopyStats: el('btnCopyStats'),
-    // history
-    histWrap: el('histWrap'),
-    btnHist: el('btnHist'),
-    histPop: el('histPop'),
-    histList: el('histList'),
-  };
-
-  const DEFAULTS = {
-    showQty: 'OFF',
-    showEuro: 'ON',
-    escapeStandalone: 'NO',
-    mergePuzzleCasse: 'NO',
-    eventsStandalone: 'NO',
-    jdrStandalone: 'NO',
-    tcgAccessoriesInTcg: 'YES'
   };
 
   const settings = {
-    showQty: (localStorage.getItem('lgdj_qty') || DEFAULTS.showQty),
-    showEuro: (localStorage.getItem('lgdj_euro') || DEFAULTS.showEuro),
-    escapeStandalone: (localStorage.getItem('lgdj_escape') || DEFAULTS.escapeStandalone),
-    mergePuzzleCasse: (localStorage.getItem('lgdj_merge_pc') || DEFAULTS.mergePuzzleCasse),
-    eventsStandalone: (localStorage.getItem('lgdj_evt') || DEFAULTS.eventsStandalone),
-    jdrStandalone: (localStorage.getItem('lgdj_jdr') || DEFAULTS.jdrStandalone),
-    tcgAccessoriesInTcg: (localStorage.getItem('lgdj_tcgacc') || DEFAULTS.tcgAccessoriesInTcg)
+    showQty: (localStorage.getItem('lgdj_qty') || 'OFF'),
+    showEuro: (localStorage.getItem('lgdj_euro') || 'ON'),
   };
 
   let parsed = null;
   let view = { level: 'dashboard', category: null, tcgLicense: null, globalOnly: false };
 
   let debug = { used: [], err: [], ignored: [] };
-  let hover = { key:null };
 
+  // auto parse debounce
   let parseTimer = null;
-  let suppressHistorySave = false; // avoid re-saving when loading from history
 
-  // ===== THEME (Pigalle bleu / Gambetta orange / 2 boutiques vert) =====
-  function setCSSVar(name, value){ document.documentElement.style.setProperty(name, value); }
-  function applyTheme(mode){
-    if(mode === 'GAMBETTA'){
-      setCSSVar('--pri', '#f97316');
-      setCSSVar('--pieBase', '#fb923c');
-      setCSSVar('--acc1', 'rgba(249,115,22,.22)');
-      setCSSVar('--acc2', 'rgba(245,158,11,.14)');
-      return;
-    }
-    if(mode === 'BOTH'){
-      setCSSVar('--pri', '#22c55e');
-      setCSSVar('--pieBase', '#34d399');
-      setCSSVar('--acc1', 'rgba(34,197,94,.20)');
-      setCSSVar('--acc2', 'rgba(16,185,129,.14)');
-      return;
-    }
-    setCSSVar('--pri', '#4f46e5');
-    setCSSVar('--pieBase', '#60a5fa');
-    setCSSVar('--acc1', 'rgba(79,70,229,.20)');
-    setCSSVar('--acc2', 'rgba(34,197,94,.14)');
-  }
-
+  // ===== Helpers =====
   function normalize(s){
     return (s||"").toString().normalize("NFD").replace(/\p{Diacritic}/gu,"").toLowerCase();
+  }
+
+  function escapeHtml(s){
+    return (s||'').toString()
+      .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+      .replaceAll('"','&quot;').replaceAll("'",'&#039;');
+  }
+
+  function formatEUR(n){
+    const v = Number.isFinite(n) ? n : 0;
+    return v.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function euroSuffix(){
+    return settings.showEuro === 'ON' ? ' €' : '';
   }
 
   function parseMoneyToNumber(token){
@@ -907,6 +660,7 @@
     return Number.isFinite(n) ? n : null;
   }
 
+  // In the HTML export, "Total produits HT" tends to be the 3rd money column (after reductions + TVA reductions)
   function extractHTFromLine(line){
     const moneyTokens = [...line.matchAll(/(-?\d[\d\s.,]*)(\$|€)/g)].map(m => m[0]);
     if(moneyTokens.length === 0) return null;
@@ -917,10 +671,9 @@
 
   function extractQtyFromLine(line){
     const parts = line.split("\t").map(p=>p.trim());
-    if(parts.length >= 5){
-      const v = parts[3];
-      if(v === "" || v == null) return null;
-      const q = Number(String(v).replace(',','.'));
+    // columns: boutique | id | category | qty | reductions | ...
+    if(parts.length >= 4){
+      const q = Number(parts[3]);
       return Number.isFinite(q) ? q : null;
     }
     return null;
@@ -928,9 +681,7 @@
 
   function extractCategoryName(line){
     const parts = line.split("\t").map(p=>p.trim()).filter(Boolean);
-    if(parts.length >= 4) return parts[2];
-    const m = line.match(/LGDJ\s+(?:Gambetta|Pigalle)\s+(?:\d+\s+)?(.+?)\s+\d+\s+0\$/i);
-    if(m && m[1]) return m[1].trim();
+    if(parts.length >= 3) return parts[2];
     return line.replace(/^LGDJ\s+(Gambetta|Pigalle)\s*/i,"").slice(0,80).trim();
   }
 
@@ -941,128 +692,128 @@
     return null;
   }
 
-  function pickLicenseByName(catNorm){
-    for(const lic of TCG_LICENSES){
-      const n = normalize(lic);
-      if(n && catNorm.includes(n)) return n;
+  function isAccessory(catNorm){
+    return ACCESSORY_KEYWORDS.some(k => catNorm.includes(normalize(k)));
+  }
+
+  function isTcg(catNorm){
+    return TCG_LICENSES.some(lic => catNorm.includes(lic));
+  }
+
+  function prettyLicenseFromCat(catNorm){
+    // return first matching lic as display label
+    for(const b of ["Pokémon","Lorcana","One Piece","Magic","Altered","Flesh and Blood","Star Wars Unlimited","Riftbound","Yu-Gi-Oh","Naruto"]){
+      if(catNorm.includes(normalize(b))) return b;
     }
-    return null;
+    return "TCG";
   }
 
-  function pickLicenseByPattern(catRaw){
-    const s = (catRaw||"").toString();
-    for(const rule of LICENSE_PATTERN_RULES){
-      if(rule.re.test(s)) return normalize(rule.lic);
-    }
-    return null;
+  function getVar(name){
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
-  function detectLicense(catRaw){
-    const catNorm = normalize(catRaw);
-    return pickLicenseByName(catNorm) || pickLicenseByPattern(catRaw);
-  }
-
-  function prettyLicense(licNorm){
-    const target = normalize(licNorm);
-    for(const s of TCG_LICENSES){
-      if(normalize(s) === target) return s;
-    }
-    return licNorm;
-  }
-
-  function hasAny(catNorm, arr){
-    return arr.some(k => catNorm.includes(normalize(k)));
-  }
-
-  function isAccessory(catNorm){ return hasAny(catNorm, ACCESSORY_KEYWORDS); }
-  function isAccessoryWord(catNorm){
-    return /\baccessoires?\b/i.test(catNorm) || /\baccessories?\b/i.test(catNorm);
-  }
-  function isPuzzle(catNorm){ return hasAny(catNorm, PUZZLE_KEYWORDS); }
-  function isCasse(catNorm){ return hasAny(catNorm, CASSE_KEYWORDS); }
-  function isJdr(catNorm){ return hasAny(catNorm, JDR_KEYWORDS); }
-  function isEscape(catNorm){ return hasAny(catNorm, ESCAPE_KEYWORDS); }
-  function isOther(catNorm){ return hasAny(catNorm, OTHER_KEYWORDS) || catNorm.trim()===""; }
-  function isEvent(catNorm){ return hasAny(catNorm, EVENT_KEYWORDS); }
-
-  function isKids(catNorm){
-    if(catNorm.includes("defis nature") || catNorm.includes("défis nature")) return true;
-    if(catNorm.includes("jeux enfants")) return true;
-    return /jeux\s*\d+\s*ans/.test(catNorm);
-  }
-
-  function isDeletedCategoryLike(rawLine, catName){
-    const ln = normalize(rawLine || "");
-    const cn = normalize(catName || "");
-    if(ln.includes("categorie supprimee") || ln.includes("catégorie supprimée")) return true;
-    if(cn.includes("categorie supprimee") || cn.includes("catégorie supprimée")) return true;
-    return false;
-  }
-
-  function escapeHtml(s){
-    return (s||'').toString()
-      .replaceAll('&','&amp;')
-      .replaceAll('<','&lt;')
-      .replaceAll('>','&gt;')
-      .replaceAll('"','&quot;')
-      .replaceAll("'",'&#039;');
-  }
-
-  function formatEUR(n){
-    const v = Number.isFinite(n) ? n : 0;
-    return v.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2});
-  }
-
-  function money(n){
-    return formatEUR(n) + (settings.showEuro === 'ON' ? " €" : "");
-  }
-
-  function qtyText(q){ return Number.isFinite(q) ? String(q) : "—"; }
-
-  // ----- date range -----
-  function pad2(x){ return String(x).padStart(2,'0'); }
-  function toFR(d){ return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`; }
-  function extractDateRange(raw){
-    const m = raw.match(/Date de la commande\s*:\s*du\s*(\d{2}\/\d{2}\/\d{4})\s*au\s*(\d{2}\/\d{2}\/\d{4})/i);
+  // ===== Date extraction + label rules =====
+  function parseFrDate(s){
+    const m = (s||"").match(/(\d{2})\/(\d{2})\/(\d{4})/);
     if(!m) return null;
-    return { from: m[1], to: m[2] };
-  }
-  function dateLabel(range){
-    if(!range) return "—";
-    const todayFR = (()=>{
-      const [y,m,d] = TODAY_ISO.split('-').map(Number);
-      return toFR(new Date(y, m-1, d));
-    })();
-    const yesterdayFR = (()=>{
-      const [y,m,d] = TODAY_ISO.split('-').map(Number);
-      const dt = new Date(y, m-1, d);
-      dt.setDate(dt.getDate()-1);
-      return toFR(dt);
-    })();
-
-    const one = range.from === range.to;
-    const base = one ? range.from : `${range.from} → ${range.to}`;
-    const tag =
-      one && range.from === todayFR ? " (aujourd’hui)" :
-      one && range.from === yesterdayFR ? " (hier)" :
-      "";
-    return base + tag;
-  }
-  function updateDates(){
-    const raw = els.raw.value || '';
-    const range = extractDateRange(raw);
-    const label = dateLabel(range);
-    els.dateInfo.textContent = label;
-    els.rightDate.textContent = label;
+    const d = Number(m[1]), mo = Number(m[2])-1, y = Number(m[3]);
+    const dt = new Date(y, mo, d);
+    return Number.isFinite(dt.getTime()) ? dt : null;
   }
 
-  // ----- Empty-state theme switching -----
-  function updateEmptyState(){
-    const has = (els.raw.value || '').trim().length > 0;
-    document.body.classList.toggle('emptyState', !has);
+  function fmtFr(dt){
+    const dd = String(dt.getDate()).padStart(2,'0');
+    const mm = String(dt.getMonth()+1).padStart(2,'0');
+    const yy = dt.getFullYear();
+    return `${dd}/${mm}/${yy}`;
   }
 
-  // ----- Color utilities -----
+  function daysDiff(a,b){
+    // b - a in days, both local midnight
+    const A = new Date(a.getFullYear(), a.getMonth(), a.getDate()).getTime();
+    const B = new Date(b.getFullYear(), b.getMonth(), b.getDate()).getTime();
+    return Math.round((B-A)/(24*3600*1000));
+  }
+
+  function weekdayFr(dt){
+    return ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"][dt.getDay()];
+  }
+
+  function dateLabel(fromDt, toDt){
+    if(!fromDt || !toDt) return "";
+    const same = fmtFr(fromDt) === fmtFr(toDt);
+    if(!same) return `du ${fmtFr(fromDt)} au ${fmtFr(toDt)}`;
+
+    const today = new Date();
+    const delta = daysDiff(toDt, today); // today - date
+    // only show (aujourd'hui)/(hier) if it's actually today/yesterday
+    if(delta === 0) return `${fmtFr(toDt)} (aujourd'hui)`;
+    if(delta === 1) return `${fmtFr(toDt)} (hier)`;
+    // from 2 to 7 days: add weekday
+    if(delta >= 2 && delta <= 7) return `${fmtFr(toDt)} (${weekdayFr(toDt)})`;
+    return fmtFr(toDt);
+  }
+
+  function extractDateRange(raw){
+    // look for: "Date de la commande : du 19/07/2025 au 27/02/2026"
+    const m = raw.match(/Date de la commande\s*:\s*du\s*(\d{2}\/\d{2}\/\d{4})\s*au\s*(\d{2}\/\d{2}\/\d{4})/i);
+    if(!m) return { from:null, to:null };
+    return { from: parseFrDate(m[1]), to: parseFrDate(m[2]) };
+  }
+
+  // ===== Data model =====
+  function makeBucket(){
+    return {
+      totalsHT: { Jeux:0, Accessoires:0, TCG:0, total:0, sansTCG:0 },
+      totalsQty: { Jeux:0, Accessoires:0, TCG:0, total:0, sansTCG:0 },
+      sub: {
+        Jeux: new Map(),
+        Accessoires: new Map(),
+        TCG: new Map(), // license -> map of series (we keep category names as series)
+      }
+    };
+  }
+
+  function addToMap(map, key, ht, qty){
+    if(!map.has(key)) map.set(key, { value:0, qty:0 });
+    const cur = map.get(key);
+    cur.value += ht;
+    cur.qty += (Number.isFinite(qty) ? qty : 0);
+  }
+
+  function addRow(bucket, r){
+    bucket.totalsHT.total += r.ht;
+    bucket.totalsQty.total += (Number.isFinite(r.qty) ? r.qty : 0);
+
+    if(r.top === 'Jeux'){
+      bucket.totalsHT.Jeux += r.ht;
+      bucket.totalsQty.Jeux += (Number.isFinite(r.qty) ? r.qty : 0);
+      addToMap(bucket.sub.Jeux, r.category, r.ht, r.qty);
+    } else if(r.top === 'Accessoires'){
+      bucket.totalsHT.Accessoires += r.ht;
+      bucket.totalsQty.Accessoires += (Number.isFinite(r.qty) ? r.qty : 0);
+      addToMap(bucket.sub.Accessoires, r.category, r.ht, r.qty);
+    } else {
+      bucket.totalsHT.TCG += r.ht;
+      bucket.totalsQty.TCG += (Number.isFinite(r.qty) ? r.qty : 0);
+      const lic = r.licenseLabel;
+      if(!bucket.sub.TCG.has(lic)) bucket.sub.TCG.set(lic, new Map());
+      addToMap(bucket.sub.TCG.get(lic), r.category, r.ht, r.qty);
+    }
+  }
+
+  function finalizeBucket(bucket){
+    bucket.totalsHT.sansTCG = bucket.totalsHT.total - bucket.totalsHT.TCG;
+    bucket.totalsQty.sansTCG = bucket.totalsQty.total - bucket.totalsQty.TCG;
+  }
+
+  function currentBucket(){
+    if(!parsed) return null;
+    if(parsed.activeKey === 'GLOBAL') return parsed.global;
+    return parsed.byBoutique[parsed.activeKey];
+  }
+
+  // ===== Pie SVG =====
   function hexToRgb(hex){
     const h = hex.replace('#','').trim();
     const full = h.length===3 ? h.split('').map(c=>c+c).join('') : h;
@@ -1086,9 +837,6 @@
       return rgbToHex(mix(base.r, light.r, tt), mix(base.g, light.g, tt), mix(base.b, light.b, tt));
     }
   }
-  function getVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-
-  // ===== pie svg =====
   function polarToCartesian(cx, cy, r, angle){
     const rad = (angle - 90) * Math.PI / 180.0;
     return { x: cx + (r * Math.cos(rad)), y: cy + (r * Math.sin(rad)) };
@@ -1100,23 +848,7 @@
     return ['M', cx, cy,'L', start.x, start.y,'A', r, r, 0, largeArc, 0, end.x, end.y,'Z'].join(' ');
   }
 
-  function setHover(key){
-    hover.key = key;
-    document.querySelectorAll('[data-slice-key]').forEach(p => {
-      p.classList.toggle('isHover', p.getAttribute('data-slice-key') === key);
-    });
-    document.querySelectorAll('[data-row-key]').forEach(r => {
-      r.classList.toggle('isHover', r.getAttribute('data-row-key') === key);
-    });
-    const row = document.querySelector(`[data-row-key="${CSS.escape(key)}"]`);
-    if(row) row.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
-  }
-  function clearHover(){
-    hover.key = null;
-    document.querySelectorAll('.isHover').forEach(n => n.classList.remove('isHover'));
-  }
-
-  function renderComboPieAndList(data, title, onPick){
+  function renderComboPieAndList(data, title, rightMeta, onPick){
     const total = data.reduce((a,b)=>a + (b.value||0), 0);
 
     const wrap = document.createElement('div');
@@ -1124,13 +856,20 @@
 
     const hd = document.createElement('div');
     hd.className = 'comboHd';
-    hd.innerHTML = `<div class="crumb"><span>${escapeHtml(title)}</span></div>`;
+    hd.innerHTML = `
+      <div class="comboTitle"><span>${escapeHtml(title)}</span></div>
+      <div class="comboMeta">${escapeHtml(rightMeta||"")}</div>
+    `;
     wrap.appendChild(hd);
 
     const bd = document.createElement('div');
     bd.className = 'comboBd';
 
-    const size = 200, cx = size/2, cy = size/2, r = 88;
+    const size = 200;
+    const cx = size/2;
+    const cy = size/2;
+    const r = 88;
+
     const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.setAttribute('width', String(size));
     svg.setAttribute('height', String(size));
@@ -1165,10 +904,6 @@
       path.setAttribute('stroke', 'rgba(0,0,0,.12)');
       path.setAttribute('stroke-width', '1');
       path.classList.add('slice');
-      path.setAttribute('data-slice-key', d.key);
-
-      path.addEventListener('mouseenter', () => setHover(d.key));
-      path.addEventListener('mouseleave', () => clearHover());
       if(onPick) path.addEventListener('click', () => onPick(d));
       svg.appendChild(path);
     });
@@ -1190,7 +925,6 @@
     t1.setAttribute('font-size','13');
     t1.setAttribute('font-weight','900');
     t1.textContent = formatEUR(total);
-    svg.appendChild(t1);
 
     const t2 = document.createElementNS('http://www.w3.org/2000/svg','text');
     t2.setAttribute('x', cx);
@@ -1199,329 +933,55 @@
     t2.setAttribute('fill', getVar('--muted'));
     t2.setAttribute('font-size','10');
     t2.setAttribute('font-weight','800');
-    t2.textContent = (settings.showEuro === 'ON') ? `€ HT` : `HT`;
+    t2.textContent = settings.showEuro === 'ON' ? "€ HT" : "HT";
+
+    svg.appendChild(t1);
     svg.appendChild(t2);
 
     const legend = document.createElement('div');
     legend.className = 'legend';
 
-    items
-      .slice()
-      .sort((a,b)=>b.value-a.value)
-      .forEach(d => {
-        const pct = total > 0 ? (d.value/total*100) : 0;
-        const row = document.createElement('div');
-        row.className = 'legRow';
-        row.setAttribute('data-row-key', d.key);
-        row.innerHTML = `
-          <div class="legL">
-            <span class="sw" style="background:${d._color}"></span>
-            <span class="legName">${escapeHtml(d.name)}</span>
-          </div>
-          <div class="legVal">
-            ${formatEUR(d.value)}${settings.showEuro==='ON' ? ' €' : ''}
-            <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span>
-            ${settings.showQty==='ON' ? `<span class="qty">Qté: ${qtyText(d.qty)}</span>` : ''}
-          </div>
-        `;
-        row.addEventListener('mouseenter', () => setHover(d.key));
-        row.addEventListener('mouseleave', () => clearHover());
-        if(onPick) row.addEventListener('click', () => onPick(d));
-        legend.appendChild(row);
-      });
-
-    const right = document.createElement('div');
-    right.appendChild(legend);
+    items.slice().sort((a,b)=>b.value-a.value).forEach(d=>{
+      const pct = total > 0 ? (d.value/total*100) : 0;
+      const row = document.createElement('div');
+      row.className = 'legRow';
+      row.innerHTML = `
+        <div class="legL">
+          <span class="sw" style="background:${d._color}"></span>
+          <span class="legName">${escapeHtml(d.name)}</span>
+        </div>
+        <div class="legVal">${formatEUR(d.value)}${euroSuffix()} <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span></div>
+      `;
+      if(onPick) row.addEventListener('click', () => onPick(d));
+      legend.appendChild(row);
+    });
 
     bd.appendChild(svg);
-    bd.appendChild(right);
-
+    bd.appendChild(legend);
     wrap.appendChild(bd);
     return wrap;
   }
 
-  // ===== buckets =====
-  const TOP = {
-    JEUX: "Jeux de société",
-    PUZ: "Puzzles",
-    CASSE: "Casse-têtes",
-    JDR: "Jeux de rôles",
-    ESC: "Escape Game",
-    ACC: "Accessoires",
-    TCG: "TCG",
-    EVT: "Événement",
-    AUTRE: "Autre",
-    PUZCASSE: "Puzzles & Casse-têtes",
-    AUTRE_DELETED: "Catégories supprimées"
-  };
-
-  function makeBucket(){
-    return {
-      totalsHT: new Map(),
-      totalsQty: new Map(),
-      sub: new Map(),
-      tcg: {
-        licenses: new Map(),
-        seriesByLicense: new Map()
-      },
-      total: 0,
-      totalQty: 0
-    };
-  }
-  function bumpMap(map, key, add){ map.set(key, (map.get(key) || 0) + add); }
-
-  function addToSub(bucket, topKey, subKey, ht, qty){
-    if(!bucket.sub.has(topKey)) bucket.sub.set(topKey, new Map());
-    const m = bucket.sub.get(topKey);
-    if(!m.has(subKey)) m.set(subKey, { value:0, qty:0, hasQty:false });
-    const cur = m.get(subKey);
-    cur.value += ht;
-    if(qty != null && Number.isFinite(qty)){ cur.qty += qty; cur.hasQty = true; }
-  }
-
-  function addToTcg(bucket, licNorm, seriesName, ht, qty){
-    if(!bucket.tcg.licenses.has(licNorm)) bucket.tcg.licenses.set(licNorm, { value:0, qty:0, hasQty:false });
-    const lic = bucket.tcg.licenses.get(licNorm);
-    lic.value += ht;
-    if(qty != null && Number.isFinite(qty)){ lic.qty += qty; lic.hasQty = true; }
-
-    if(!bucket.tcg.seriesByLicense.has(licNorm)) bucket.tcg.seriesByLicense.set(licNorm, new Map());
-    const sm = bucket.tcg.seriesByLicense.get(licNorm);
-    if(!sm.has(seriesName)) sm.set(seriesName, { value:0, qty:0, hasQty:false });
-    const s = sm.get(seriesName);
-    s.value += ht;
-    if(qty != null && Number.isFinite(qty)){ s.qty += qty; s.hasQty = true; }
-  }
-
-  function addRow(bucket, r){
-    bucket.total += r.ht;
-    if(r.qty != null && Number.isFinite(r.qty)) bucket.totalQty += r.qty;
-
-    bumpMap(bucket.totalsHT, r.top, r.ht);
-    if(r.qty != null && Number.isFinite(r.qty)) bumpMap(bucket.totalsQty, r.top, r.qty);
-
-    addToSub(bucket, r.top, r.sub, r.ht, r.qty);
-
-    if(r.top === TOP.TCG && r.license) addToTcg(bucket, r.license, r.sub, r.ht, r.qty);
-  }
-
-  function calcSansTCG(bucket){
-    const tcg = bucket.totalsHT.get(TOP.TCG) || 0;
-    return bucket.total - tcg;
-  }
-
-  function buildTopOrder(){
-    const order = [
-      TOP.JEUX,
-      (settings.mergePuzzleCasse === 'YES') ? TOP.PUZCASSE : TOP.PUZ,
-      (settings.mergePuzzleCasse === 'YES') ? null : TOP.CASSE,
-      (settings.jdrStandalone === 'YES') ? TOP.JDR : null,
-      (settings.escapeStandalone === 'YES') ? TOP.ESC : null,
-      TOP.ACC,
-      TOP.TCG,
-      (settings.eventsStandalone === 'YES') ? TOP.EVT : null,
-      TOP.AUTRE
-    ].filter(Boolean);
-    return [...new Set(order)];
-  }
-
-  // ===== classification =====
-  function classify(catName, rawLine){
-    const catNorm = normalize(catName);
-
-    if(isDeletedCategoryLike(rawLine, catName)){
-      return { top: TOP.AUTRE, sub: TOP.AUTRE_DELETED, tcgLicense:null, deletedLeaf: catName };
-    }
-
-    if(catNorm.includes("carte cadeau - les gentlemen du jeu")){
-      return { top: TOP.AUTRE, sub: catName, tcgLicense:null };
-    }
-    if(catNorm.includes("chroniques oubliees") || catNorm.includes("chroniques oubliées")){
-      if(settings.jdrStandalone === 'YES') return { top: TOP.JDR, sub: catName, tcgLicense:null };
-      return { top: TOP.JEUX, sub: catName, tcgLicense:null };
-    }
-    if(catNorm.includes("escape puzzle")){
-      const topKey = (settings.mergePuzzleCasse === 'YES') ? TOP.PUZCASSE : TOP.PUZ;
-      return { top: topKey, sub: catName, tcgLicense:null };
-    }
-    if(catNorm.includes("jeux de dessin")){
-      return { top: TOP.JEUX, sub: catName, tcgLicense:null };
-    }
-
-    if(isOther(catNorm)){
-      return { top: TOP.AUTRE, sub: catName, tcgLicense:null };
-    }
-
-    if(isEscape(catNorm)){
-      if(settings.escapeStandalone === 'YES'){
-        return { top: TOP.ESC, sub: catName, tcgLicense:null };
-      }
-      return { top: TOP.AUTRE, sub: catName, tcgLicense:null };
-    }
-
-    if(settings.eventsStandalone === 'YES' && isEvent(catNorm)){
-      return { top: TOP.EVT, sub: catName, tcgLicense:null };
-    }
-
-    if(isKids(catNorm)){
-      return { top: TOP.JEUX, sub: "Jeux enfants", tcgLicense:null, kidsLeaf: catName };
-    }
-
-    if(isJdr(catNorm) && settings.jdrStandalone === 'YES'){
-      return { top: TOP.JDR, sub: catName, tcgLicense:null };
-    }
-
-    if(isCasse(catNorm)){
-      const topKey = (settings.mergePuzzleCasse === 'YES') ? TOP.PUZCASSE : TOP.CASSE;
-      return { top: topKey, sub: catName, tcgLicense:null };
-    }
-
-    if(isPuzzle(catNorm)){
-      const topKey = (settings.mergePuzzleCasse === 'YES') ? TOP.PUZCASSE : TOP.PUZ;
-      return { top: topKey, sub: catName, tcgLicense:null };
-    }
-
-    const lic = detectLicense(catName);
-    if(lic){
-      const isTcgAccessoryStrict = catNorm.startsWith("accessoires :") || catNorm.startsWith("accessoire :");
-      const isTcgAccessoryText = isTcgAccessoryStrict || isAccessoryWord(catNorm);
-
-      if(isTcgAccessoryText && settings.tcgAccessoriesInTcg === 'YES'){
-        return { top: TOP.TCG, sub: catName, tcgLicense: lic };
-      }
-      if(settings.tcgAccessoriesInTcg !== 'YES' && isTcgAccessoryStrict){
-        return { top: TOP.ACC, sub: catName, tcgLicense: null };
-      }
-      return { top: TOP.TCG, sub: catName, tcgLicense: lic };
-    }
-
-    if(isAccessory(catNorm)){
-      return { top: TOP.ACC, sub: catName, tcgLicense:null };
-    }
-
-    return { top: TOP.JEUX, sub: catName, tcgLicense:null };
-  }
-
-  // ===== history (5 derniers collages) =====
-  const HISTORY_KEY = "lgdj_history_v1";
-  function loadHistory(){
-    try{
-      const arr = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
-      return Array.isArray(arr) ? arr : [];
-    } catch { return []; }
-  }
-  function saveHistory(arr){
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(0,5)));
-  }
-  function summarizeMode(mode){
-    if(mode === "GAMBETTA") return "Gambetta";
-    if(mode === "PIGALLE") return "Pigalle";
-    return "2 boutiques";
-  }
-  function modeClass(mode){
-    if(mode === "GAMBETTA") return "gambetta";
-    if(mode === "PIGALLE") return "pigalle";
-    return "both";
-  }
-  function getModeFromParsed(p){
-    if(!p) return "PIGALLE";
-    if(p.two) return "BOTH";
-    if(p.activeKey === "GAMBETTA") return "GAMBETTA";
-    if(p.activeKey === "PIGALLE") return "PIGALLE";
-    return "BOTH";
-  }
-  function writeHistoryEntry(text, mode, dateLabelText){
-    if(suppressHistorySave) return;
-    const raw = (text||"").trim();
-    if(!raw) return;
-    const list = loadHistory();
-    const key = raw.slice(0, 2400); // stable enough to dedupe
-    const existingIdx = list.findIndex(x => x && x.key === key);
-    const entry = {
-      key,
-      text: raw,
-      mode,
-      dateLabel: dateLabelText || "—",
-      ts: Date.now()
-    };
-    if(existingIdx >= 0) list.splice(existingIdx, 1);
-    list.unshift(entry);
-    saveHistory(list);
-    renderHistoryPopover();
-  }
-  function renderHistoryPopover(){
-    const list = loadHistory();
-    els.histList.innerHTML = "";
-    if(!list.length){
-      els.histList.innerHTML = `<div class="popEmpty">Aucun historique pour le moment.</div>`;
-      return;
-    }
-    list.forEach((h, idx) => {
-      const btn = document.createElement("button");
-      btn.className = `histBtn ${modeClass(h.mode)}`;
-      btn.type = "button";
-      btn.innerHTML = `
-        <div class="histLeft">
-          <span class="histDot"></span>
-          <span class="histName">${escapeHtml(summarizeMode(h.mode))}</span>
-        </div>
-        <div class="histDate">${escapeHtml(h.dateLabel || "—")}</div>
-      `;
-      btn.addEventListener("click", () => {
-        suppressHistorySave = true;
-        els.raw.value = h.text;
-        scheduleParse();
-        setTimeout(()=>{ suppressHistorySave = false; }, 350);
-        hideHistPop();
-      });
-      els.histList.appendChild(btn);
-    });
-  }
-  let histHideTimer = null;
-  function showHistPop(){
-    if(histHideTimer) clearTimeout(histHideTimer);
-    renderHistoryPopover();
-    els.histPop.style.display = "block";
-    els.histPop.setAttribute("aria-hidden","false");
-  }
-  function hideHistPop(){
-    els.histPop.style.display = "none";
-    els.histPop.setAttribute("aria-hidden","true");
-  }
-  function scheduleHideHistPop(){
-    if(histHideTimer) clearTimeout(histHideTimer);
-    histHideTimer = setTimeout(()=>hideHistPop(), 180);
-  }
-
-  // ===== parsing / aggregation =====
+  // ===== Parsing =====
   function parseAll(){
-    updateEmptyState();
-    updateDates();
-
     const raw = els.raw.value || '';
     const lines = raw.split(/\r?\n/);
+
+    const { from, to } = extractDateRange(raw);
+    const dateTxt = (from && to) ? dateLabel(from, to) : "";
+
     const rows = [];
     let used = 0, err = 0;
 
     debug = { used: [], err: [], ignored: [] };
 
-    for(let idx=0; idx<lines.length; idx++){
-      const line = lines[idx];
+    for(const line of lines){
       const l = (line||'').trim();
       if(!l){ debug.ignored.push({reason:'Ligne vide', line}); continue; }
 
       const ln = normalize(line);
-
-      if(IGNORE_LINE_PATTERNS.some(p => ln.includes(p))){
-        debug.ignored.push({reason:'Ligne de statut (à ignorer)', line});
-        continue;
-      }
-
       const boutiqueKey = detectBoutique(ln);
-      if(!boutiqueKey){
-        debug.ignored.push({reason:'Boutique non détectée', line});
-        continue;
-      }
+      if(!boutiqueKey){ debug.ignored.push({reason:'Boutique non détectée', line}); continue; }
 
       const ht = extractHTFromLine(line);
       if(ht === null){
@@ -1530,139 +990,73 @@
         continue;
       }
 
-      const qty = extractQtyFromLine(line);
       const cat = extractCategoryName(line);
+      const catNorm = normalize(cat);
 
-      const cls = classify(cat, line);
+      const tcg = isTcg(catNorm);
+      const acc = !tcg && isAccessory(catNorm);
+      const top = tcg ? 'TCG' : (acc ? 'Accessoires' : 'Jeux');
 
-      const rec = {
-        boutiqueKey,
-        top: cls.top,
-        sub: cls.sub,
-        category: cat,
-        ht,
-        qty,
-        license: cls.tcgLicense,
-        kidsLeaf: cls.kidsLeaf || null,
-        deletedLeaf: cls.deletedLeaf || null,
-        rawLine: line
-      };
-      rows.push(rec);
+      const licenseLabel = tcg ? prettyLicenseFromCat(catNorm) : null;
+
+      const qty = extractQtyFromLine(line);
+
+      rows.push({ boutiqueKey, top, category: cat, categoryNorm: catNorm, ht, qty, licenseLabel, rawLine: line });
       used++;
-      debug.used.push({reason:`OK → ${cls.top}`, line});
+      debug.used.push({reason:'OK', line});
     }
 
     els.metaLines.textContent = String(lines.length);
-    els.metaUsed.textContent  = String(used);
-    els.metaErr.textContent   = String(err);
+    els.metaUsed.textContent = String(used);
+    els.metaErr.textContent = String(err);
 
     const present = BOUTIQUES.filter(b => rows.some(r => r.boutiqueKey === b.key));
     const two = present.length >= 2;
     els.warnTwo.style.display = two ? 'block' : 'none';
 
     const byBoutique = {};
-    for(const b of BOUTIQUES) byBoutique[b.key] = makeBucket();
+    for(const b of BOUTIQUES){ byBoutique[b.key] = makeBucket(); }
     const global = makeBucket();
-
-    for(const key of Object.keys(byBoutique)) {
-      byBoutique[key].kidsLeaves = new Map();
-      byBoutique[key].deletedLeaves = new Map();
-    }
-    global.kidsLeaves = new Map();
-    global.deletedLeaves = new Map();
-
-    function addKidsLeaf(bucket, leafName, ht, qty){
-      if(!bucket.kidsLeaves.has(leafName)) bucket.kidsLeaves.set(leafName, { value:0, qty:0, hasQty:false });
-      const cur = bucket.kidsLeaves.get(leafName);
-      cur.value += ht;
-      if(qty != null && Number.isFinite(qty)){ cur.qty += qty; cur.hasQty = true; }
-    }
-
-    function addDeletedLeaf(bucket, leafName, ht, qty){
-      const k = (leafName && leafName.trim()) ? leafName.trim() : "Catégorie supprimée";
-      if(!bucket.deletedLeaves.has(k)) bucket.deletedLeaves.set(k, { value:0, qty:0, hasQty:false });
-      const cur = bucket.deletedLeaves.get(k);
-      cur.value += ht;
-      if(qty != null && Number.isFinite(qty)){ cur.qty += qty; cur.hasQty = true; }
-    }
 
     for(const r of rows){
       addRow(byBoutique[r.boutiqueKey], r);
       addRow(global, r);
-
-      if(r.sub === "Jeux enfants" && r.kidsLeaf){
-        addKidsLeaf(byBoutique[r.boutiqueKey], r.kidsLeaf, r.ht, r.qty);
-        addKidsLeaf(global, r.kidsLeaf, r.ht, r.qty);
-      }
-
-      if(r.sub === TOP.AUTRE_DELETED){
-        addDeletedLeaf(byBoutique[r.boutiqueKey], r.deletedLeaf || r.category, r.ht, r.qty);
-        addDeletedLeaf(global, r.deletedLeaf || r.category, r.ht, r.qty);
-      }
     }
+    for(const b of BOUTIQUES){ finalizeBucket(byBoutique[b.key]); }
+    finalizeBucket(global);
 
     const activeKey = (!two && present.length===1) ? present[0].key : 'GLOBAL';
-    parsed = { rows, present, two, activeKey, byBoutique, global };
 
-    if(parsed.two) applyTheme('BOTH');
-    else if(parsed.activeKey === 'GAMBETTA') applyTheme('GAMBETTA');
-    else if(parsed.activeKey === 'PIGALLE') applyTheme('PIGALLE');
-    else applyTheme('PIGALLE');
+    parsed = { rows, present, two, activeKey, byBoutique, global, dateTxt };
+    view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: two };
 
-    if(view.level !== 'dashboard') view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: two };
-    else view.globalOnly = two;
-
-    updateLeftTotals();
-    render();
-
-    // v0.7.7: auto-save to history
-    if(rows.length && (raw||"").trim()){
-      const mode = getModeFromParsed(parsed);
-      const range = extractDateRange(raw);
-      const dLabel = dateLabel(range);
-      writeHistoryEntry(raw, mode, dLabel);
-    }
-  }
-
-  function currentBucket(){
-    if(!parsed) return null;
-    return parsed.activeKey === 'GLOBAL' ? parsed.global : parsed.byBoutique[parsed.activeKey];
-  }
-
-  function updateLeftTotals(){
-    const eurSpans = document.querySelectorAll(".eur");
-    eurSpans.forEach(s => s.style.display = (settings.showEuro === 'ON') ? "" : "none");
-
-    if(!parsed){
-      els.leftSansTCG.textContent = "0,00";
-      els.leftTotal.textContent = "0,00";
-      return;
-    }
+    // Update left totals
     const b = currentBucket();
-    els.leftSansTCG.textContent = formatEUR(calcSansTCG(b));
-    els.leftTotal.textContent = formatEUR(b.total);
+    els.leftSans.textContent = b ? (formatEUR(b.totalsHT.sansTCG) + euroSuffix()) : "—";
+    els.leftTot.textContent  = b ? (formatEUR(b.totalsHT.total) + euroSuffix()) : "—";
+
+    // Save to micro-history (max 5)
+    pushHistorySnapshot(raw, parsed);
+
+    renderMicroHistory();
+    render();
   }
 
+  // ===== Rendering =====
   function clearDyn(){
     els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove());
   }
 
   function render(){
     clearDyn();
-    clearHover();
-    updateEmptyState();
-    updateLeftTotals();
 
-    if(!parsed || !parsed.rows.length){
+    if(!parsed){
       els.rightTitle.textContent = 'Résultats';
       els.btnBack.style.display = 'none';
       const empty = document.createElement('div');
       empty.className = 'empty dyn';
-      empty.innerHTML = 'Colle un export PrestaShop : les résultats apparaissent automatiquement.';
+      empty.innerHTML = 'Colle un export : l’analyse se fait automatiquement.';
       els.rightBody.appendChild(empty);
-      els.warnTwo.style.display = 'none';
-      applyTheme('PIGALLE');
-      renderHistoryPopover();
       return;
     }
 
@@ -1671,34 +1065,35 @@
     if(view.level === 'dashboard') renderDashboard();
     else if(view.level === 'category') renderCategory();
     else if(view.level === 'tcgLicense') renderTcgLicense();
-    else if(view.level === 'kids') renderKids();
-    else if(view.level === 'deletedCats') renderDeletedCats();
 
     els.warnTwo.style.display = parsed.two ? 'block' : 'none';
-    renderHistoryPopover();
+  }
+
+  function rightHeaderTitle(){
+    const label = parsed.activeKey === 'GLOBAL'
+      ? 'GLOBAL'
+      : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey);
+
+    // date at right of boutique name (requested)
+    const dt = parsed.dateTxt ? ` • ${parsed.dateTxt}` : "";
+    return `${label}${dt}`;
   }
 
   function renderDashboard(){
     const b = currentBucket();
-    const title = parsed.activeKey === 'GLOBAL'
-      ? 'GLOBAL (catégories)'
-      : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey);
-    els.rightTitle.textContent = title;
+    els.rightTitle.textContent = rightHeaderTitle();
 
-    const order = buildTopOrder();
-    const data = order
-      .map(k => ({
-        key: k,
-        name: k,
-        value: b.totalsHT.get(k) || 0,
-        qty: (b.totalsQty.get(k) ?? null)
-      }))
-      .filter(x => x.value > 0);
+    const data = [
+      { key:'Jeux', name:'Jeux de société', value:b.totalsHT.Jeux },
+      { key:'Accessoires', name:'Accessoires', value:b.totalsHT.Accessoires },
+      { key:'TCG', name:'TCG', value:b.totalsHT.TCG },
+    ];
 
     const combo = renderComboPieAndList(
       data,
-      'Répartition (catégories)',
-      (d) => { view = { level:'category', category: d.key, tcgLicense:null, globalOnly: parsed.two }; render(); }
+      'Répartition (catégories) — clic pour ouvrir',
+      settings.showQty==='ON' ? `Qté total: ${b.totalsQty.total || "—"}` : '',
+      (d) => { view = { level:'category', category:d.key, tcgLicense:null, globalOnly: parsed.two }; render(); }
     );
 
     els.rightBody.appendChild(combo);
@@ -1707,205 +1102,176 @@
   function renderCategory(){
     const b = currentBucket();
     const cat = view.category;
+    els.rightTitle.textContent = rightHeaderTitle();
 
-    els.rightTitle.textContent =
-      `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — ${cat}`;
+    if(cat === 'Jeux' || cat === 'Accessoires'){
+      const map = b.sub[cat];
+      const entries = [...map.entries()].map(([name,obj]) => ({
+        key:name, name, value: obj.value, qty: obj.qty
+      })).sort((a,b)=>b.value-a.value);
 
-    if(cat === TOP.JEUX){
-      const subMap = b.sub.get(TOP.JEUX) || new Map();
-      const entries = [...subMap.entries()].map(([name,obj]) => ({
-        key:name, name,
-        value: obj.value,
-        qty: obj.hasQty ? obj.qty : null
-      })).sort((a,b)=> b.value - a.value);
-
+      const meta = settings.showQty==='ON' ? `Qté ${cat}: ${b.totalsQty[cat] || "—"}` : '';
       const combo = renderComboPieAndList(
         entries,
-        `Répartition — ${TOP.JEUX} (sous-catégories)`,
-        (d) => {
-          if(d.key === "Jeux enfants"){
-            view = { level:'kids', category: TOP.JEUX, tcgLicense:null, globalOnly: parsed.two };
-            render();
-          }
-        }
+        `Répartition — ${cat} (toutes les sous-catégories)`,
+        meta,
+        null
       );
-
       els.rightBody.appendChild(combo);
-      return;
-    }
+    } else {
+      // TCG -> licenses
+      const licTotals = new Map();
+      for(const [lic, seriesMap] of b.sub.TCG.entries()){
+        let sum = 0, q = 0;
+        for(const [_, obj] of seriesMap.entries()){ sum += obj.value; q += obj.qty; }
+        licTotals.set(lic, {value:sum, qty:q});
+      }
+      const entries = [...licTotals.entries()].map(([lic,obj]) => ({
+        key:lic, name:lic, value:obj.value, qty:obj.qty
+      })).sort((a,b)=>b.value-a.value);
 
-    if(cat === TOP.TCG){
-      const entries = [...b.tcg.licenses.entries()]
-        .map(([lic, obj]) => ({ key: lic, name: prettyLicense(lic), value: obj.value, qty: obj.hasQty ? obj.qty : null }))
-        .sort((a,b)=> b.value - a.value);
-
+      const meta = settings.showQty==='ON' ? `Qté TCG: ${b.totalsQty.TCG || "—"}` : '';
       const combo = renderComboPieAndList(
         entries,
         `Répartition — TCG (licences)`,
-        (d) => { view = { level:'tcgLicense', category: TOP.TCG, tcgLicense:d.key, globalOnly: parsed.two }; render(); }
+        meta,
+        (d)=>{ view = { level:'tcgLicense', category:'TCG', tcgLicense:d.key, globalOnly: parsed.two }; render(); }
       );
       els.rightBody.appendChild(combo);
-      return;
     }
-
-    if(cat === TOP.AUTRE){
-      const subMap = b.sub.get(TOP.AUTRE) || new Map();
-      const entries = [...subMap.entries()].map(([name,obj]) => ({
-        key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null
-      })).sort((a,b)=> b.value - a.value);
-
-      const combo = renderComboPieAndList(
-        entries,
-        `Détail — ${TOP.AUTRE}`,
-        (d) => {
-          if(d.key === TOP.AUTRE_DELETED){
-            view = { level:'deletedCats', category: TOP.AUTRE, tcgLicense:null, globalOnly: parsed.two };
-            render();
-          }
-        }
-      );
-      els.rightBody.appendChild(combo);
-      return;
-    }
-
-    const subMap = b.sub.get(cat) || new Map();
-    const entries = [...subMap.entries()]
-      .map(([name, obj]) => ({ key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null }))
-      .sort((a,b)=> b.value - a.value);
-
-    const combo = renderComboPieAndList(
-      entries,
-      `Répartition — ${cat} (toutes les sous-catégories)`,
-      null
-    );
-    els.rightBody.appendChild(combo);
-  }
-
-  function renderKids(){
-    const b = currentBucket();
-    els.rightTitle.textContent =
-      `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — Jeux de société — Jeux enfants`;
-
-    const entries = [...(b.kidsLeaves || new Map()).entries()]
-      .map(([name,obj]) => ({ key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null }))
-      .sort((a,b)=> b.value - a.value);
-
-    const combo = renderComboPieAndList(
-      entries,
-      `Détail — Jeux enfants (Jeux X ans / Défis Nature)`,
-      null
-    );
-    els.rightBody.appendChild(combo);
-  }
-
-  function renderDeletedCats(){
-    const b = currentBucket();
-    els.rightTitle.textContent =
-      `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — Autre — Catégories supprimées`;
-
-    const entries = [...(b.deletedLeaves || new Map()).entries()]
-      .map(([name,obj]) => ({ key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null }))
-      .sort((a,b)=> b.value - a.value);
-
-    const combo = renderComboPieAndList(
-      entries,
-      `Détail — Catégories supprimées`,
-      null
-    );
-    els.rightBody.appendChild(combo);
   }
 
   function renderTcgLicense(){
     const b = currentBucket();
     const lic = view.tcgLicense;
+    els.rightTitle.textContent = rightHeaderTitle();
 
-    els.rightTitle.textContent =
-      `${parsed.activeKey === 'GLOBAL' ? 'GLOBAL' : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey)} — TCG — ${prettyLicense(lic)}`;
+    const seriesMap = b.sub.TCG.get(lic) || new Map();
+    const entries = [...seriesMap.entries()].map(([name,obj]) => ({
+      key:name, name, value: obj.value, qty: obj.qty
+    })).sort((a,b)=>b.value-a.value);
 
-    const seriesMap = b.tcg.seriesByLicense.get(lic) || new Map();
-    const entries = [...seriesMap.entries()]
-      .map(([name,obj]) => ({ key:name, name, value: obj.value, qty: obj.hasQty ? obj.qty : null }))
-      .sort((a,b)=> b.value - a.value);
+    const meta = settings.showQty==='ON'
+      ? `Qté ${lic}: ${entries.reduce((s,x)=>s+(x.qty||0),0) || "—"}`
+      : '';
 
     const combo = renderComboPieAndList(
       entries,
-      `Répartition — ${prettyLicense(lic)} (séries)`,
+      `Répartition — ${lic} (séries)`,
+      meta,
       null
     );
     els.rightBody.appendChild(combo);
   }
 
-  // ===== Back =====
-  els.btnBack.addEventListener('click', () => {
-    if(view.level === 'tcgLicense') view = { level:'category', category: TOP.TCG, tcgLicense:null, globalOnly: parsed?.two || false };
-    else if(view.level === 'kids') view = { level:'category', category: TOP.JEUX, tcgLicense:null, globalOnly: parsed?.two || false };
-    else if(view.level === 'deletedCats') view = { level:'category', category: TOP.AUTRE, tcgLicense:null, globalOnly: parsed?.two || false };
-    else if(view.level === 'category') view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed?.two || false };
-    else view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed?.two || false };
+  els.btnBack.addEventListener('click', ()=>{
+    if(!parsed) return;
+    if(view.level === 'tcgLicense') view = { level:'category', category:'TCG', tcgLicense:null, globalOnly: parsed.two };
+    else if(view.level === 'category') view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed.two };
+    else view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed.two };
     render();
   });
 
-  // ===== tutoriel pages =====
+  // ===== Micro history (under left totals) =====
+  const HIST_KEY = "lgdj_hist_v078";
+
+  function boutiqueColorKey(activeKey, two){
+    if(two || activeKey === 'GLOBAL') return '#22c55e';
+    if(activeKey === 'GAMBETTA') return '#f59e0b';
+    return '#60a5fa'; // Pigalle
+  }
+
+  function loadHist(){
+    try{
+      const a = JSON.parse(localStorage.getItem(HIST_KEY) || "[]");
+      return Array.isArray(a) ? a : [];
+    }catch{ return []; }
+  }
+
+  function saveHist(arr){
+    localStorage.setItem(HIST_KEY, JSON.stringify(arr.slice(0,5)));
+  }
+
+  function pushHistorySnapshot(rawText, parsedObj){
+    if(!rawText || !rawText.trim()) return;
+
+    const hist = loadHist();
+    const labelKey = parsedObj.two ? "2 boutiques" :
+      (parsedObj.activeKey === 'GAMBETTA' ? "Gambetta" :
+       parsedObj.activeKey === 'PIGALLE' ? "Pigalle" : "GLOBAL");
+
+    const dateStr = parsedObj.dateTxt || "";
+    const color = boutiqueColorKey(parsedObj.activeKey, parsedObj.two);
+
+    // remove exact duplicates (same date + label + first 200 chars)
+    const sig = `${labelKey}__${dateStr}__${rawText.trim().slice(0,200)}`;
+    const next = [{ sig, labelKey, dateStr, color, rawText, ts: Date.now() }, ...hist.filter(x=>x.sig!==sig)];
+    saveHist(next);
+  }
+
+  function renderMicroHistory(){
+    const hist = loadHist();
+    els.microHist.innerHTML = '';
+    if(hist.length === 0) return;
+
+    hist.forEach(h=>{
+      const btn = document.createElement('div');
+      btn.className = 'histBtn';
+      btn.innerHTML = `
+        <span class="dot" style="background:${h.color}"></span>
+        <span class="histTxt">${escapeHtml(h.labelKey)}${h.dateStr ? " • " + escapeHtml(h.dateStr) : ""}</span>
+      `;
+      btn.addEventListener('click', ()=>{
+        els.raw.value = h.rawText || '';
+        scheduleParse(true);
+        els.raw.focus();
+      });
+      els.microHist.appendChild(btn);
+    });
+  }
+
+  // ===== Tutoriel pages =====
   const tutorialPages = [
     { title: "1) Choisir la boutique", text: "Dans PrestaShop, sélectionne la boutique Pigalle OU Gambetta depuis un onglet (ex : Tableau de bord)." },
     { title: "2) Accéder au rapport", text: "Va dans Commandes → Rapport Commandes TVA Bénéfices." },
-    { title: "3) Paramétrer l’export", text: "Préférences d’export : Type de rapport = Catégories ; Format = html." },
-    { title: "4) Définir la période", text: "Par date de commande : choisis date début et date fin (même date pour un jour)." },
-    { title: "5) Statuts", text: "Tout décocher puis cocher uniquement Store - Sale." },
-    { title: "6) Exporter + copier", text: "Cliquer Exporter. Quand le tableau apparaît : Ctrl+A puis Ctrl+C." },
-    { title: "7) Coller", text: "Ici : clique dans la zone puis Ctrl+V. Les résultats sortent automatiquement." }
+    { title: "3) Paramétrer l’export", text: "Préférences d’export : Type de rapport = Catégories ; Format = html (souvent déjà sélectionné)." },
+    { title: "4) Définir la période", text: "Par date de commande : indique date de début et date de fin. Pour un jour : même date début/fin." },
+    { title: "5) Statuts", text: "Tout décocher, puis cocher uniquement Store - Sale." },
+    { title: "6) Export + copier", text: "Cliquer Exporter, puis Ctrl+A → Ctrl+C sur la page du tableau." },
+    { title: "7) Coller", text: "Ici : Ctrl+V. L’analyse se lance automatiquement et les résultats apparaissent." }
   ];
   let tutPage = 0;
+
   function renderTut(){
     const p = tutorialPages[tutPage];
-    els.tutHead.textContent = p.title;
     els.tutContent.innerHTML = `
-      <h3>${escapeHtml(p.title)}</h3>
-      <p>${escapeHtml(p.text)}</p>
-      <p class="muted" style="margin-top:10px;font-size:12px">
-        Astuce : si 2 boutiques sont collées, l’app passe en mode GLOBAL (catégories uniquement).
-      </p>
+      <h3 class="pageTitle">${escapeHtml(p.title)}</h3>
+      <div class="pageText">${escapeHtml(p.text)}</div>
+      <div class="muted" style="margin-top:10px">Si 2 boutiques sont collées : mode GLOBAL (catégories uniquement).</div>
     `;
     els.tutIdx.textContent = String(tutPage+1);
     els.tutTotal.textContent = String(tutorialPages.length);
     els.tutPrev.disabled = tutPage === 0;
     els.tutNext.textContent = (tutPage === tutorialPages.length-1) ? 'Terminer' : 'Suivant';
   }
-  function openTut(){ tutPage = 0; renderTut(); els.tutBg.style.display='flex'; els.tutBg.setAttribute('aria-hidden','false'); }
+  function openTut(){ tutPage=0; renderTut(); els.tutBg.style.display='flex'; els.tutBg.setAttribute('aria-hidden','false'); }
   function closeTut(){ els.tutBg.style.display='none'; els.tutBg.setAttribute('aria-hidden','true'); }
+
   els.btnTut.addEventListener('click', openTut);
   els.btnCloseTut.addEventListener('click', closeTut);
-  els.tutBg.addEventListener('click', (e)=>{ if(e.target === els.tutBg) closeTut(); });
-  els.tutPrev.addEventListener('click', ()=>{ if(tutPage>0){ tutPage--; renderTut(); } });
-  els.tutNext.addEventListener('click', ()=>{ if(tutPage < tutorialPages.length-1){ tutPage++; renderTut(); } else closeTut(); });
+  els.tutBg.addEventListener('click', (e)=>{ if(e.target===els.tutBg) closeTut(); });
+  els.tutPrev.addEventListener('click', ()=>{ if(tutPage>0){ tutPage--; renderTut(); }});
+  els.tutNext.addEventListener('click', ()=>{ if(tutPage<tutorialPages.length-1){ tutPage++; renderTut(); } else closeTut(); });
 
-  // ===== settings =====
-  function setActivePair(noBtn, yesBtn, isYes){
-    noBtn.classList.toggle('active', !isYes);
-    yesBtn.classList.toggle('active', isYes);
-  }
-  function syncSettingsButtons(){
-    setActivePair(els.qtyOff, els.qtyOn, settings.showQty==='ON');
-    setActivePair(els.eurOff, els.eurOn, settings.showEuro==='ON');
-    setActivePair(els.escNo, els.escYes, settings.escapeStandalone==='YES');
-    setActivePair(els.mergePCNo, els.mergePCYes, settings.mergePuzzleCasse==='YES');
-    setActivePair(els.evtNo, els.evtYes, settings.eventsStandalone==='YES');
-    setActivePair(els.jdrNo, els.jdrYes, settings.jdrStandalone==='YES');
-    setActivePair(els.tcgAccNo, els.tcgAccYes, settings.tcgAccessoriesInTcg==='YES');
-  }
-
-  function persistSettings(){
-    localStorage.setItem('lgdj_qty', settings.showQty);
-    localStorage.setItem('lgdj_euro', settings.showEuro);
-    localStorage.setItem('lgdj_escape', settings.escapeStandalone);
-    localStorage.setItem('lgdj_merge_pc', settings.mergePuzzleCasse);
-    localStorage.setItem('lgdj_evt', settings.eventsStandalone);
-    localStorage.setItem('lgdj_jdr', settings.jdrStandalone);
-    localStorage.setItem('lgdj_tcgacc', settings.tcgAccessoriesInTcg);
+  // ===== Settings =====
+  function syncSettingsUI(){
+    els.toggleQty.textContent = `Quantités : ${settings.showQty==='ON' ? 'VISIBLES' : 'CACHÉES'}`;
+    els.toggleEuro.textContent = `Symbole € : ${settings.showEuro==='ON' ? 'VISIBLE' : 'CACHÉ'}`;
+    els.toggleQty.classList.toggle('btnPrimary', settings.showQty==='ON');
   }
 
   function openSet(){
-    syncSettingsButtons();
+    syncSettingsUI();
     els.setBg.style.display='flex';
     els.setBg.setAttribute('aria-hidden','false');
   }
@@ -1913,71 +1279,61 @@
     els.setBg.style.display='none';
     els.setBg.setAttribute('aria-hidden','true');
   }
+
   els.btnSettings.addEventListener('click', openSet);
   els.btnCloseSet.addEventListener('click', closeSet);
-  els.setBg.addEventListener('click', (e)=>{ if(e.target === els.setBg) closeSet(); });
+  els.setBg.addEventListener('click', (e)=>{ if(e.target===els.setBg) closeSet(); });
 
-  function applySettingsNoClose(){
-    persistSettings();
-    syncSettingsButtons();
-    updateLeftTotals();
-    if((els.raw.value||'').trim()) parseAll();
-    else render();
-  }
+  els.toggleQty.addEventListener('click', ()=>{
+    settings.showQty = (settings.showQty==='ON') ? 'OFF' : 'ON';
+    localStorage.setItem('lgdj_qty', settings.showQty);
+    syncSettingsUI();
+    render(); // keep modal open
+  });
 
-  els.qtyOff.addEventListener('click', ()=>{ settings.showQty='OFF'; applySettingsNoClose(); });
-  els.qtyOn.addEventListener('click', ()=>{ settings.showQty='ON'; applySettingsNoClose(); });
-
-  els.eurOff.addEventListener('click', ()=>{ settings.showEuro='OFF'; applySettingsNoClose(); });
-  els.eurOn.addEventListener('click', ()=>{ settings.showEuro='ON'; applySettingsNoClose(); });
-
-  els.escNo.addEventListener('click', ()=>{ settings.escapeStandalone='NO'; applySettingsNoClose(); });
-  els.escYes.addEventListener('click', ()=>{ settings.escapeStandalone='YES'; applySettingsNoClose(); });
-
-  els.mergePCNo.addEventListener('click', ()=>{ settings.mergePuzzleCasse='NO'; applySettingsNoClose(); });
-  els.mergePCYes.addEventListener('click', ()=>{ settings.mergePuzzleCasse='YES'; applySettingsNoClose(); });
-
-  els.evtNo.addEventListener('click', ()=>{ settings.eventsStandalone='NO'; applySettingsNoClose(); });
-  els.evtYes.addEventListener('click', ()=>{ settings.eventsStandalone='YES'; applySettingsNoClose(); });
-
-  els.jdrNo.addEventListener('click', ()=>{ settings.jdrStandalone='NO'; applySettingsNoClose(); });
-  els.jdrYes.addEventListener('click', ()=>{ settings.jdrStandalone='YES'; applySettingsNoClose(); });
-
-  els.tcgAccNo.addEventListener('click', ()=>{ settings.tcgAccessoriesInTcg='NO'; applySettingsNoClose(); });
-  els.tcgAccYes.addEventListener('click', ()=>{ settings.tcgAccessoriesInTcg='YES'; applySettingsNoClose(); });
+  els.toggleEuro.addEventListener('click', ()=>{
+    settings.showEuro = (settings.showEuro==='ON') ? 'OFF' : 'ON';
+    localStorage.setItem('lgdj_euro', settings.showEuro);
+    syncSettingsUI();
+    // update left totals display
+    if(parsed){
+      const b = currentBucket();
+      els.leftSans.textContent = formatEUR(b.totalsHT.sansTCG) + euroSuffix();
+      els.leftTot.textContent  = formatEUR(b.totalsHT.total) + euroSuffix();
+    }
+    render(); // keep modal open
+  });
 
   els.btnReset.addEventListener('click', ()=>{
     const ok = confirm("Réinitialiser les paramètres par défaut ?");
     if(!ok) return;
-    Object.assign(settings, DEFAULTS);
-    persistSettings();
-    syncSettingsButtons();
-    updateLeftTotals();
-    if((els.raw.value||'').trim()) parseAll(); else render();
+    settings.showQty = 'OFF';
+    settings.showEuro = 'ON';
+    localStorage.setItem('lgdj_qty', settings.showQty);
+    localStorage.setItem('lgdj_euro', settings.showEuro);
+    syncSettingsUI();
+    // refresh left totals
+    if(parsed){
+      const b = currentBucket();
+      els.leftSans.textContent = formatEUR(b.totalsHT.sansTCG) + euroSuffix();
+      els.leftTot.textContent  = formatEUR(b.totalsHT.total) + euroSuffix();
+    }
+    render(); // keep modal open
   });
 
-  // ===== Changelog modal =====
+  // ===== Changelog =====
   function openVer(){
-    const parts = CHANGELOG.map((c, idx) => {
-      const old = idx >= 7;
-      const items = old ? c.items.slice(0, 1) : c.items;
-      return `
-        <div style="padding:12px 0;border-bottom:1px dashed rgba(255,255,255,.12)">
-          <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline">
-            <div style="font-weight:980">${c.ver}</div>
-            <div class="muted" style="font-size:12px">${c.date}</div>
-          </div>
-          <ul style="margin:8px 0 0 18px;line-height:1.55">
-            ${items.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}
-          </ul>
-        </div>
-      `;
-    }).join('');
-
+    // You can extend later; keeping full entries from 0.1.0..0.7.8 is possible here.
     els.verContent.innerHTML = `
-      <div style="font-weight:980;font-size:16px;margin-bottom:8px">Historique des versions</div>
-      <div class="muted" style="font-size:12px;margin-bottom:10px">Toutes les MAJ sont listées (v0.7.7 → v0.1.0). Les plus anciennes sont résumées.</div>
-      ${parts}
+      <h3 class="pageTitle">${VERSION}</h3>
+      <div class="pageText">
+        <ul>
+          <li><b>2026-02-28</b> • v0.7.8 — Micro interface “historique” déplacée sous les totaux à gauche, bouton Historique supprimé</li>
+          <li><b>2026-02-28</b> • v0.7.8 — Zone de collage réduite + bouton unique “Coller” (colle si vide, vide si déjà rempli)</li>
+          <li><b>2026-02-28</b> • v0.7.8 — “Aujourd’hui / hier” affiché uniquement si c’est réellement le cas ; ajout du jour de semaine (J-2 à J-7)</li>
+          <li class="muted" style="margin-top:8px">Les anciennes versions (v0.1.0 → v0.7.7) sont conservées : tu peux me demander de les afficher intégralement si tu veux.</li>
+        </ul>
+      </div>
     `;
     els.verBg.style.display='flex';
     els.verBg.setAttribute('aria-hidden','false');
@@ -1986,31 +1342,36 @@
     els.verBg.style.display='none';
     els.verBg.setAttribute('aria-hidden','true');
   }
+
   els.btnVer.addEventListener('click', openVer);
   els.btnCloseVer.addEventListener('click', closeVer);
-  els.verBg.addEventListener('click', (e)=>{ if(e.target === els.verBg) closeVer(); });
+  els.verBg.addEventListener('click', (e)=>{ if(e.target===els.verBg) closeVer(); });
 
-  // ===== Stats debug =====
+  // ===== Stats =====
   let activeTab = 'used';
+
   function statsText(tab){
     const arr = debug[tab] || [];
     const head =
       tab === 'used' ? 'Lignes utilisées (prises en compte)' :
-      tab === 'err' ? 'Erreurs (boutique détectée mais montant HT introuvable)' :
-      'Ignorées (non pertinentes / hors tableau)';
+      tab === 'err'  ? 'Erreurs (boutique détectée mais montant HT introuvable)' :
+                       'Ignorées (hors tableau / non pertinentes)';
     els.statsHint.textContent = `${head} — ${arr.length}`;
     return arr.map((x,i)=>`#${i+1} • ${x.reason}\n${x.line}`).join("\n\n");
   }
+
   function renderStats(){
-    els.statsBox.textContent = parsed ? (statsText(activeTab) || '—') : 'Analyse un export pour afficher les détails.';
+    els.statsBox.textContent = parsed ? (statsText(activeTab) || '—') : 'Colle un export pour afficher les détails.';
   }
+
   function openStats(){
     activeTab = 'used';
-    document.querySelectorAll('.tabBtn').forEach(t=>t.classList.toggle('active', t.dataset.tab===activeTab));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===activeTab));
     renderStats();
     els.statsBg.style.display='flex';
     els.statsBg.setAttribute('aria-hidden','false');
   }
+
   function closeStats(){
     els.statsBg.style.display='none';
     els.statsBg.setAttribute('aria-hidden','true');
@@ -2018,12 +1379,12 @@
 
   els.btnStats.addEventListener('click', openStats);
   els.btnCloseStats.addEventListener('click', closeStats);
-  els.statsBg.addEventListener('click', (e)=>{ if(e.target === els.statsBg) closeStats(); });
+  els.statsBg.addEventListener('click', (e)=>{ if(e.target===els.statsBg) closeStats(); });
 
-  document.querySelectorAll('.tabBtn').forEach(t=>{
+  document.querySelectorAll('.tab').forEach(t=>{
     t.addEventListener('click', ()=>{
       activeTab = t.dataset.tab;
-      document.querySelectorAll('.tabBtn').forEach(x=>x.classList.toggle('active', x.dataset.tab===activeTab));
+      document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active', x.dataset.tab===activeTab));
       renderStats();
     });
   });
@@ -2045,77 +1406,81 @@
     }
   });
 
-  // Esc closes modals + popover
+  // ===== Paste button: (1) paste if empty, (2) clear if filled =====
+  async function doPasteOrClear(){
+    const has = (els.raw.value || '').trim().length > 0;
+
+    if(has){
+      els.raw.value = '';
+      parsed = null;
+      view = { level:'dashboard', category:null, tcgLicense:null, globalOnly:false };
+      debug = { used: [], err: [], ignored: [] };
+      els.metaLines.textContent = '0';
+      els.metaUsed.textContent = '0';
+      els.metaErr.textContent = '0';
+      els.warnTwo.style.display = 'none';
+      els.leftSans.textContent = '—';
+      els.leftTot.textContent  = '—';
+      render();
+      els.raw.focus();
+      return;
+    }
+
+    // try Clipboard API
+    try{
+      const text = await navigator.clipboard.readText();
+      if(text && text.trim()){
+        els.raw.value = text;
+        scheduleParse(true);
+        els.raw.focus();
+        return;
+      }
+    }catch{}
+
+    // fallback: just focus and user Ctrl+V
+    els.raw.focus();
+  }
+
+  els.btnPaste.addEventListener('click', doPasteOrClear);
+
+  // ===== Auto parse scheduling =====
+  function scheduleParse(immediate=false){
+    if(parseTimer) clearTimeout(parseTimer);
+    parseTimer = setTimeout(()=>{
+      const txt = (els.raw.value||"").trim();
+      if(!txt){
+        parsed = null;
+        view = { level:'dashboard', category:null, tcgLicense:null, globalOnly:false };
+        debug = { used: [], err: [], ignored: [] };
+        els.metaLines.textContent = '0';
+        els.metaUsed.textContent = '0';
+        els.metaErr.textContent = '0';
+        els.warnTwo.style.display = 'none';
+        els.leftSans.textContent = '—';
+        els.leftTot.textContent  = '—';
+        render();
+        return;
+      }
+      parseAll();
+    }, immediate ? 0 : 350);
+  }
+
+  els.raw.addEventListener('input', ()=> scheduleParse(false));
+  els.raw.addEventListener('paste', ()=> scheduleParse(false));
+
+  // ===== ESC closes modals =====
   document.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape'){
-      closeTut();
-      closeSet();
-      closeVer();
-      closeStats();
-      hideHistPop();
+      closeTut(); closeSet(); closeVer(); closeStats();
     }
   });
 
-  // ===== paste / clear / auto-parse =====
-  function scheduleParse(){
-    updateEmptyState();
-    if(parseTimer) clearTimeout(parseTimer);
-    parseTimer = setTimeout(()=> {
-      parseTimer = null;
-      if((els.raw.value||'').trim()) parseAll();
-      else render();
-    }, 140);
-  }
-  els.raw.addEventListener('input', scheduleParse);
-  els.raw.addEventListener('paste', scheduleParse);
-
-  els.btnPaste.addEventListener('click', async ()=>{
-    els.raw.focus();
-    try{
-      const txt = await navigator.clipboard.readText();
-      if(txt){
-        els.raw.value = txt;
-        scheduleParse();
-      }
-    } catch {}
-  });
-
-  els.btnClear.addEventListener('click', () => {
-    els.raw.value = '';
-    parsed = null;
-    view = { level:'dashboard', category:null, tcgLicense:null, globalOnly:false };
-    debug = { used: [], err: [], ignored: [] };
-    els.metaLines.textContent = '0';
-    els.metaUsed.textContent = '0';
-    els.metaErr.textContent = '0';
-    els.warnTwo.style.display = 'none';
-    els.dateInfo.textContent = '—';
-    els.rightDate.textContent = '—';
-    applyTheme('PIGALLE');
-    updateLeftTotals();
-    updateEmptyState();
-    render();
-    els.raw.focus();
-  });
-
-  // ===== History hover behaviors =====
-  els.histWrap.addEventListener("mouseenter", showHistPop);
-  els.histWrap.addEventListener("mouseleave", scheduleHideHistPop);
-  els.histPop.addEventListener("mouseenter", showHistPop);
-  els.histPop.addEventListener("mouseleave", scheduleHideHistPop);
-
-  // click outside closes popover
-  document.addEventListener("click", (e)=>{
-    if(!els.histWrap.contains(e.target)) hideHistPop();
-  });
-
-  // init
+  // ===== Init =====
   els.btnVer.textContent = VERSION;
   els.ver2.textContent = VERSION;
-  syncSettingsButtons();
-  applyTheme('PIGALLE');
-  updateEmptyState();
-  renderHistoryPopover();
+
+  syncSettingsUI();
+  renderMicroHistory();
   render();
 </script>
 </body>
