@@ -6,10 +6,16 @@
   <title>LGDJ — Extracteur CA (Offline)</title>
   <style>
     :root{
-      --ver:"v0.7.8";
+      --ver:"v0.7.14";
 
       --bg0:#0b1020;
       --bg1:#0c1426;
+
+      --accent:#60a5fa;
+      --accent2:#93c5fd;
+      --accentGlow: rgba(96,165,250,.18);
+      --pieBase:#60a5fa;
+
       --panel: rgba(255,255,255,.06);
       --panel2: rgba(0,0,0,.22);
       --text:#eef2ff;
@@ -17,18 +23,20 @@
       --line:rgba(255,255,255,.10);
       --shadow: 0 18px 55px rgba(0,0,0,.45);
 
-      --pri:#4f46e5;
       --ok:#22c55e;
       --warn:#f59e0b;
       --bad:#fb7185;
-
-      --pieBase:#60a5fa;
 
       --r:18px;
       --btn: rgba(255,255,255,.08);
       --btnH: rgba(255,255,255,.12);
       --chip: rgba(255,255,255,.06);
       --input: rgba(0,0,0,.18);
+
+      /* hover glow */
+      --hoverWhite: rgba(255,255,255,.18);
+      --hoverBox: 0 0 0 1px rgba(255,255,255,.14) inset, 0 0 18px rgba(255,255,255,.10);
+      --hoverDrop: drop-shadow(0 0 10px rgba(255,255,255,.16));
     }
 
     *{box-sizing:border-box}
@@ -38,8 +46,8 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color:var(--text);
       background:
-        radial-gradient(900px 520px at 18% 12%, rgba(79,70,229,.20), transparent 60%),
-        radial-gradient(900px 520px at 80% 14%, rgba(34,197,94,.14), transparent 60%),
+        radial-gradient(900px 520px at 18% 12%, var(--accentGlow), transparent 60%),
+        radial-gradient(900px 520px at 80% 14%, rgba(34,197,94,.10), transparent 60%),
         linear-gradient(180deg, var(--bg1), var(--bg0));
       overflow:hidden;
     }
@@ -55,7 +63,7 @@
     .logo{
       width:36px;height:36px;border-radius:14px;
       border:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(79,70,229,.18), rgba(34,197,94,.10));
+      background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 25%, transparent), rgba(0,0,0,.08));
       display:grid;place-items:center;
       box-shadow: var(--shadow);
     }
@@ -95,25 +103,25 @@
       border-radius: 12px;
       font-weight:900;
       font-size:12px;
-      transition: background .15s ease, transform .04s ease;
+      transition: background .15s ease, transform .04s ease, box-shadow .15s ease;
       user-select:none;
     }
     button:hover{background:var(--btnH)}
     button:active{transform: translateY(1px)}
+    button:disabled{opacity:.55; cursor:not-allowed}
 
     .btnTutor{border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.12)}
     .btnTutor:hover{background: rgba(34,197,94,.18)}
     .btnGear{border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.10)}
     .btnGear:hover{background: rgba(245,158,11,.16)}
-    .btnPrimary{border-color: rgba(79,70,229,.35); background: rgba(79,70,229,.14)}
-    .btnPrimary:hover{background: rgba(79,70,229,.20)}
+    .btnPrimary{border-color: color-mix(in srgb, var(--accent) 40%, transparent); background: color-mix(in srgb, var(--accent) 14%, transparent)}
+    .btnPrimary:hover{background: color-mix(in srgb, var(--accent) 20%, transparent)}
 
-    /* Layout */
     .main{
       flex:1;
       padding:0 14px 14px;
       display:grid;
-      grid-template-columns: .72fr 1.28fr; /* LEFT more slim */
+      grid-template-columns: .68fr 1.32fr;
       gap:12px;
       min-height:0;
     }
@@ -156,23 +164,41 @@
       line-height:1.35;
     }
 
-    /* Smaller paste zone */
     textarea{
       resize:none;
       overflow:auto;
-      height: 22vh; /* reduced */
-      min-height: 140px;
+      height: 19vh;
+      min-height: 120px;
     }
 
     .inputGrid{
       display:grid;
-      grid-template-rows: auto auto 1fr;
+      grid-template-rows: auto auto auto 1fr auto;
       gap:10px;
       height:100%;
       min-height:0;
     }
 
     .label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.2px}
+
+    .bannerErr,
+    .bannerWarn{
+      display:none;
+      border-radius: 14px;
+      padding:10px 12px;
+      font-weight:900;
+      font-size:12px;
+      line-height:1.45;
+    }
+    .bannerErr{
+      border:1px solid rgba(251,113,133,.45);
+      background: rgba(251,113,133,.12);
+    }
+    .bannerWarn{
+      border:1px solid rgba(245,158,11,.40);
+      background: rgba(245,158,11,.10);
+      cursor:pointer;
+    }
 
     .miniTotals{
       border:1px solid var(--line);
@@ -194,40 +220,95 @@
     .totalRow .val{font-weight:980; font-size:16px}
     .valGreen{color:var(--ok)}
 
-    /* Micro history interface (5 last) */
-    .microHist{
-      display:flex;
+    /* History */
+    .histSearch{
+      display:none;
       gap:8px;
-      flex-wrap:wrap;
-      padding:2px 2px 0;
+      align-items:center;
+      padding-top:6px;
     }
-    .histBtn{
-      display:flex; align-items:center; gap:8px;
-      border-radius: 999px;
-      padding:7px 10px;
+    .histSearch input{
+      height:36px;
+      padding:8px 10px;
+      border-radius:12px;
+      font-size:12px;
+    }
+
+    .microHist{
+      display:grid;
+      gap:8px;
+      padding:2px 0 0;
+      max-height:224px;
+      overflow:auto;
+    }
+    .microHist.withSearch{max-height:264px;}
+
+    .histCard{
       border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.06);
-      font-weight:950;
+      border-radius: 14px;
+      padding:10px 42px 10px 10px; /* fixed space for delete */
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
       cursor:pointer;
-      user-select:none;
-      max-width: 100%;
+      position:relative;
     }
-    .histBtn:hover{background: rgba(255,255,255,.10)}
-    .dot{
-      width:10px;height:10px;border-radius:6px;flex:0 0 auto;
-      border:1px solid rgba(255,255,255,.18);
+    .histCard:hover{
+      background: rgba(255,255,255,.10);
+      box-shadow: var(--hoverBox);
     }
-    .histTxt{
+    .histLeft{display:flex;align-items:center;gap:10px;min-width:0}
+    .pill{
+      height:18px;
+      padding:0 8px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:950;
+      display:flex;align-items:center;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      white-space:nowrap;
+    }
+    .histText{
       color:var(--muted);
       font-size:12px;
       font-weight:900;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-width: 260px;
+      max-width: 240px;
+    }
+    .histRight{
+      text-align:right;
+      font-weight:980;
+      white-space:nowrap;
+      font-size:12px;
+    }
+    .histDel{
+      position:absolute;
+      right:8px;
+      top:50%;
+      transform:translateY(-50%);
+      width:30px;height:30px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.24);
+      color:var(--muted);
+      display:grid;
+      place-items:center;
+      font-weight:980;
+      line-height:1;
+      opacity:.2;
+    }
+    .histCard:hover .histDel{opacity:1;}
+    .histDel:hover{
+      background: rgba(251,113,133,.14);
+      border-color: rgba(251,113,133,.28);
+      color:var(--text);
     }
 
-    /* Right side */
     .rightScroll{
       height:100%;
       overflow:auto;
@@ -246,7 +327,6 @@
       display:none;
     }
 
-    /* Combined pie + list only (NO totals on right) */
     .combo{
       border-radius: var(--r);
       border:1px solid var(--line);
@@ -262,11 +342,7 @@
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       background: var(--panel2);
     }
-    .comboTitle{
-      display:flex; align-items:center; gap:10px;
-      min-width:0;
-      font-weight:980;
-    }
+    .comboTitle{display:flex; align-items:center; gap:10px; min-width:0; font-weight:980;}
     .comboTitle span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
     .comboMeta{
       display:flex; align-items:center; gap:10px;
@@ -294,37 +370,97 @@
       max-height: 56vh;
       overflow:auto;
       padding-right:6px;
+      scroll-behavior:smooth;
     }
     .legRow{
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       padding:8px 0;
       border-bottom:1px dashed rgba(125,125,155,.22);
       cursor:pointer;
+      user-select:none;
     }
     .legRow:last-child{border-bottom:none}
+    .legRow:hover{
+      box-shadow: var(--hoverBox);
+      border-radius:10px;
+    }
     .legRow:hover .legName{color:var(--text)}
-    .legL{display:flex;align-items:center;gap:10px; min-width:0;}
+
+    .legL{display:flex;align-items:center;gap:10px; min-width:0; flex:1 1 auto;}
     .sw{width:10px;height:10px;border-radius:4px; flex:0 0 auto;}
     .legName{
       color:var(--muted);font-weight:950;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .legVal{font-weight:950; white-space:nowrap;}
 
-    .slice{cursor:pointer; transition: opacity .15s ease;}
-    .slice:hover{opacity:.86}
+    .legR{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex:0 0 auto;
+      min-width:0;
+    }
+    .legVal{
+      font-weight:950;
+      white-space:nowrap;
+      display:flex;
+      align-items:baseline;
+      gap:8px;
+      justify-content:flex-end;
+    }
+    .qtyMini{color:var(--muted); font-weight:850; font-size:12px; white-space:nowrap;}
+
+    .eyeBtn{
+      width:28px;height:28px;
+      padding:0;
+      border-radius:10px;
+      display:none;
+      place-items:center;
+      font-size:13px;
+      line-height:1;
+      border-color: rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      flex:0 0 auto;
+    }
+    .eyeBtn:hover{
+      box-shadow: var(--hoverBox);
+    }
+    .dev-on .eyeBtn{display:grid;}
+
+    .legRow.hi .legName{color:color-mix(in srgb, var(--accent) 78%, var(--text));}
+    .legRow.hi{
+      box-shadow: var(--hoverBox);
+      border-radius:10px;
+    }
+
+    .slice{
+      cursor:pointer;
+      transition: opacity .15s ease, filter .15s ease, stroke .15s ease;
+    }
+    .slice:hover{
+      opacity:.92;
+      filter: var(--hoverDrop);
+      stroke: rgba(255,255,255,.18);
+      stroke-width: 1.2;
+    }
+    .slice.hi{
+      opacity:.94;
+      filter: var(--hoverDrop);
+      stroke: rgba(255,255,255,.22);
+      stroke-width: 1.3;
+    }
 
     .empty{padding:22px;color:var(--muted);text-align:center;font-weight:900}
 
-    /* Modals */
     .modalBg{
       position:fixed;inset:0;background: rgba(0,0,0,.45);
       display:none;align-items:center;justify-content:center;
       padding:16px;z-index:50;
     }
     .modal{
-      width:min(920px, 100%);
-      max-height: min(86vh, 900px);
+      width:min(980px, 100%);
+      max-height: min(88vh, 980px);
       overflow:auto;
       border-radius: 18px;
       border:1px solid var(--line);
@@ -343,6 +479,7 @@
     .pageTitle{font-weight:980;font-size:16px;margin:0 0 6px 0}
     .pageText{color:var(--text); line-height:1.55}
     .muted{color:var(--muted)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
 
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
     .tab{
@@ -350,7 +487,7 @@
       background: rgba(255,255,255,.06);
       font-weight:900;font-size:12px;cursor:pointer
     }
-    .tab.active{background: rgba(79,70,229,.16);border-color: rgba(79,70,229,.35)}
+    .tab.active{background: color-mix(in srgb, var(--accent) 16%, transparent);border-color: color-mix(in srgb, var(--accent) 35%, transparent)}
 
     .codeBox{
       border:1px solid var(--line);
@@ -361,8 +498,16 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size:12px;
       line-height:1.45;
-      max-height: 52vh;
+      max-height: 56vh;
       overflow:auto;
+    }
+
+    .confirmBox{
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      padding:12px;
+      line-height:1.5;
     }
 
     .foot{
@@ -370,8 +515,20 @@
       display:flex;justify-content:space-between;align-items:center;gap:10px;
       color:var(--muted);font-size:11px;font-weight:800;
     }
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
     .contact{color:var(--muted);font-size:11px;font-weight:900}
+
+    .devDot{
+      display:none;
+      height:18px;
+      padding:0 8px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:950;
+      border:1px solid rgba(245,158,11,.35);
+      background: rgba(245,158,11,.12);
+      color:var(--text);
+    }
+    .devDot.on{display:inline-flex; align-items:center; gap:6px;}
   </style>
 </head>
 
@@ -389,8 +546,11 @@
           </svg>
         </div>
         <div class="brandTitle">
-          <div>Extracteur CA</div>
-          <button class="verBtn" id="btnVer">v0.7.8</button>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div>Extracteur CA</div>
+            <span class="devDot" id="devDot">DEV</span>
+          </div>
+          <button class="verBtn" id="btnVer">v0.7.14</button>
         </div>
       </div>
 
@@ -406,7 +566,6 @@
     </div>
 
     <div class="main">
-      <!-- LEFT -->
       <section class="panel">
         <div class="hd">
           <div class="hdTitle">Copier-coller PrestaShop</div>
@@ -421,6 +580,9 @@
             <textarea id="raw" placeholder="Sur PrestaShop : Ctrl+A → Ctrl+C, puis ici Ctrl+V."></textarea>
           </div>
 
+          <div class="bannerErr" id="parseErr"></div>
+          <div class="bannerWarn" id="dupWarn"></div>
+
           <div class="miniTotals">
             <div class="totalRow">
               <div class="lbl">CA Total (hors TCG)</div>
@@ -429,6 +591,11 @@
             <div class="totalRow">
               <div class="lbl">CA TOTAL GLOBAL</div>
               <div class="val"><span id="leftTot">—</span></div>
+            </div>
+
+            <div class="histSearch" id="histSearch">
+              <input id="histQuery" type="text" placeholder="Filtrer l'historique (date / boutique)..." />
+              <button id="histClear" type="button">Effacer</button>
             </div>
 
             <div class="microHist" id="microHist"></div>
@@ -440,7 +607,6 @@
         </div>
       </section>
 
-      <!-- RIGHT -->
       <section class="panel">
         <div class="hd">
           <div class="hdTitle" id="rightTitle">Résultats</div>
@@ -451,14 +617,13 @@
         <div class="bd" style="padding:0">
           <div class="rightScroll" id="rightBody">
             <div class="alert" id="warnTwo">⚠️ Deux boutiques détectées. Détails boutique désactivés (GLOBAL uniquement).</div>
-            <!-- dynamic -->
           </div>
         </div>
       </section>
     </div>
 
     <div class="foot">
-      <div class="mono">LGDJ — <span id="ver2">v0.7.8</span></div>
+      <div class="mono">LGDJ — <span id="ver2">v0.7.14</span></div>
       <div class="contact">Si problème ou suggestion d’amélioration : contacter Zao</div>
       <div>Offline • Drilldown • HT</div>
     </div>
@@ -491,17 +656,27 @@
       </div>
       <div class="mbd">
         <div class="label" style="margin-bottom:8px">Affichage</div>
-
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button id="toggleQty" class="btnPrimary" type="button">Quantités : CACHÉES</button>
           <button id="toggleEuro" type="button">Symbole € : VISIBLE</button>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:14px 0">
+
+        <div class="label" style="margin-bottom:8px">Classement (les boutons re-classent, ils ne “cachent” pas)</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button id="toggleEvt" class="btnPrimary" type="button">Événements : CATÉGORIE</button>
+          <button id="toggleJdr" class="btnPrimary" type="button">JDR : CATÉGORIE</button>
+          <button id="toggleMergePC" type="button">Puzzles+Casse-tête : SÉPARÉS</button>
+          <button id="toggleTcgAcc" class="btnPrimary" type="button">Accessoires TCG : DANS TCG</button>
         </div>
 
         <div class="muted" style="margin-top:10px;font-size:12px;line-height:1.45">
           Note : si la colonne Quantité n’est pas présente, l’app affiche “—”.
         </div>
 
-        <div class="pager" style="justify-content:flex-end;margin-top:14px">
+        <div class="pager" style="justify-content:flex-end;margin-top:14px;gap:10px">
+          <button id="toggleDev" type="button" style="border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.10)">DEV : OFF</button>
           <button id="btnReset" style="border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.10)">Réinitialiser</button>
         </div>
       </div>
@@ -541,27 +716,132 @@
     </div>
   </div>
 
+  <!-- Dev Details -->
+  <div class="modalBg" id="devBg" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" aria-label="Détails DEV">
+      <div class="mhd">
+        <div style="font-weight:980">Détails DEV</div>
+        <button id="btnCloseDev">Fermer</button>
+      </div>
+      <div class="mbd">
+        <div class="confirmBox" id="devSummary" style="margin-bottom:12px"></div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <button id="btnCopyDev" class="btnPrimary" type="button">Copier détail</button>
+        </div>
+
+        <div class="label" style="margin:10px 0 8px">Diff de toggles (dernier changement)</div>
+        <div class="codeBox" id="devDiffBox">—</div>
+
+        <div class="label" style="margin:12px 0 8px">Lignes sources + raisons</div>
+        <div class="codeBox" id="devLinesBox">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Duplicate warning -->
+  <div class="modalBg" id="dupBg" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" aria-label="Avertissement doublon">
+      <div class="mhd">
+        <div style="font-weight:980">Attention : doublon probable</div>
+        <button id="btnCloseDup">Fermer</button>
+      </div>
+      <div class="mbd">
+        <div class="confirmBox" id="dupModalText"></div>
+        <div class="pager" style="justify-content:flex-end; margin-top:12px; gap:10px">
+          <button id="btnDupProceed" class="btnPrimary" type="button">OK, je confirme</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
-  const VERSION = "v0.7.8";
+  const VERSION = "v0.7.14";
 
   const BOUTIQUES = [
     { key: "GAMBETTA", label: "LGDJ Gambetta", needles: ["lgdj gambetta","gambetta"] },
     { key: "PIGALLE", label: "LGDJ Pigalle", needles: ["lgdj pigalle","pigalle"] }
   ];
 
-  const ACCESSORY_KEYWORDS = [
-    "accessoire","accessoires","protege","protège","sleeve","deck box","classeur","portfolio",
-    "des","dés","piste","pistes","protections acryliques","grenier ludique","booknooks",
-    "produits derives","produits dérivés","tapis"
+  const IGNORE_LINE_PATTERNS = [
+    "commande en attente de retrait - gambetta",
+    "commande en attente de retrait - pigalle"
   ];
 
-  // Simple TCG detection: if any known license is present in category name (you will update via code when needed)
+  const EVENT_KEYWORDS = ["evenement","évènement","evenements","évènements"];
+
+  const OTHER_FORCE = [
+    "acomptes","acompte","reservations","réservations","reste a payer","reste à payer","autres",
+    "accueil",
+    "carte cadeau - les gentlemen du jeu"
+  ];
+
+  const JDR_KEYWORDS = [
+    "chroniques oubliees","chroniques oubliées",
+    "boite d'initiation jeu de roles","boîte d'initiation jeu de rôles",
+    "donjons et chatons",
+    "donjons et dragons","donjons & dragons","donjons et/& dragons",
+    "dungeons & dragons","dungeons and dragons","d&d",
+    "manuel","manuels",
+    "jeux de roles","jeux de rôle","jeux de rôles","jeu de roles","jeu de rôle","jdr"
+  ];
+
+  const ESCAPE_GAME_KEYWORDS = ["escape game","4escape","4-escape"];
+
+  const PUZZLE_KEYWORDS = [
+    "puzzle","puzzles","logique et puzzles",
+    "cavallini","cavalini",
+    "jour ferie","jours feries","jour férié","jours fériés",
+    "puzzle 100p","puzzle 500p","puzzle 1000p","puzzle 3d",
+    "escape puzzle"
+  ];
+
+  const CASSE_KEYWORDS = [
+    "casse-tete","casse-têtes","casse tete","casse tetes",
+    "smart games","smartgame","perplexus",
+    "gravitrax"
+  ];
+
+  const ACCESSORY_KEYWORDS = [
+    "accessoire","accessoires","accessoires cartes",
+    "protege-carte","protège-carte","protege carte","protège carte",
+    "sleeve","sleeves","toploader","top loaders","top loader",
+    "deck box","deckbox","classeur","portfolio","binder",
+    "piste de des","piste de dés","pistes de des","pistes de dés",
+    "tapis","playmat",
+    "protections acryliques",
+    "produits le grenier ludique","grenier ludique",
+    "booknook","booknooks"
+  ];
+
   const TCG_LICENSES = [
-    "pokemon","lorcana","one piece","magic","altered","flesh and blood","star wars unlimited","riftbound","yu-gi-oh","naruto"
-  ].map(x => normalize(x));
+    "Pokémon","Lorcana","One Piece","Magic","Altered","Flesh and Blood",
+    "Star Wars Unlimited","Riftbound","Yu-Gi-Oh","Naruto"
+  ];
+
+  const LICENSE_PATTERN_RULES = [
+    { lic: "Lorcana", re: /\b(chapitre|chapter)\s*\d+\b/i },
+    { lic: "Pokémon", re: /\b(me|ev)\s*\d+(?:\.\d+)?\b/i },
+    { lic: "One Piece", re: /\b(op|eb)\s*\d+\b/i },
+    { lic: "Altered", re: /\baltered\s*\d+\b/i },
+  ];
+
+  const TOP = {
+    JEUX: "Jeux de société",
+    TCG: "TCG",
+    JDR: "Jeux de rôles",
+    ACC: "Accessoires",
+    PUZ: "Puzzles",
+    CASSE: "Casse-tête",
+    PUZCASSE: "Puzzles & Casse-tête",
+    EVT: "Événement",
+    ESC: "Escape Game",
+    AUTRE: "Autre",
+    AUTRE_DELETED: "Catégories supprimées",
+    JEUX_ENFANTS: "Jeux enfants"
+  };
 
   const el = (id) => document.getElementById(id);
-
   const els = {
     raw: el('raw'),
     btnPaste: el('btnPaste'),
@@ -577,7 +857,14 @@
 
     leftSans: el('leftSans'),
     leftTot: el('leftTot'),
+
     microHist: el('microHist'),
+    histSearch: el('histSearch'),
+    histQuery: el('histQuery'),
+    histClear: el('histClear'),
+
+    parseErr: el('parseErr'),
+    dupWarn: el('dupWarn'),
 
     btnTut: el('btnTut'),
     tutBg: el('tutBg'),
@@ -593,6 +880,11 @@
     btnCloseSet: el('btnCloseSet'),
     toggleQty: el('toggleQty'),
     toggleEuro: el('toggleEuro'),
+    toggleEvt: el('toggleEvt'),
+    toggleJdr: el('toggleJdr'),
+    toggleMergePC: el('toggleMergePC'),
+    toggleTcgAcc: el('toggleTcgAcc'),
+    toggleDev: el('toggleDev'),
     btnReset: el('btnReset'),
 
     btnVer: el('btnVer'),
@@ -607,30 +899,62 @@
     statsHint: el('statsHint'),
     statsBox: el('statsBox'),
     btnCopyStats: el('btnCopyStats'),
+
+    devDot: el('devDot'),
+    devBg: el('devBg'),
+    btnCloseDev: el('btnCloseDev'),
+    devSummary: el('devSummary'),
+    devLinesBox: el('devLinesBox'),
+    devDiffBox: el('devDiffBox'),
+    btnCopyDev: el('btnCopyDev'),
+
+    dupBg: el('dupBg'),
+    btnCloseDup: el('btnCloseDup'),
+    dupModalText: el('dupModalText'),
+    btnDupProceed: el('btnDupProceed'),
+  };
+
+  const DEFAULTS = {
+    showQty: 'OFF',
+    showEuro: 'ON',
+    eventsStandalone: 'YES',
+    jdrStandalone: 'YES',
+    mergePuzzleCasse: 'NO',
+    tcgAccessoriesInTcg: 'YES',
+    devMode: 'OFF',
   };
 
   const settings = {
-    showQty: (localStorage.getItem('lgdj_qty') || 'OFF'),
-    showEuro: (localStorage.getItem('lgdj_euro') || 'ON'),
+    showQty: (localStorage.getItem('lgdj_qty') || DEFAULTS.showQty),
+    showEuro: (localStorage.getItem('lgdj_euro') || DEFAULTS.showEuro),
+    eventsStandalone: (localStorage.getItem('lgdj_evt') || DEFAULTS.eventsStandalone),
+    jdrStandalone: (localStorage.getItem('lgdj_jdr') || DEFAULTS.jdrStandalone),
+    mergePuzzleCasse: (localStorage.getItem('lgdj_merge_pc') || DEFAULTS.mergePuzzleCasse),
+    tcgAccessoriesInTcg: (localStorage.getItem('lgdj_tcgacc') || DEFAULTS.tcgAccessoriesInTcg),
+    devMode: (localStorage.getItem('lgdj_dev') || DEFAULTS.devMode),
   };
 
   let parsed = null;
   let view = { level: 'dashboard', category: null, tcgLicense: null, globalOnly: false };
-
   let debug = { used: [], err: [], ignored: [] };
-
-  // auto parse debounce
   let parseTimer = null;
 
-  // ===== Helpers =====
+  let lastDiffText = "—";
+  let prevSettingsSnap = null;
+  let lastDevPayload = null;
+  let dupConfirmedSig = null;
+
   function normalize(s){
     return (s||"").toString().normalize("NFD").replace(/\p{Diacritic}/gu,"").toLowerCase();
   }
 
   function escapeHtml(s){
     return (s||'').toString()
-      .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
-      .replaceAll('"','&quot;').replaceAll("'",'&#039;');
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'",'&#039;');
   }
 
   function formatEUR(n){
@@ -640,6 +964,10 @@
 
   function euroSuffix(){
     return settings.showEuro === 'ON' ? ' €' : '';
+  }
+
+  function qtyText(q){
+    return Number.isFinite(q) ? String(q) : "—";
   }
 
   function parseMoneyToNumber(token){
@@ -660,7 +988,6 @@
     return Number.isFinite(n) ? n : null;
   }
 
-  // In the HTML export, "Total produits HT" tends to be the 3rd money column (after reductions + TVA reductions)
   function extractHTFromLine(line){
     const moneyTokens = [...line.matchAll(/(-?\d[\d\s.,]*)(\$|€)/g)].map(m => m[0]);
     if(moneyTokens.length === 0) return null;
@@ -671,9 +998,10 @@
 
   function extractQtyFromLine(line){
     const parts = line.split("\t").map(p=>p.trim());
-    // columns: boutique | id | category | qty | reductions | ...
     if(parts.length >= 4){
-      const q = Number(parts[3]);
+      const raw = parts[3];
+      if(raw === "" || raw == null) return null;
+      const q = Number(String(raw).replace(',','.'));
       return Number.isFinite(q) ? q : null;
     }
     return null;
@@ -682,7 +1010,7 @@
   function extractCategoryName(line){
     const parts = line.split("\t").map(p=>p.trim()).filter(Boolean);
     if(parts.length >= 3) return parts[2];
-    return line.replace(/^LGDJ\s+(Gambetta|Pigalle)\s*/i,"").slice(0,80).trim();
+    return line.replace(/^LGDJ\s+(Gambetta|Pigalle)\s*/i,"").slice(0,120).trim();
   }
 
   function detectBoutique(lineNorm){
@@ -692,27 +1020,83 @@
     return null;
   }
 
-  function isAccessory(catNorm){
-    return ACCESSORY_KEYWORDS.some(k => catNorm.includes(normalize(k)));
+  function hasAny(catNorm, arr){
+    return arr.some(k => catNorm.includes(normalize(k)));
   }
 
-  function isTcg(catNorm){
-    return TCG_LICENSES.some(lic => catNorm.includes(lic));
+  function isDeletedCategoryLike(rawLine, catName){
+    const ln = normalize(rawLine || "");
+    const cn = normalize(catName || "");
+    if(ln.includes("categorie supprimee") || ln.includes("catégorie supprimée")) return true;
+    if(cn.includes("categorie supprimee") || cn.includes("catégorie supprimée")) return true;
+    if(ln.includes("categorie supprime") || ln.includes("catégorie supprim")) return true;
+    if(cn.includes("categorie supprime") || cn.includes("catégorie supprim")) return true;
+    return false;
   }
 
-  function prettyLicenseFromCat(catNorm){
-    // return first matching lic as display label
-    for(const b of ["Pokémon","Lorcana","One Piece","Magic","Altered","Flesh and Blood","Star Wars Unlimited","Riftbound","Yu-Gi-Oh","Naruto"]){
-      if(catNorm.includes(normalize(b))) return b;
+  function detectLicense(catRaw){
+    const catNorm = normalize(catRaw);
+    for(const lic of TCG_LICENSES){
+      const n = normalize(lic);
+      if(n && catNorm.includes(n)) return n;
     }
-    return "TCG";
+    for(const rule of LICENSE_PATTERN_RULES){
+      if(rule.re.test(catRaw||"")) return normalize(rule.lic);
+    }
+    return null;
+  }
+
+  function prettyLicense(licNorm){
+    const t = normalize(licNorm);
+    for(const s of TCG_LICENSES){
+      if(normalize(s) === t) return s;
+    }
+    return licNorm;
+  }
+
+  function isAccessoryWord(catNorm){
+    return /\baccessoires?\b/i.test(catNorm) || /\baccessories?\b/i.test(catNorm);
+  }
+
+  function isKids(catNorm){
+    if(catNorm.includes("defis nature") || catNorm.includes("défis nature")) return true;
+    if(catNorm.includes("jeux enfants")) return true;
+    return /jeux\s*\d+\s*ans/.test(catNorm);
+  }
+
+  function stripEventPrefix(cat){
+    const s = (cat||"").toString().trim();
+    const sn = normalize(s);
+    if(!hasAny(sn, EVENT_KEYWORDS)) return s;
+    return s.replace(/^\s*év?e?n?e?m?e?n?t?s?\s*[:\-–—]?\s*/i,'').trim();
   }
 
   function getVar(name){
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
-  // ===== Date extraction + label rules =====
+  function setThemeForBoutique(activeKey, two){
+    const root = document.documentElement;
+    if(two || activeKey === 'GLOBAL'){
+      root.style.setProperty('--accent', '#22c55e');
+      root.style.setProperty('--accent2', '#86efac');
+      root.style.setProperty('--accentGlow', 'rgba(34,197,94,.18)');
+      root.style.setProperty('--pieBase', '#22c55e');
+      return;
+    }
+    if(activeKey === 'GAMBETTA'){
+      root.style.setProperty('--accent', '#f59e0b');
+      root.style.setProperty('--accent2', '#fdba74');
+      root.style.setProperty('--accentGlow', 'rgba(245,158,11,.20)');
+      root.style.setProperty('--pieBase', '#f59e0b');
+      return;
+    }
+    root.style.setProperty('--accent', '#60a5fa');
+    root.style.setProperty('--accent2', '#93c5fd');
+    root.style.setProperty('--accentGlow', 'rgba(96,165,250,.18)');
+    root.style.setProperty('--pieBase', '#60a5fa');
+  }
+
   function parseFrDate(s){
     const m = (s||"").match(/(\d{2})\/(\d{2})\/(\d{4})/);
     if(!m) return null;
@@ -720,91 +1104,250 @@
     const dt = new Date(y, mo, d);
     return Number.isFinite(dt.getTime()) ? dt : null;
   }
-
   function fmtFr(dt){
     const dd = String(dt.getDate()).padStart(2,'0');
     const mm = String(dt.getMonth()+1).padStart(2,'0');
     const yy = dt.getFullYear();
     return `${dd}/${mm}/${yy}`;
   }
-
   function daysDiff(a,b){
-    // b - a in days, both local midnight
     const A = new Date(a.getFullYear(), a.getMonth(), a.getDate()).getTime();
     const B = new Date(b.getFullYear(), b.getMonth(), b.getDate()).getTime();
     return Math.round((B-A)/(24*3600*1000));
   }
-
   function weekdayFr(dt){
     return ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"][dt.getDay()];
   }
-
   function dateLabel(fromDt, toDt){
     if(!fromDt || !toDt) return "";
     const same = fmtFr(fromDt) === fmtFr(toDt);
     if(!same) return `du ${fmtFr(fromDt)} au ${fmtFr(toDt)}`;
-
     const today = new Date();
-    const delta = daysDiff(toDt, today); // today - date
-    // only show (aujourd'hui)/(hier) if it's actually today/yesterday
+    const delta = daysDiff(toDt, today);
     if(delta === 0) return `${fmtFr(toDt)} (aujourd'hui)`;
     if(delta === 1) return `${fmtFr(toDt)} (hier)`;
-    // from 2 to 7 days: add weekday
     if(delta >= 2 && delta <= 7) return `${fmtFr(toDt)} (${weekdayFr(toDt)})`;
     return fmtFr(toDt);
   }
-
   function extractDateRange(raw){
-    // look for: "Date de la commande : du 19/07/2025 au 27/02/2026"
     const m = raw.match(/Date de la commande\s*:\s*du\s*(\d{2}\/\d{2}\/\d{4})\s*au\s*(\d{2}\/\d{2}\/\d{4})/i);
     if(!m) return { from:null, to:null };
     return { from: parseFrDate(m[1]), to: parseFrDate(m[2]) };
   }
 
-  // ===== Data model =====
+  function classify(catName, rawLine){
+    const catRaw = (catName||"").toString();
+    const catNorm = normalize(catRaw);
+
+    if(isDeletedCategoryLike(rawLine, catRaw)){
+      return { top: TOP.AUTRE, sub: TOP.AUTRE_DELETED, license:null, leafDeleted: catRaw, why: ["Catégorie supprimée détectée (robuste)"] };
+    }
+
+    if(hasAny(catNorm, OTHER_FORCE)){
+      return { top: TOP.AUTRE, sub: catRaw, license:null, why: ["Forcé Autre (acompte/réservation/accueil/carte cadeau)"] };
+    }
+
+    if(catNorm.includes("jeux de dessin")){
+      return { top: TOP.JEUX, sub: catRaw, license:null, why: ["Forcé Jeux de société (Jeux de Dessin)"] };
+    }
+
+    if(hasAny(catNorm, ESCAPE_GAME_KEYWORDS) && catNorm.includes("escape game")){
+      return { top: TOP.ESC, sub: catRaw, license:null, why: ["Escape Game détecté"] };
+    }
+
+    const isEvt = hasAny(catNorm, EVENT_KEYWORDS);
+    if(isEvt && settings.eventsStandalone === 'YES'){
+      return { top: TOP.EVT, sub: catRaw, license:null, why: ["Événement (standalone=OUI)"] };
+    }
+
+    let catForClass = catRaw;
+    let whyEventDist = null;
+    if(isEvt && settings.eventsStandalone !== 'YES'){
+      const stripped = stripEventPrefix(catRaw);
+      catForClass = stripped || catRaw;
+      whyEventDist = `Événement réparti (standalone=NON) → "${catForClass}"`;
+    }
+
+    const catForNorm = normalize(catForClass);
+
+    if(isKids(catForNorm)){
+      return { top: TOP.JEUX, sub: TOP.JEUX_ENFANTS, license:null, leafKids: catForClass, why: [whyEventDist, "Jeux enfants (Jeux X ans / Défis Nature)"].filter(Boolean) };
+    }
+
+    if(hasAny(catForNorm, JDR_KEYWORDS)){
+      if(settings.jdrStandalone === 'YES'){
+        return { top: TOP.JDR, sub: catForClass, license:null, why: [whyEventDist, "JDR détecté (standalone=OUI)"].filter(Boolean) };
+      }
+      return { top: TOP.JEUX, sub: catForClass, license:null, why: [whyEventDist, "JDR intégré à Jeux de société (standalone=NON)"].filter(Boolean) };
+    }
+
+    const mergePC = settings.mergePuzzleCasse === 'YES';
+
+    if(hasAny(catForNorm, CASSE_KEYWORDS)){
+      const top = mergePC ? TOP.PUZCASSE : TOP.CASSE;
+      return { top, sub: catForClass, license:null, why: [whyEventDist, mergePC ? "Casse-tête → Puzzles & Casse-tête (merge=OUI)" : "Casse-tête détecté"].filter(Boolean) };
+    }
+    if(hasAny(catForNorm, PUZZLE_KEYWORDS)){
+      const top = mergePC ? TOP.PUZCASSE : TOP.PUZ;
+      return { top, sub: catForClass, license:null, why: [whyEventDist, mergePC ? "Puzzle → Puzzles & Casse-tête (merge=OUI)" : "Puzzle détecté"].filter(Boolean) };
+    }
+
+    const lic = detectLicense(catForClass);
+    if(lic){
+      const isTcgAccessoryStrict = catForNorm.startsWith("accessoires :") || catForNorm.startsWith("accessoire :");
+      const isTcgAccessoryText = isTcgAccessoryStrict || isAccessoryWord(catForNorm);
+
+      if(isTcgAccessoryText && settings.tcgAccessoriesInTcg === 'YES'){
+        return { top: TOP.TCG, sub: catForClass, license: lic, why: [whyEventDist, "TCG + Accessoires TCG → dans TCG (toggle=OUI)"].filter(Boolean) };
+      }
+      if(settings.tcgAccessoriesInTcg !== 'YES' && isTcgAccessoryStrict){
+        return { top: TOP.ACC, sub: catForClass, license: null, why: [whyEventDist, "Accessoires : X → Accessoires (toggle=NON)"].filter(Boolean) };
+      }
+      return { top: TOP.TCG, sub: catForClass, license: lic, why: [whyEventDist, "TCG détecté"].filter(Boolean) };
+    }
+
+    if(hasAny(catForNorm, ACCESSORY_KEYWORDS) || isAccessoryWord(catForNorm)){
+      return { top: TOP.ACC, sub: catForClass, license:null, why: [whyEventDist, "Accessoires détecté"].filter(Boolean) };
+    }
+
+    return { top: TOP.JEUX, sub: catForClass, license:null, why: [whyEventDist, "Défaut → Jeux de société"].filter(Boolean) };
+  }
+
+  function buildTrace(cat, rawLine, cls){
+    const cN = normalize(cat);
+    const parts = [];
+
+    const deleted = isDeletedCategoryLike(rawLine, cat);
+    parts.push(`Deleted=${deleted?'OUI':'NON'}`);
+
+    const forcedOther = hasAny(cN, OTHER_FORCE);
+    parts.push(`ForcedAutre=${forcedOther?'OUI':'NON'}`);
+
+    const forcedJds = cN.includes("jeux de dessin");
+    parts.push(`ForceJDS=${forcedJds?'OUI':'NON'}`);
+
+    const isEvt = hasAny(cN, EVENT_KEYWORDS);
+    parts.push(`Event=${isEvt?'OUI':'NON'} (standalone=${settings.eventsStandalone})`);
+
+    const lic = detectLicense(cat);
+    parts.push(`TCGLic=${lic ? prettyLicense(lic) : '—'}`);
+
+    const accStrict = cN.startsWith("accessoires :") || cN.startsWith("accessoire :");
+    parts.push(`AccStrict=${accStrict?'OUI':'NON'} (tcgAccInTcg=${settings.tcgAccessoriesInTcg})`);
+
+    const jdr = hasAny(cN, JDR_KEYWORDS);
+    parts.push(`JDR=${jdr?'OUI':'NON'} (standalone=${settings.jdrStandalone})`);
+
+    const mergePC = settings.mergePuzzleCasse;
+    const isPuz = hasAny(cN, PUZZLE_KEYWORDS);
+    const isCasse = hasAny(cN, CASSE_KEYWORDS);
+    parts.push(`Puzzle=${isPuz?'OUI':'NON'} Casse=${isCasse?'OUI':'NON'} (merge=${mergePC})`);
+
+    const acc = hasAny(cN, ACCESSORY_KEYWORDS) || isAccessoryWord(cN);
+    parts.push(`Accessoires=${acc?'OUI':'NON'}`);
+
+    const kids = isKids(cN);
+    parts.push(`Kids=${kids?'OUI':'NON'}`);
+
+    parts.push(`=> TOP="${cls.top}" SUB="${cls.sub}"`);
+    return parts.join(" → ");
+  }
+
   function makeBucket(){
     return {
-      totalsHT: { Jeux:0, Accessoires:0, TCG:0, total:0, sansTCG:0 },
-      totalsQty: { Jeux:0, Accessoires:0, TCG:0, total:0, sansTCG:0 },
-      sub: {
-        Jeux: new Map(),
-        Accessoires: new Map(),
-        TCG: new Map(), // license -> map of series (we keep category names as series)
-      }
+      totalsHT: new Map(),
+      totalsQty: new Map(),
+      sub: new Map(),
+      total: 0,
+      totalQty: 0,
+      tcg: { licenses: new Map(), seriesByLicense: new Map() },
+      kidsLeaves: new Map(),
+      deletedLeaves: new Map(),
     };
   }
 
-  function addToMap(map, key, ht, qty){
-    if(!map.has(key)) map.set(key, { value:0, qty:0 });
-    const cur = map.get(key);
+  function bumpMap(map, key, add){
+    map.set(key, (map.get(key) || 0) + add);
+  }
+
+  function addToSub(bucket, topKey, subKey, ht, qty){
+    if(!bucket.sub.has(topKey)) bucket.sub.set(topKey, new Map());
+    const m = bucket.sub.get(topKey);
+    if(!m.has(subKey)) m.set(subKey, { value:0, qty:0, hasQty:false });
+    const cur = m.get(subKey);
     cur.value += ht;
-    cur.qty += (Number.isFinite(qty) ? qty : 0);
+    if(qty != null && Number.isFinite(qty)){ cur.qty += qty; cur.hasQty = true; }
+  }
+
+  function addToTcg(bucket, licNorm, seriesName, ht, qty){
+    if(!bucket.tcg.licenses.has(licNorm)) bucket.tcg.licenses.set(licNorm, { value:0, qty:0, hasQty:false });
+    const lic = bucket.tcg.licenses.get(licNorm);
+    lic.value += ht;
+    if(qty != null && Number.isFinite(qty)){ lic.qty += qty; lic.hasQty = true; }
+
+    if(!bucket.tcg.seriesByLicense.has(licNorm)) bucket.tcg.seriesByLicense.set(licNorm, new Map());
+    const sm = bucket.tcg.seriesByLicense.get(licNorm);
+    if(!sm.has(seriesName)) sm.set(seriesName, { value:0, qty:0, hasQty:false });
+    const s = sm.get(seriesName);
+    s.value += ht;
+    if(qty != null && Number.isFinite(qty)){ s.qty += qty; s.hasQty = true; }
+  }
+
+  function addKidsLeaf(bucket, leafName, ht, qty){
+    if(!bucket.kidsLeaves.has(leafName)) bucket.kidsLeaves.set(leafName, { value:0, qty:0, hasQty:false });
+    const cur = bucket.kidsLeaves.get(leafName);
+    cur.value += ht;
+    if(qty != null && Number.isFinite(qty)){ cur.qty += qty; cur.hasQty = true; }
+  }
+
+  function addDeletedLeaf(bucket, leafName, ht, qty){
+    const k = (leafName && String(leafName).trim()) ? String(leafName).trim() : "Catégorie supprimée";
+    if(!bucket.deletedLeaves.has(k)) bucket.deletedLeaves.set(k, { value:0, qty:0, hasQty:false });
+    const cur = bucket.deletedLeaves.get(k);
+    cur.value += ht;
+    if(qty != null && Number.isFinite(qty)){ cur.qty += qty; cur.hasQty = true; }
   }
 
   function addRow(bucket, r){
-    bucket.totalsHT.total += r.ht;
-    bucket.totalsQty.total += (Number.isFinite(r.qty) ? r.qty : 0);
+    bucket.total += r.ht;
+    if(r.qty != null && Number.isFinite(r.qty)) bucket.totalQty += r.qty;
 
-    if(r.top === 'Jeux'){
-      bucket.totalsHT.Jeux += r.ht;
-      bucket.totalsQty.Jeux += (Number.isFinite(r.qty) ? r.qty : 0);
-      addToMap(bucket.sub.Jeux, r.category, r.ht, r.qty);
-    } else if(r.top === 'Accessoires'){
-      bucket.totalsHT.Accessoires += r.ht;
-      bucket.totalsQty.Accessoires += (Number.isFinite(r.qty) ? r.qty : 0);
-      addToMap(bucket.sub.Accessoires, r.category, r.ht, r.qty);
-    } else {
-      bucket.totalsHT.TCG += r.ht;
-      bucket.totalsQty.TCG += (Number.isFinite(r.qty) ? r.qty : 0);
-      const lic = r.licenseLabel;
-      if(!bucket.sub.TCG.has(lic)) bucket.sub.TCG.set(lic, new Map());
-      addToMap(bucket.sub.TCG.get(lic), r.category, r.ht, r.qty);
+    bumpMap(bucket.totalsHT, r.top, r.ht);
+    if(r.qty != null && Number.isFinite(r.qty)) bumpMap(bucket.totalsQty, r.top, r.qty);
+
+    addToSub(bucket, r.top, r.sub, r.ht, r.qty);
+
+    if(r.top === TOP.TCG && r.license) addToTcg(bucket, r.license, r.sub, r.ht, r.qty);
+
+    if(r.top === TOP.JEUX && r.sub === TOP.JEUX_ENFANTS && r.leafKids){
+      addKidsLeaf(bucket, r.leafKids, r.ht, r.qty);
+    }
+
+    if(r.top === TOP.AUTRE && r.sub === TOP.AUTRE_DELETED){
+      addDeletedLeaf(bucket, r.leafDeleted || r.category, r.ht, r.qty);
     }
   }
 
-  function finalizeBucket(bucket){
-    bucket.totalsHT.sansTCG = bucket.totalsHT.total - bucket.totalsHT.TCG;
-    bucket.totalsQty.sansTCG = bucket.totalsQty.total - bucket.totalsQty.TCG;
+  function calcSansTCG(bucket){
+    const tcg = bucket.totalsHT.get(TOP.TCG) || 0;
+    return bucket.total - tcg;
+  }
+
+  function buildTopOrder(){
+    const mergePC = settings.mergePuzzleCasse === 'YES';
+    const order = [
+      TOP.JEUX,
+      TOP.TCG,
+      (settings.jdrStandalone === 'YES') ? TOP.JDR : null,
+      TOP.ACC,
+      mergePC ? TOP.PUZCASSE : TOP.PUZ,
+      mergePC ? null : TOP.CASSE,
+      (settings.eventsStandalone === 'YES') ? TOP.EVT : null,
+      TOP.ESC,
+      TOP.AUTRE
+    ].filter(Boolean);
+
+    return [...new Set(order)];
   }
 
   function currentBucket(){
@@ -813,7 +1356,6 @@
     return parsed.byBoutique[parsed.activeKey];
   }
 
-  // ===== Pie SVG =====
   function hexToRgb(hex){
     const h = hex.replace('#','').trim();
     const full = h.length===3 ? h.split('').map(c=>c+c).join('') : h;
@@ -848,11 +1390,12 @@
     return ['M', cx, cy,'L', start.x, start.y,'A', r, r, 0, largeArc, 0, end.x, end.y,'Z'].join(' ');
   }
 
-  function renderComboPieAndList(data, title, rightMeta, onPick){
+  function renderComboPieAndList(data, title, rightMeta, onPick, devPayloadBuilder){
     const total = data.reduce((a,b)=>a + (b.value||0), 0);
 
     const wrap = document.createElement('div');
     wrap.className = 'combo dyn';
+    if(settings.devMode === 'ON') wrap.classList.add('dev-on');
 
     const hd = document.createElement('div');
     hd.className = 'comboHd';
@@ -904,6 +1447,11 @@
       path.setAttribute('stroke', 'rgba(0,0,0,.12)');
       path.setAttribute('stroke-width', '1');
       path.classList.add('slice');
+      path.dataset.key = d.key;
+
+      path.addEventListener('mouseenter', ()=>highlightLegend(d.key, true));
+      path.addEventListener('mouseleave', ()=>highlightLegend(d.key, false));
+
       if(onPick) path.addEventListener('click', () => onPick(d));
       svg.appendChild(path);
     });
@@ -925,6 +1473,7 @@
     t1.setAttribute('font-size','13');
     t1.setAttribute('font-weight','900');
     t1.textContent = formatEUR(total);
+    svg.appendChild(t1);
 
     const t2 = document.createElementNS('http://www.w3.org/2000/svg','text');
     t2.setAttribute('x', cx);
@@ -934,8 +1483,6 @@
     t2.setAttribute('font-size','10');
     t2.setAttribute('font-weight','800');
     t2.textContent = settings.showEuro === 'ON' ? "€ HT" : "HT";
-
-    svg.appendChild(t1);
     svg.appendChild(t2);
 
     const legend = document.createElement('div');
@@ -945,14 +1492,42 @@
       const pct = total > 0 ? (d.value/total*100) : 0;
       const row = document.createElement('div');
       row.className = 'legRow';
+      row.dataset.key = d.key;
+
       row.innerHTML = `
         <div class="legL">
           <span class="sw" style="background:${d._color}"></span>
           <span class="legName">${escapeHtml(d.name)}</span>
         </div>
-        <div class="legVal">${formatEUR(d.value)}${euroSuffix()} <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span></div>
+        <div class="legR">
+          <div class="legVal">
+            <span>${formatEUR(d.value)}${euroSuffix()} <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span></span>
+            ${settings.showQty==='ON' ? `<span class="qtyMini">Qté: ${qtyText(d.qty)}</span>` : ``}
+          </div>
+          <button class="eyeBtn" type="button" title="Voir le détail DEV" aria-label="Voir le détail DEV">👁</button>
+        </div>
       `;
-      if(onPick) row.addEventListener('click', () => onPick(d));
+
+      row.addEventListener('mouseenter', ()=>highlightSlice(d.key, true));
+      row.addEventListener('mouseleave', ()=>highlightSlice(d.key, false));
+
+      if(onPick) {
+        row.addEventListener('click', (e)=>{
+          const eye = e.target.closest('.eyeBtn');
+          if(eye) return;
+          onPick(d);
+        });
+      }
+
+      if(settings.devMode === 'ON' && devPayloadBuilder){
+        const eyeBtn = row.querySelector('.eyeBtn');
+        eyeBtn.addEventListener('click', (e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          openDevDetails(devPayloadBuilder(d));
+        });
+      }
+
       legend.appendChild(row);
     });
 
@@ -962,17 +1537,204 @@
     return wrap;
   }
 
-  // ===== Parsing =====
+  function highlightLegend(key, on){
+    const legend = document.querySelector('.legend');
+    if(!legend) return;
+    const row = legend.querySelector(`.legRow[data-key="${CSS.escape(key)}"]`);
+    if(!row) return;
+    row.classList.toggle('hi', on);
+    if(on){
+      row.scrollIntoView({block:'nearest', inline:'nearest'});
+    }
+  }
+
+  function highlightSlice(key, on){
+    const path = document.querySelector(`.slice[data-key="${CSS.escape(key)}"]`);
+    if(!path) return;
+    path.classList.toggle('hi', on);
+  }
+
+  function snapshotSettings(){
+    return JSON.stringify({
+      showQty: settings.showQty,
+      showEuro: settings.showEuro,
+      eventsStandalone: settings.eventsStandalone,
+      jdrStandalone: settings.jdrStandalone,
+      mergePuzzleCasse: settings.mergePuzzleCasse,
+      tcgAccessoriesInTcg: settings.tcgAccessoriesInTcg,
+      devMode: settings.devMode,
+    });
+  }
+
+  function computeDiffText(beforeSnap, afterSnap, sampleRows){
+    try{
+      const before = JSON.parse(beforeSnap);
+      const after = JSON.parse(afterSnap);
+      if(!sampleRows || sampleRows.length === 0) return "—";
+
+      const oldSettings = {...settings};
+
+      function classifyWith(tempSettings, cat, line){
+        const saved = {
+          eventsStandalone: settings.eventsStandalone,
+          jdrStandalone: settings.jdrStandalone,
+          mergePuzzleCasse: settings.mergePuzzleCasse,
+          tcgAccessoriesInTcg: settings.tcgAccessoriesInTcg,
+        };
+        settings.eventsStandalone = tempSettings.eventsStandalone;
+        settings.jdrStandalone = tempSettings.jdrStandalone;
+        settings.mergePuzzleCasse = tempSettings.mergePuzzleCasse;
+        settings.tcgAccessoriesInTcg = tempSettings.tcgAccessoriesInTcg;
+
+        const res = classify(cat, line);
+
+        settings.eventsStandalone = saved.eventsStandalone;
+        settings.jdrStandalone = saved.jdrStandalone;
+        settings.mergePuzzleCasse = saved.mergePuzzleCasse;
+        settings.tcgAccessoriesInTcg = saved.tcgAccessoriesInTcg;
+
+        return res;
+      }
+
+      const moved = new Map();
+      let movedTotal = 0;
+
+      for(const r of sampleRows){
+        const a = classifyWith(before, r.category, r.rawLine);
+        const b = classifyWith(after, r.category, r.rawLine);
+        if(a.top !== b.top){
+          const k = `${a.top} → ${b.top}`;
+          moved.set(k, (moved.get(k)||0)+1);
+          movedTotal++;
+        }
+      }
+
+      Object.assign(settings, oldSettings);
+
+      const changedKeys = [];
+      for(const k of ["eventsStandalone","jdrStandalone","mergePuzzleCasse","tcgAccessoriesInTcg"]){
+        if(before[k] !== after[k]) changedKeys.push(`${k}:${before[k]}→${after[k]}`);
+      }
+
+      const head = changedKeys.length ? `Changements : ${changedKeys.join(" • ")}` : "Changements : (affichage / aucun toggle de classement)";
+      if(movedTotal === 0) return `${head}\nAucun déplacement de lignes entre catégories principales.`;
+
+      const body = [...moved.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12).map(([k,c])=>`- ${k} : ${c}`).join("\n");
+      return `${head}\nDéplacements (TOP) : ${movedTotal}\n${body}`;
+    } catch {
+      return "—";
+    }
+  }
+
+  function hashString(s){
+    let h = 2166136261;
+    for(let i=0;i<s.length;i++){
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h>>>0).toString(16);
+  }
+
+  function computeDupSignature(rows){
+    const sigs = rows.map(r=>{
+      const q = (r.qty==null) ? "" : String(r.qty);
+      return `${r.boutiqueKey}|${r.categoryNorm}|${r.ht.toFixed(2)}|${q}`;
+    });
+    sigs.sort();
+    return hashString(sigs.join("\n"));
+  }
+
+  function detectLikelyDuplicatePaste(rows){
+    const m = new Map();
+    for(const r of rows){
+      const q = (r.qty==null) ? "" : String(r.qty);
+      const k = `${r.boutiqueKey}|${r.categoryNorm}|${r.ht.toFixed(2)}|${q}`;
+      m.set(k, (m.get(k)||0)+1);
+    }
+    const total = rows.length;
+    if(total < 12) return { likely:false };
+
+    let dupCount = 0;
+    let maxRep = 1;
+    for(const c of m.values()){
+      if(c >= 2) dupCount += c;
+      if(c > maxRep) maxRep = c;
+    }
+    const share = dupCount / total;
+    const likely = (share >= 0.60 && maxRep >= 2);
+    return { likely, share, maxRep, unique: m.size, total };
+  }
+
+  function showDupWarningBanner(info){
+    if(!info || !info.likely){
+      clearDupWarn();
+      return;
+    }
+    const pct = Math.round((info.share||0)*100);
+    els.dupWarn.innerHTML =
+      `⚠️ <b>Doublon probable</b> : le tableau semble collé <b>2 fois</b> (ou +). ` +
+      `Beaucoup de lignes sont répétées (${pct}%). Clique ici pour confirmer si c’est voulu.`;
+    els.dupWarn.style.display = 'block';
+    els.dupWarn.onclick = () => openDupModal(info);
+  }
+
+  function clearDupWarn(){
+    els.dupWarn.textContent = '';
+    els.dupWarn.style.display = 'none';
+    els.dupWarn.onclick = null;
+  }
+
+  function openDupModal(info){
+    const pct = Math.round((info.share||0)*100);
+    els.dupModalText.innerHTML = `
+      <b>Risque compta :</b> si le même tableau est collé 2 fois, les montants seront doublés.<br><br>
+      Indice : ${pct}% des lignes semblent répétées (max répétition : ${info.maxRep}×).<br><br>
+      Si c’est volontaire, clique “OK, je confirme”.
+    `;
+    els.dupBg.style.display='flex';
+    els.dupBg.setAttribute('aria-hidden','false');
+  }
+  function closeDupModal(){
+    els.dupBg.style.display='none';
+    els.dupBg.setAttribute('aria-hidden','true');
+  }
+
+  els.btnCloseDup.addEventListener('click', closeDupModal);
+  els.dupBg.addEventListener('click', (e)=>{ if(e.target===els.dupBg) closeDupModal(); });
+  els.btnDupProceed.addEventListener('click', ()=>{
+    if(parsed){
+      dupConfirmedSig = parsed.dupSig || null;
+      els.dupWarn.style.display = 'none';
+      pushHistorySnapshot(els.raw.value || '', parsed);
+      renderMicroHistory();
+    }
+    closeDupModal();
+  });
+
+  function makeBucket(){
+    return {
+      totalsHT: new Map(),
+      totalsQty: new Map(),
+      sub: new Map(),
+      total: 0,
+      totalQty: 0,
+      tcg: { licenses: new Map(), seriesByLicense: new Map() },
+      kidsLeaves: new Map(),
+      deletedLeaves: new Map(),
+    };
+  }
+
   function parseAll(){
+    clearParseError();
+    clearDupWarn();
+
     const raw = els.raw.value || '';
     const lines = raw.split(/\r?\n/);
-
     const { from, to } = extractDateRange(raw);
     const dateTxt = (from && to) ? dateLabel(from, to) : "";
 
     const rows = [];
-    let used = 0, err = 0;
-
+    let used = 0, err = 0, moneyFound = 0;
     debug = { used: [], err: [], ignored: [] };
 
     for(const line of lines){
@@ -980,6 +1742,12 @@
       if(!l){ debug.ignored.push({reason:'Ligne vide', line}); continue; }
 
       const ln = normalize(line);
+
+      if(IGNORE_LINE_PATTERNS.some(p => ln.includes(p))){
+        debug.ignored.push({reason:'Ligne de statut (ignorée)', line});
+        continue;
+      }
+
       const boutiqueKey = detectBoutique(ln);
       if(!boutiqueKey){ debug.ignored.push({reason:'Boutique non détectée', line}); continue; }
 
@@ -989,21 +1757,43 @@
         debug.err.push({reason:'Montant HT introuvable', line});
         continue;
       }
+      moneyFound++;
 
       const cat = extractCategoryName(line);
       const catNorm = normalize(cat);
-
-      const tcg = isTcg(catNorm);
-      const acc = !tcg && isAccessory(catNorm);
-      const top = tcg ? 'TCG' : (acc ? 'Accessoires' : 'Jeux');
-
-      const licenseLabel = tcg ? prettyLicenseFromCat(catNorm) : null;
-
       const qty = extractQtyFromLine(line);
 
-      rows.push({ boutiqueKey, top, category: cat, categoryNorm: catNorm, ht, qty, licenseLabel, rawLine: line });
+      const cls = classify(cat, line);
+      const rec = {
+        boutiqueKey,
+        top: cls.top,
+        sub: cls.sub,
+        category: cat,
+        categoryNorm: catNorm,
+        ht,
+        qty,
+        license: cls.license,
+        leafKids: cls.leafKids || null,
+        leafDeleted: cls.leafDeleted || null,
+        why: cls.why || [],
+        trace: buildTrace(cat, line, cls),
+        rawLine: line
+      };
+
+      rows.push(rec);
       used++;
-      debug.used.push({reason:'OK', line});
+      debug.used.push({reason:`OK → ${cls.top}`, line});
+    }
+
+    if(used === 0 || moneyFound === 0){
+      els.metaLines.textContent = String(lines.length);
+      els.metaUsed.textContent = '0';
+      els.metaErr.textContent = String(err);
+      parsed = null;
+      view = { level:'dashboard', category:null, tcgLicense:null, globalOnly:false };
+      render();
+      showParseError("Erreur : le contenu collé ne ressemble pas au tableau PrestaShop (aucune ligne exploitable / aucun montant trouvé).");
+      return;
     }
 
     els.metaLines.textContent = String(lines.length);
@@ -1022,27 +1812,50 @@
       addRow(byBoutique[r.boutiqueKey], r);
       addRow(global, r);
     }
-    for(const b of BOUTIQUES){ finalizeBucket(byBoutique[b.key]); }
-    finalizeBucket(global);
 
     const activeKey = (!two && present.length===1) ? present[0].key : 'GLOBAL';
+    parsed = { rows, present, two, activeKey, byBoutique, global, dateTxt, settingsSnap: snapshotSettings() };
 
-    parsed = { rows, present, two, activeKey, byBoutique, global, dateTxt };
+    const dupInfo = detectLikelyDuplicatePaste(rows);
+    const dupSig = computeDupSignature(rows);
+    parsed.dupSig = dupSig;
+    parsed.dupLikely = dupInfo.likely;
+    parsed.dupInfo = dupInfo;
+
+    setThemeForBoutique(activeKey, two);
     view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: two };
 
-    // Update left totals
     const b = currentBucket();
-    els.leftSans.textContent = b ? (formatEUR(b.totalsHT.sansTCG) + euroSuffix()) : "—";
-    els.leftTot.textContent  = b ? (formatEUR(b.totalsHT.total) + euroSuffix()) : "—";
+    els.leftSans.textContent = b ? (formatEUR(calcSansTCG(b)) + euroSuffix()) : "—";
+    els.leftTot.textContent  = b ? (formatEUR(b.total) + euroSuffix()) : "—";
 
-    // Save to micro-history (max 5)
-    pushHistorySnapshot(raw, parsed);
+    if(parsed.dupLikely && dupConfirmedSig !== dupSig){
+      showDupWarningBanner(dupInfo);
+    } else {
+      pushHistorySnapshot(raw, parsed);
+    }
 
     renderMicroHistory();
     render();
   }
 
-  // ===== Rendering =====
+  function showParseError(msg){
+    els.parseErr.textContent = msg;
+    els.parseErr.style.display = 'block';
+  }
+  function clearParseError(){
+    els.parseErr.textContent = '';
+    els.parseErr.style.display = 'none';
+  }
+
+  function rightHeaderTitle(){
+    const label = parsed.activeKey === 'GLOBAL'
+      ? 'GLOBAL'
+      : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey);
+    const dt = parsed.dateTxt ? ` • ${parsed.dateTxt}` : "";
+    return `${label}${dt}`;
+  }
+
   function clearDyn(){
     els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove());
   }
@@ -1065,35 +1878,30 @@
     if(view.level === 'dashboard') renderDashboard();
     else if(view.level === 'category') renderCategory();
     else if(view.level === 'tcgLicense') renderTcgLicense();
+    else if(view.level === 'kids') renderKids();
+    else if(view.level === 'deletedCats') renderDeletedCats();
 
     els.warnTwo.style.display = parsed.two ? 'block' : 'none';
-  }
-
-  function rightHeaderTitle(){
-    const label = parsed.activeKey === 'GLOBAL'
-      ? 'GLOBAL'
-      : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey);
-
-    // date at right of boutique name (requested)
-    const dt = parsed.dateTxt ? ` • ${parsed.dateTxt}` : "";
-    return `${label}${dt}`;
   }
 
   function renderDashboard(){
     const b = currentBucket();
     els.rightTitle.textContent = rightHeaderTitle();
 
-    const data = [
-      { key:'Jeux', name:'Jeux de société', value:b.totalsHT.Jeux },
-      { key:'Accessoires', name:'Accessoires', value:b.totalsHT.Accessoires },
-      { key:'TCG', name:'TCG', value:b.totalsHT.TCG },
-    ];
+    const order = buildTopOrder();
+    const data = order.map(k => ({
+      key:k,
+      name:k,
+      value: b.totalsHT.get(k) || 0,
+      qty: (b.totalsQty.get(k) ?? null)
+    })).filter(x => x.value > 0);
 
     const combo = renderComboPieAndList(
       data,
       'Répartition (catégories) — clic pour ouvrir',
-      settings.showQty==='ON' ? `Qté total: ${b.totalsQty.total || "—"}` : '',
-      (d) => { view = { level:'category', category:d.key, tcgLicense:null, globalOnly: parsed.two }; render(); }
+      settings.showQty==='ON' ? `Qté total: ${qtyText(b.totalQty)}` : '',
+      (d) => { view = { level:'category', category:d.key, tcgLicense:null, globalOnly: parsed.two }; render(); },
+      (d) => buildDevPayload({ level:'dashboard', pickKey:d.key })
     );
 
     els.rightBody.appendChild(combo);
@@ -1104,41 +1912,126 @@
     const cat = view.category;
     els.rightTitle.textContent = rightHeaderTitle();
 
-    if(cat === 'Jeux' || cat === 'Accessoires'){
-      const map = b.sub[cat];
-      const entries = [...map.entries()].map(([name,obj]) => ({
-        key:name, name, value: obj.value, qty: obj.qty
-      })).sort((a,b)=>b.value-a.value);
+    if(cat === TOP.TCG){
+      const entries = [...b.tcg.licenses.entries()]
+        .map(([lic,obj]) => ({
+          key: lic,
+          name: prettyLicense(lic),
+          value: obj.value,
+          qty: obj.hasQty ? obj.qty : null
+        }))
+        .sort((a,b)=>b.value-a.value);
 
-      const meta = settings.showQty==='ON' ? `Qté ${cat}: ${b.totalsQty[cat] || "—"}` : '';
+      const meta = settings.showQty==='ON' ? `Qté TCG: ${qtyText(b.totalsQty.get(TOP.TCG))}` : '';
       const combo = renderComboPieAndList(
         entries,
-        `Répartition — ${cat} (toutes les sous-catégories)`,
+        `Répartition — ${TOP.TCG} (licences)`,
         meta,
-        null
+        (d)=>{ view = { level:'tcgLicense', category:TOP.TCG, tcgLicense:d.key, globalOnly: parsed.two }; render(); },
+        (d) => buildDevPayload({ level:'category', category:TOP.TCG, pickKey:d.key })
       );
       els.rightBody.appendChild(combo);
-    } else {
-      // TCG -> licenses
-      const licTotals = new Map();
-      for(const [lic, seriesMap] of b.sub.TCG.entries()){
-        let sum = 0, q = 0;
-        for(const [_, obj] of seriesMap.entries()){ sum += obj.value; q += obj.qty; }
-        licTotals.set(lic, {value:sum, qty:q});
-      }
-      const entries = [...licTotals.entries()].map(([lic,obj]) => ({
-        key:lic, name:lic, value:obj.value, qty:obj.qty
-      })).sort((a,b)=>b.value-a.value);
-
-      const meta = settings.showQty==='ON' ? `Qté TCG: ${b.totalsQty.TCG || "—"}` : '';
-      const combo = renderComboPieAndList(
-        entries,
-        `Répartition — TCG (licences)`,
-        meta,
-        (d)=>{ view = { level:'tcgLicense', category:'TCG', tcgLicense:d.key, globalOnly: parsed.two }; render(); }
-      );
-      els.rightBody.appendChild(combo);
+      return;
     }
+
+    if(cat === TOP.JEUX){
+      const map = b.sub.get(TOP.JEUX) || new Map();
+      const entries = [...map.entries()]
+        .map(([name,obj])=>({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
+        .sort((a,b)=>b.value-a.value);
+
+      const meta = settings.showQty==='ON' ? `Qté ${TOP.JEUX}: ${qtyText(b.totalsQty.get(TOP.JEUX))}` : '';
+      const combo = renderComboPieAndList(
+        entries,
+        `Répartition — ${TOP.JEUX} (sous-catégories)`,
+        meta,
+        (d)=>{
+          if(d.key === TOP.JEUX_ENFANTS){
+            view = { level:'kids', category:TOP.JEUX, tcgLicense:null, globalOnly: parsed.two };
+            render();
+          }
+        },
+        (d) => buildDevPayload({ level:'category', category:TOP.JEUX, pickKey:d.key })
+      );
+      els.rightBody.appendChild(combo);
+      return;
+    }
+
+    if(cat === TOP.AUTRE){
+      const map = b.sub.get(TOP.AUTRE) || new Map();
+      const entries = [...map.entries()]
+        .map(([name,obj])=>({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
+        .sort((a,b)=>b.value-a.value);
+
+      const meta = settings.showQty==='ON' ? `Qté ${TOP.AUTRE}: ${qtyText(b.totalsQty.get(TOP.AUTRE))}` : '';
+      const combo = renderComboPieAndList(
+        entries,
+        `Détail — ${TOP.AUTRE}`,
+        meta,
+        (d)=>{
+          if(d.key === TOP.AUTRE_DELETED){
+            view = { level:'deletedCats', category:TOP.AUTRE, tcgLicense:null, globalOnly: parsed.two };
+            render();
+          }
+        },
+        (d) => buildDevPayload({ level:'category', category:TOP.AUTRE, pickKey:d.key })
+      );
+      els.rightBody.appendChild(combo);
+      return;
+    }
+
+    const map = b.sub.get(cat) || new Map();
+    const entries = [...map.entries()]
+      .map(([name,obj])=>({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
+      .sort((a,b)=>b.value-a.value);
+
+    const meta = settings.showQty==='ON' ? `Qté ${cat}: ${qtyText(b.totalsQty.get(cat))}` : '';
+    const combo = renderComboPieAndList(
+      entries,
+      `Répartition — ${cat} (sous-catégories)`,
+      meta,
+      null,
+      (d) => buildDevPayload({ level:'category', category:cat, pickKey:d.key })
+    );
+    els.rightBody.appendChild(combo);
+  }
+
+  function renderKids(){
+    const b = currentBucket();
+    els.rightTitle.textContent = rightHeaderTitle();
+
+    const entries = [...(b.kidsLeaves || new Map()).entries()]
+      .map(([name,obj]) => ({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
+      .sort((a,b)=>b.value-a.value);
+
+    const meta = settings.showQty==='ON' ? `Qté ${TOP.JEUX_ENFANTS}: ${qtyText(entries.reduce((s,x)=>s+(x.qty||0),0))}` : '';
+    const combo = renderComboPieAndList(
+      entries,
+      `Détail — ${TOP.JEUX_ENFANTS} (Jeux X ans / Défis Nature)`,
+      meta,
+      null,
+      (d) => buildDevPayload({ level:'kids', pickKey:d.key })
+    );
+    els.rightBody.appendChild(combo);
+  }
+
+  function renderDeletedCats(){
+    const b = currentBucket();
+    els.rightTitle.textContent = rightHeaderTitle();
+
+    const entries = [...(b.deletedLeaves || new Map()).entries()]
+      .map(([name,obj]) => ({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
+      .sort((a,b)=>b.value-a.value);
+
+    const meta = settings.showQty==='ON' ? `Qté ${TOP.AUTRE_DELETED}: ${qtyText(entries.reduce((s,x)=>s+(x.qty||0),0))}` : '';
+    const combo = renderComboPieAndList(
+      entries,
+      `Détail — ${TOP.AUTRE_DELETED}`,
+      meta,
+      null,
+      (d) => buildDevPayload({ level:'deletedCats', pickKey:d.key })
+    );
+    els.rightBody.appendChild(combo);
   }
 
   function renderTcgLicense(){
@@ -1146,40 +2039,195 @@
     const lic = view.tcgLicense;
     els.rightTitle.textContent = rightHeaderTitle();
 
-    const seriesMap = b.sub.TCG.get(lic) || new Map();
-    const entries = [...seriesMap.entries()].map(([name,obj]) => ({
-      key:name, name, value: obj.value, qty: obj.qty
-    })).sort((a,b)=>b.value-a.value);
+    const seriesMap = b.tcg.seriesByLicense.get(lic) || new Map();
+    const entries = [...seriesMap.entries()]
+      .map(([name,obj]) => ({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
+      .sort((a,b)=>b.value-a.value);
 
     const meta = settings.showQty==='ON'
-      ? `Qté ${lic}: ${entries.reduce((s,x)=>s+(x.qty||0),0) || "—"}`
+      ? `Qté ${prettyLicense(lic)}: ${qtyText(entries.reduce((s,x)=>s+(x.qty||0),0))}`
       : '';
 
     const combo = renderComboPieAndList(
       entries,
-      `Répartition — ${lic} (séries)`,
+      `Répartition — ${prettyLicense(lic)} (séries)`,
       meta,
-      null
+      null,
+      (d) => buildDevPayload({ level:'tcgLicense', tcgLicense:lic, pickKey:d.key })
     );
     els.rightBody.appendChild(combo);
   }
 
   els.btnBack.addEventListener('click', ()=>{
     if(!parsed) return;
-    if(view.level === 'tcgLicense') view = { level:'category', category:'TCG', tcgLicense:null, globalOnly: parsed.two };
+    if(view.level === 'tcgLicense') view = { level:'category', category:TOP.TCG, tcgLicense:null, globalOnly: parsed.two };
+    else if(view.level === 'kids') view = { level:'category', category:TOP.JEUX, tcgLicense:null, globalOnly: parsed.two };
+    else if(view.level === 'deletedCats') view = { level:'category', category:TOP.AUTRE, tcgLicense:null, globalOnly: parsed.two };
     else if(view.level === 'category') view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed.two };
     else view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed.two };
     render();
   });
 
-  // ===== Micro history (under left totals) =====
-  const HIST_KEY = "lgdj_hist_v078";
-
-  function boutiqueColorKey(activeKey, two){
-    if(two || activeKey === 'GLOBAL') return '#22c55e';
-    if(activeKey === 'GAMBETTA') return '#f59e0b';
-    return '#60a5fa'; // Pigalle
+  function boutiqueLabelForParsed(){
+    if(!parsed) return "";
+    if(parsed.two || parsed.activeKey === 'GLOBAL') return "2 boutiques / GLOBAL";
+    if(parsed.activeKey === 'GAMBETTA') return "Gambetta";
+    if(parsed.activeKey === 'PIGALLE') return "Pigalle";
+    return parsed.activeKey;
   }
+
+  function pickRowsByFilter(filter){
+    if(!parsed) return [];
+    const rows = parsed.rows;
+    const needBoutique = (parsed.activeKey !== 'GLOBAL' && !parsed.two);
+    const keyBoutique = parsed.activeKey;
+    const inBoutique = (r)=> !needBoutique || r.boutiqueKey === keyBoutique;
+
+    const lvl = filter.level;
+
+    if(lvl === 'dashboard'){
+      if(!filter.pickKey) return rows.filter(inBoutique);
+      return rows.filter(r => inBoutique(r) && r.top === filter.pickKey);
+    }
+
+    if(lvl === 'category'){
+      const cat = filter.category;
+      if(cat === TOP.TCG){
+        if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === TOP.TCG);
+        return rows.filter(r => inBoutique(r) && r.top === TOP.TCG && r.license === filter.pickKey);
+      }
+      if(!filter.pickKey){
+        return rows.filter(r => inBoutique(r) && r.top === cat);
+      }
+      return rows.filter(r => inBoutique(r) && r.top === cat && r.sub === filter.pickKey);
+    }
+
+    if(lvl === 'tcgLicense'){
+      const lic = filter.tcgLicense;
+      if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === TOP.TCG && r.license === lic);
+      return rows.filter(r => inBoutique(r) && r.top === TOP.TCG && r.license === lic && r.sub === filter.pickKey);
+    }
+
+    if(lvl === 'kids'){
+      if(!filter.pickKey){
+        return rows.filter(r => inBoutique(r) && r.top === TOP.JEUX && r.sub === TOP.JEUX_ENFANTS);
+      }
+      return rows.filter(r => inBoutique(r) && r.top === TOP.JEUX && r.sub === TOP.JEUX_ENFANTS && r.leafKids === filter.pickKey);
+    }
+
+    if(lvl === 'deletedCats'){
+      if(!filter.pickKey){
+        return rows.filter(r => inBoutique(r) && r.top === TOP.AUTRE && r.sub === TOP.AUTRE_DELETED);
+      }
+      return rows.filter(r => inBoutique(r) && r.top === TOP.AUTRE && r.sub === TOP.AUTRE_DELETED && (r.leafDeleted||r.category) === filter.pickKey);
+    }
+
+    return rows.filter(inBoutique);
+  }
+
+  function buildDevPayload(filter){
+    if(!parsed) return null;
+
+    const rows = pickRowsByFilter(filter);
+    const totalHT = rows.reduce((s,r)=>s+(r.ht||0),0);
+    const totalQty = rows.reduce((s,r)=>s+(Number.isFinite(r.qty)?r.qty:0),0);
+
+    let title = "—";
+    if(filter.level === 'dashboard'){
+      title = filter.pickKey ? `Catégorie : ${filter.pickKey}` : "Dashboard : toutes catégories";
+    } else if(filter.level === 'category'){
+      if(filter.category === TOP.TCG){
+        title = filter.pickKey ? `TCG / ${prettyLicense(filter.pickKey)}` : "TCG (toutes licences)";
+      } else {
+        title = filter.pickKey ? `${filter.category} / ${filter.pickKey}` : `${filter.category} (toutes sous-catégories)`;
+      }
+    } else if(filter.level === 'tcgLicense'){
+      title = filter.pickKey ? `TCG / ${prettyLicense(filter.tcgLicense)} / ${filter.pickKey}` : `TCG / ${prettyLicense(filter.tcgLicense)} (toutes séries)`;
+    } else if(filter.level === 'kids'){
+      title = filter.pickKey ? `Jeux enfants / ${filter.pickKey}` : `Jeux enfants (toutes entrées)`;
+    } else if(filter.level === 'deletedCats'){
+      title = filter.pickKey ? `Catégories supprimées / ${filter.pickKey}` : `Catégories supprimées (toutes entrées)`;
+    }
+
+    return {
+      title,
+      totalHT,
+      totalQty: settings.showQty==='ON' ? totalQty : null,
+      lines: rows.map(r => ({
+        rawLine: r.rawLine,
+        why: r.why || [],
+        trace: r.trace || "—",
+      })),
+      dateTxt: parsed.dateTxt || "",
+      boutiqueLabel: boutiqueLabelForParsed(),
+    };
+  }
+
+  function openDevDetails(payload){
+    if(!payload || !parsed) return;
+    lastDevPayload = payload;
+
+    const linesCount = payload.lines?.length || 0;
+    els.devSummary.innerHTML = `
+<b>Filtre</b> : ${escapeHtml(payload.title || "—")}<br>
+<b>Totaux</b> : ${escapeHtml(formatEUR(payload.totalHT||0))}${escapeHtml(euroSuffix())}
+${settings.showQty==='ON' ? ` • <b>Qté</b> : ${escapeHtml(String(payload.totalQty ?? "—"))}` : ``}
+<br>
+<b>Lignes</b> : ${linesCount}
+${payload.dateTxt ? `<br><b>Période</b> : ${escapeHtml(payload.dateTxt)}` : ``}
+${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLabel)}` : ``}
+    `.trim();
+
+    els.devDiffBox.textContent = lastDiffText || "—";
+
+    if(linesCount === 0){
+      els.devLinesBox.textContent = "—";
+    } else {
+      const txt = payload.lines.map((x,i)=>{
+        const why = (x.why && x.why.length) ? x.why.join(" | ") : "—";
+        const trace = x.trace || "—";
+        return `#${i+1}\nPourquoi : ${why}\nTrace : ${trace}\nLigne : ${x.rawLine}`;
+      }).join("\n\n");
+      els.devLinesBox.textContent = txt;
+    }
+
+    els.devBg.style.display='flex';
+    els.devBg.setAttribute('aria-hidden','false');
+  }
+
+  function closeDev(){
+    els.devBg.style.display='none';
+    els.devBg.setAttribute('aria-hidden','true');
+  }
+
+  els.btnCloseDev.addEventListener('click', closeDev);
+  els.devBg.addEventListener('click', (e)=>{ if(e.target===els.devBg) closeDev(); });
+
+  els.btnCopyDev.addEventListener('click', async ()=>{
+    try{
+      const txt = [
+        (els.devSummary.textContent||'').trim(),
+        "\n\n---\nDiff de toggles\n---\n",
+        els.devDiffBox.textContent||'',
+        "\n\n---\nLignes + raisons\n---\n",
+        els.devLinesBox.textContent||'',
+      ].join("");
+      await navigator.clipboard.writeText(txt);
+      els.btnCopyDev.textContent = 'Copié';
+      setTimeout(()=> els.btnCopyDev.textContent='Copier détail', 900);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = (els.devLinesBox.textContent||'');
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      els.btnCopyDev.textContent = 'Copié';
+      setTimeout(()=> els.btnCopyDev.textContent='Copier détail', 900);
+    }
+  });
+
+  const HIST_KEY = "lgdj_hist_v0714";
 
   function loadHist(){
     try{
@@ -1188,168 +2236,267 @@
     }catch{ return []; }
   }
 
-  function saveHist(arr){
-    localStorage.setItem(HIST_KEY, JSON.stringify(arr.slice(0,5)));
+  function saveHistUnlimited(arr){
+    let a = arr.slice();
+    while(a.length){
+      try{
+        localStorage.setItem(HIST_KEY, JSON.stringify(a));
+        return;
+      } catch(e){
+        a.pop();
+      }
+    }
+    try{ localStorage.removeItem(HIST_KEY); }catch{}
+  }
+
+  function histBoutiqueLabel(parsedObj){
+    if(parsedObj.two || parsedObj.activeKey === 'GLOBAL') return "2 boutiques";
+    if(parsedObj.activeKey === 'GAMBETTA') return "Gambetta";
+    if(parsedObj.activeKey === 'PIGALLE') return "Pigalle";
+    return "GLOBAL";
+  }
+
+  function boutiqueColorHex(parsedObj){
+    if(parsedObj.two || parsedObj.activeKey === 'GLOBAL') return '#22c55e';
+    if(parsedObj.activeKey === 'GAMBETTA') return '#f59e0b';
+    return '#60a5fa';
   }
 
   function pushHistorySnapshot(rawText, parsedObj){
     if(!rawText || !rawText.trim()) return;
 
     const hist = loadHist();
-    const labelKey = parsedObj.two ? "2 boutiques" :
-      (parsedObj.activeKey === 'GAMBETTA' ? "Gambetta" :
-       parsedObj.activeKey === 'PIGALLE' ? "Pigalle" : "GLOBAL");
-
+    const label = histBoutiqueLabel(parsedObj);
     const dateStr = parsedObj.dateTxt || "";
-    const color = boutiqueColorKey(parsedObj.activeKey, parsedObj.two);
+    const color = boutiqueColorHex(parsedObj);
+    const total = (parsedObj.activeKey === 'GLOBAL') ? parsedObj.global.total :
+      (parsedObj.byBoutique[parsedObj.activeKey]?.total ?? parsedObj.global.total);
 
-    // remove exact duplicates (same date + label + first 200 chars)
-    const sig = `${labelKey}__${dateStr}__${rawText.trim().slice(0,200)}`;
-    const next = [{ sig, labelKey, dateStr, color, rawText, ts: Date.now() }, ...hist.filter(x=>x.sig!==sig)];
-    saveHist(next);
+    const sig = `${label}__${dateStr}__${parsedObj.dupSig || hashString(rawText.trim().slice(0,1200))}`;
+
+    const next = [{
+      id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
+      sig,
+      label,
+      dateStr,
+      color,
+      total,
+      rawText,
+      ts: Date.now()
+    }, ...hist.filter(x=>x.sig!==sig)];
+
+    saveHistUnlimited(next);
   }
 
   function renderMicroHistory(){
     const hist = loadHist();
-    els.microHist.innerHTML = '';
-    if(hist.length === 0) return;
+    const showSearch = hist.length >= 8;
+    els.histSearch.style.display = showSearch ? 'flex' : 'none';
+    els.microHist.classList.toggle('withSearch', showSearch);
 
-    hist.forEach(h=>{
-      const btn = document.createElement('div');
-      btn.className = 'histBtn';
-      btn.innerHTML = `
-        <span class="dot" style="background:${h.color}"></span>
-        <span class="histTxt">${escapeHtml(h.labelKey)}${h.dateStr ? " • " + escapeHtml(h.dateStr) : ""}</span>
+    const q = (els.histQuery.value || '').trim().toLowerCase();
+    let list = hist;
+    if(showSearch && q){
+      list = hist.filter(h => (`${h.label||''} ${h.dateStr||''}`).toLowerCase().includes(q));
+    }
+
+    els.microHist.innerHTML = '';
+    if(list.length === 0) return;
+
+    list.forEach(h=>{
+      const card = document.createElement('div');
+      card.className = 'histCard';
+      card.innerHTML = `
+        <div class="histLeft">
+          <span class="pill" style="border-color:${h.color}55;color:${h.color}">${escapeHtml(h.label)}</span>
+          <span class="histText">${escapeHtml(h.dateStr || "—")}</span>
+        </div>
+        <div class="histRight">${formatEUR(h.total)}${euroSuffix()}</div>
+        <button class="histDel" type="button" title="Supprimer" aria-label="Supprimer">×</button>
       `;
-      btn.addEventListener('click', ()=>{
+
+      card.addEventListener('click', (e)=>{
+        const isDel = e.target.closest('.histDel');
+        if(isDel) return;
         els.raw.value = h.rawText || '';
         scheduleParse(true);
         els.raw.focus();
       });
-      els.microHist.appendChild(btn);
+
+      const delBtn = card.querySelector('.histDel');
+      delBtn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        const ok = confirm("Supprimer cet élément de l’historique ?");
+        if(!ok) return;
+        const all = loadHist().filter(x => x.id !== h.id);
+        saveHistUnlimited(all);
+        renderMicroHistory();
+      });
+
+      els.microHist.appendChild(card);
     });
   }
 
-  // ===== Tutoriel pages =====
-  const tutorialPages = [
-    { title: "1) Choisir la boutique", text: "Dans PrestaShop, sélectionne la boutique Pigalle OU Gambetta depuis un onglet (ex : Tableau de bord)." },
-    { title: "2) Accéder au rapport", text: "Va dans Commandes → Rapport Commandes TVA Bénéfices." },
-    { title: "3) Paramétrer l’export", text: "Préférences d’export : Type de rapport = Catégories ; Format = html (souvent déjà sélectionné)." },
-    { title: "4) Définir la période", text: "Par date de commande : indique date de début et date de fin. Pour un jour : même date début/fin." },
-    { title: "5) Statuts", text: "Tout décocher, puis cocher uniquement Store - Sale." },
-    { title: "6) Export + copier", text: "Cliquer Exporter, puis Ctrl+A → Ctrl+C sur la page du tableau." },
-    { title: "7) Coller", text: "Ici : Ctrl+V. L’analyse se lance automatiquement et les résultats apparaissent." }
-  ];
-  let tutPage = 0;
+  els.histClear.addEventListener('click', ()=>{
+    els.histQuery.value = '';
+    renderMicroHistory();
+  });
+  els.histQuery.addEventListener('input', ()=> renderMicroHistory());
 
   function renderTut(){
-    const p = tutorialPages[tutPage];
+    const pages = [
+      { title: "1) Choisir la boutique", text: "Dans PrestaShop, sélectionne la boutique Pigalle OU Gambetta depuis un onglet (ex : Tableau de bord)." },
+      { title: "2) Accéder au rapport", text: "Va dans Commandes → Rapport Commandes TVA Bénéfices." },
+      { title: "3) Paramétrer l’export", text: "Préférences d’export : Type de rapport = Catégories ; Format = html (souvent déjà sélectionné)." },
+      { title: "4) Définir la période", text: "Par date de commande : indique date de début et date de fin. Pour un jour : même date début/fin." },
+      { title: "5) Statuts", text: "Tout décocher, puis cocher uniquement Store - Sale." },
+      { title: "6) Export + copier", text: "Cliquer Exporter, puis Ctrl+A → Ctrl+C sur la page du tableau." },
+      { title: "7) Coller", text: "Ici : Ctrl+V. L’analyse se lance automatiquement et les résultats apparaissent." }
+    ];
+    const p = pages[tutPage];
     els.tutContent.innerHTML = `
       <h3 class="pageTitle">${escapeHtml(p.title)}</h3>
       <div class="pageText">${escapeHtml(p.text)}</div>
       <div class="muted" style="margin-top:10px">Si 2 boutiques sont collées : mode GLOBAL (catégories uniquement).</div>
     `;
     els.tutIdx.textContent = String(tutPage+1);
-    els.tutTotal.textContent = String(tutorialPages.length);
+    els.tutTotal.textContent = String(pages.length);
     els.tutPrev.disabled = tutPage === 0;
-    els.tutNext.textContent = (tutPage === tutorialPages.length-1) ? 'Terminer' : 'Suivant';
+    els.tutNext.textContent = (tutPage === pages.length-1) ? 'Terminer' : 'Suivant';
   }
-  function openTut(){ tutPage=0; renderTut(); els.tutBg.style.display='flex'; els.tutBg.setAttribute('aria-hidden','false'); }
-  function closeTut(){ els.tutBg.style.display='none'; els.tutBg.setAttribute('aria-hidden','true'); }
-
+  let tutPage = 0;
+  function openTut(){ tutPage=0; renderTut(); els.tutBg.style.display='flex'; }
+  function closeTut(){ els.tutBg.style.display='none'; }
   els.btnTut.addEventListener('click', openTut);
   els.btnCloseTut.addEventListener('click', closeTut);
   els.tutBg.addEventListener('click', (e)=>{ if(e.target===els.tutBg) closeTut(); });
   els.tutPrev.addEventListener('click', ()=>{ if(tutPage>0){ tutPage--; renderTut(); }});
-  els.tutNext.addEventListener('click', ()=>{ if(tutPage<tutorialPages.length-1){ tutPage++; renderTut(); } else closeTut(); });
+  els.tutNext.addEventListener('click', ()=>{ if(tutPage<6){ tutPage++; renderTut(); } else closeTut(); });
 
-  // ===== Settings =====
   function syncSettingsUI(){
     els.toggleQty.textContent = `Quantités : ${settings.showQty==='ON' ? 'VISIBLES' : 'CACHÉES'}`;
     els.toggleEuro.textContent = `Symbole € : ${settings.showEuro==='ON' ? 'VISIBLE' : 'CACHÉ'}`;
+
+    els.toggleEvt.textContent = `Événements : ${settings.eventsStandalone==='YES' ? 'CATÉGORIE' : 'RÉPARTIS'}`;
+    els.toggleJdr.textContent = `JDR : ${settings.jdrStandalone==='YES' ? 'CATÉGORIE' : 'DANS JEUX'}`;
+    els.toggleMergePC.textContent = `Puzzles+Casse-tête : ${settings.mergePuzzleCasse==='YES' ? 'FUSIONNÉS' : 'SÉPARÉS'}`;
+    els.toggleTcgAcc.textContent = `Accessoires TCG : ${settings.tcgAccessoriesInTcg==='YES' ? 'DANS TCG' : 'DANS ACCESSOIRES'}`;
+    els.toggleDev.textContent = `DEV : ${settings.devMode==='ON' ? 'ON' : 'OFF'}`;
+
     els.toggleQty.classList.toggle('btnPrimary', settings.showQty==='ON');
+    els.toggleEvt.classList.toggle('btnPrimary', settings.eventsStandalone==='YES');
+    els.toggleJdr.classList.toggle('btnPrimary', settings.jdrStandalone==='YES');
+    els.toggleTcgAcc.classList.toggle('btnPrimary', settings.tcgAccessoriesInTcg==='YES');
+
+    els.devDot.classList.toggle('on', settings.devMode==='ON');
+  }
+
+  function persistSettings(){
+    localStorage.setItem('lgdj_qty', settings.showQty);
+    localStorage.setItem('lgdj_euro', settings.showEuro);
+    localStorage.setItem('lgdj_evt', settings.eventsStandalone);
+    localStorage.setItem('lgdj_jdr', settings.jdrStandalone);
+    localStorage.setItem('lgdj_merge_pc', settings.mergePuzzleCasse);
+    localStorage.setItem('lgdj_tcgacc', settings.tcgAccessoriesInTcg);
+    localStorage.setItem('lgdj_dev', settings.devMode);
   }
 
   function openSet(){
     syncSettingsUI();
     els.setBg.style.display='flex';
-    els.setBg.setAttribute('aria-hidden','false');
   }
   function closeSet(){
     els.setBg.style.display='none';
-    els.setBg.setAttribute('aria-hidden','true');
   }
 
   els.btnSettings.addEventListener('click', openSet);
   els.btnCloseSet.addEventListener('click', closeSet);
   els.setBg.addEventListener('click', (e)=>{ if(e.target===els.setBg) closeSet(); });
 
+  function applySettingsAndReparse(){
+    const before = prevSettingsSnap || snapshotSettings();
+    persistSettings();
+    const after = snapshotSettings();
+
+    if(settings.devMode === 'ON' && parsed && parsed.rows && parsed.rows.length){
+      lastDiffText = computeDiffText(before, after, parsed.rows);
+    } else if(settings.devMode !== 'ON'){
+      lastDiffText = "—";
+    }
+
+    prevSettingsSnap = after;
+    syncSettingsUI();
+
+    if(parsed){
+      parseAll();
+    } else {
+      renderMicroHistory();
+      render();
+    }
+  }
+
   els.toggleQty.addEventListener('click', ()=>{
     settings.showQty = (settings.showQty==='ON') ? 'OFF' : 'ON';
-    localStorage.setItem('lgdj_qty', settings.showQty);
-    syncSettingsUI();
-    render(); // keep modal open
+    applySettingsAndReparse();
   });
-
   els.toggleEuro.addEventListener('click', ()=>{
     settings.showEuro = (settings.showEuro==='ON') ? 'OFF' : 'ON';
-    localStorage.setItem('lgdj_euro', settings.showEuro);
-    syncSettingsUI();
-    // update left totals display
-    if(parsed){
-      const b = currentBucket();
-      els.leftSans.textContent = formatEUR(b.totalsHT.sansTCG) + euroSuffix();
-      els.leftTot.textContent  = formatEUR(b.totalsHT.total) + euroSuffix();
-    }
-    render(); // keep modal open
+    applySettingsAndReparse();
+  });
+  els.toggleEvt.addEventListener('click', ()=>{
+    settings.eventsStandalone = (settings.eventsStandalone==='YES') ? 'NO' : 'YES';
+    applySettingsAndReparse();
+  });
+  els.toggleJdr.addEventListener('click', ()=>{
+    settings.jdrStandalone = (settings.jdrStandalone==='YES') ? 'NO' : 'YES';
+    applySettingsAndReparse();
+  });
+  els.toggleMergePC.addEventListener('click', ()=>{
+    settings.mergePuzzleCasse = (settings.mergePuzzleCasse==='YES') ? 'NO' : 'YES';
+    applySettingsAndReparse();
+  });
+  els.toggleTcgAcc.addEventListener('click', ()=>{
+    settings.tcgAccessoriesInTcg = (settings.tcgAccessoriesInTcg==='YES') ? 'NO' : 'YES';
+    applySettingsAndReparse();
+  });
+  els.toggleDev.addEventListener('click', ()=>{
+    settings.devMode = (settings.devMode==='ON') ? 'OFF' : 'ON';
+    applySettingsAndReparse();
   });
 
   els.btnReset.addEventListener('click', ()=>{
     const ok = confirm("Réinitialiser les paramètres par défaut ?");
     if(!ok) return;
-    settings.showQty = 'OFF';
-    settings.showEuro = 'ON';
-    localStorage.setItem('lgdj_qty', settings.showQty);
-    localStorage.setItem('lgdj_euro', settings.showEuro);
-    syncSettingsUI();
-    // refresh left totals
-    if(parsed){
-      const b = currentBucket();
-      els.leftSans.textContent = formatEUR(b.totalsHT.sansTCG) + euroSuffix();
-      els.leftTot.textContent  = formatEUR(b.totalsHT.total) + euroSuffix();
-    }
-    render(); // keep modal open
+    Object.assign(settings, DEFAULTS);
+    lastDiffText = "—";
+    prevSettingsSnap = snapshotSettings();
+    dupConfirmedSig = null;
+    applySettingsAndReparse();
   });
 
-  // ===== Changelog =====
   function openVer(){
-    // You can extend later; keeping full entries from 0.1.0..0.7.8 is possible here.
     els.verContent.innerHTML = `
       <h3 class="pageTitle">${VERSION}</h3>
       <div class="pageText">
         <ul>
-          <li><b>2026-02-28</b> • v0.7.8 — Micro interface “historique” déplacée sous les totaux à gauche, bouton Historique supprimé</li>
-          <li><b>2026-02-28</b> • v0.7.8 — Zone de collage réduite + bouton unique “Coller” (colle si vide, vide si déjà rempli)</li>
-          <li><b>2026-02-28</b> • v0.7.8 — “Aujourd’hui / hier” affiché uniquement si c’est réellement le cas ; ajout du jour de semaine (J-2 à J-7)</li>
-          <li class="muted" style="margin-top:8px">Les anciennes versions (v0.1.0 → v0.7.7) sont conservées : tu peux me demander de les afficher intégralement si tu veux.</li>
+          <li><b>v0.7.14</b> • Retrait complet de l’épinglage</li>
+          <li><b>v0.7.14</b> • DEV : retour au clic normal sur les lignes, ouverture des détails via bouton œil</li>
+          <li><b>v0.7.14</b> • Retrait du bouton DEV flottant</li>
+          <li><b>v0.7.14</b> • Fix historique : bouton × stable, espace réservé, hitbox plus large</li>
+          <li><b>v0.7.14</b> • Surbrillance blanche légère harmonisée sur parts du camembert et lignes</li>
+          <li><b>v0.7.14</b> • Avertissement doublon conservé</li>
         </ul>
       </div>
     `;
     els.verBg.style.display='flex';
-    els.verBg.setAttribute('aria-hidden','false');
   }
-  function closeVer(){
-    els.verBg.style.display='none';
-    els.verBg.setAttribute('aria-hidden','true');
-  }
-
+  function closeVer(){ els.verBg.style.display='none'; }
   els.btnVer.addEventListener('click', openVer);
   els.btnCloseVer.addEventListener('click', closeVer);
   els.verBg.addEventListener('click', (e)=>{ if(e.target===els.verBg) closeVer(); });
 
-  // ===== Stats =====
   let activeTab = 'used';
-
   function statsText(tab){
     const arr = debug[tab] || [];
     const head =
@@ -1359,28 +2506,19 @@
     els.statsHint.textContent = `${head} — ${arr.length}`;
     return arr.map((x,i)=>`#${i+1} • ${x.reason}\n${x.line}`).join("\n\n");
   }
-
   function renderStats(){
     els.statsBox.textContent = parsed ? (statsText(activeTab) || '—') : 'Colle un export pour afficher les détails.';
   }
-
   function openStats(){
     activeTab = 'used';
     document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===activeTab));
     renderStats();
     els.statsBg.style.display='flex';
-    els.statsBg.setAttribute('aria-hidden','false');
   }
-
-  function closeStats(){
-    els.statsBg.style.display='none';
-    els.statsBg.setAttribute('aria-hidden','true');
-  }
-
+  function closeStats(){ els.statsBg.style.display='none'; }
   els.btnStats.addEventListener('click', openStats);
   els.btnCloseStats.addEventListener('click', closeStats);
   els.statsBg.addEventListener('click', (e)=>{ if(e.target===els.statsBg) closeStats(); });
-
   document.querySelectorAll('.tab').forEach(t=>{
     t.addEventListener('click', ()=>{
       activeTab = t.dataset.tab;
@@ -1388,7 +2526,6 @@
       renderStats();
     });
   });
-
   els.btnCopyStats.addEventListener('click', async ()=>{
     try{
       await navigator.clipboard.writeText(els.statsBox.textContent || '');
@@ -1406,8 +2543,159 @@
     }
   });
 
-  // ===== Paste button: (1) paste if empty, (2) clear if filled =====
-  async function doPasteOrClear(){
+  function openDevDetails(payload){
+    if(!payload || !parsed) return;
+    lastDevPayload = payload;
+
+    const linesCount = payload.lines?.length || 0;
+    els.devSummary.innerHTML = `
+<b>Filtre</b> : ${escapeHtml(payload.title || "—")}<br>
+<b>Totaux</b> : ${escapeHtml(formatEUR(payload.totalHT||0))}${escapeHtml(euroSuffix())}
+${settings.showQty==='ON' ? ` • <b>Qté</b> : ${escapeHtml(String(payload.totalQty ?? "—"))}` : ``}
+<br>
+<b>Lignes</b> : ${linesCount}
+${payload.dateTxt ? `<br><b>Période</b> : ${escapeHtml(payload.dateTxt)}` : ``}
+${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLabel)}` : ``}
+    `.trim();
+
+    els.devDiffBox.textContent = lastDiffText || "—";
+
+    if(linesCount === 0){
+      els.devLinesBox.textContent = "—";
+    } else {
+      const txt = payload.lines.map((x,i)=>{
+        const why = (x.why && x.why.length) ? x.why.join(" | ") : "—";
+        const trace = x.trace || "—";
+        return `#${i+1}\nPourquoi : ${why}\nTrace : ${trace}\nLigne : ${x.rawLine}`;
+      }).join("\n\n");
+      els.devLinesBox.textContent = txt;
+    }
+
+    els.devBg.style.display='flex';
+  }
+
+  function closeDev(){ els.devBg.style.display='none'; }
+  els.btnCloseDev.addEventListener('click', closeDev);
+  els.devBg.addEventListener('click', (e)=>{ if(e.target===els.devBg) closeDev(); });
+
+  els.btnCopyDev.addEventListener('click', async ()=>{
+    try{
+      const txt = [
+        (els.devSummary.textContent||'').trim(),
+        "\n\n---\nDiff de toggles\n---\n",
+        els.devDiffBox.textContent||'',
+        "\n\n---\nLignes + raisons\n---\n",
+        els.devLinesBox.textContent||'',
+      ].join("");
+      await navigator.clipboard.writeText(txt);
+      els.btnCopyDev.textContent = 'Copié';
+      setTimeout(()=> els.btnCopyDev.textContent='Copier détail', 900);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = (els.devLinesBox.textContent||'');
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      els.btnCopyDev.textContent = 'Copié';
+      setTimeout(()=> els.btnCopyDev.textContent='Copier détail', 900);
+    }
+  });
+
+  function boutiqueLabelForParsed(){
+    if(!parsed) return "";
+    if(parsed.two || parsed.activeKey === 'GLOBAL') return "2 boutiques / GLOBAL";
+    if(parsed.activeKey === 'GAMBETTA') return "Gambetta";
+    if(parsed.activeKey === 'PIGALLE') return "Pigalle";
+    return parsed.activeKey;
+  }
+
+  function pickRowsByFilter(filter){
+    if(!parsed) return [];
+    const rows = parsed.rows;
+    const needBoutique = (parsed.activeKey !== 'GLOBAL' && !parsed.two);
+    const keyBoutique = parsed.activeKey;
+    const inBoutique = (r)=> !needBoutique || r.boutiqueKey === keyBoutique;
+    const lvl = filter.level;
+
+    if(lvl === 'dashboard'){
+      if(!filter.pickKey) return rows.filter(inBoutique);
+      return rows.filter(r => inBoutique(r) && r.top === filter.pickKey);
+    }
+
+    if(lvl === 'category'){
+      const cat = filter.category;
+      if(cat === TOP.TCG){
+        if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === TOP.TCG);
+        return rows.filter(r => inBoutique(r) && r.top === TOP.TCG && r.license === filter.pickKey);
+      }
+      if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === cat);
+      return rows.filter(r => inBoutique(r) && r.top === cat && r.sub === filter.pickKey);
+    }
+
+    if(lvl === 'tcgLicense'){
+      const lic = filter.tcgLicense;
+      if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === TOP.TCG && r.license === lic);
+      return rows.filter(r => inBoutique(r) && r.top === TOP.TCG && r.license === lic && r.sub === filter.pickKey);
+    }
+
+    if(lvl === 'kids'){
+      if(!filter.pickKey){
+        return rows.filter(r => inBoutique(r) && r.top === TOP.JEUX && r.sub === TOP.JEUX_ENFANTS);
+      }
+      return rows.filter(r => inBoutique(r) && r.top === TOP.JEUX && r.sub === TOP.JEUX_ENFANTS && r.leafKids === filter.pickKey);
+    }
+
+    if(lvl === 'deletedCats'){
+      if(!filter.pickKey){
+        return rows.filter(r => inBoutique(r) && r.top === TOP.AUTRE && r.sub === TOP.AUTRE_DELETED);
+      }
+      return rows.filter(r => inBoutique(r) && r.top === TOP.AUTRE && r.sub === TOP.AUTRE_DELETED && (r.leafDeleted||r.category) === filter.pickKey);
+    }
+
+    return rows.filter(inBoutique);
+  }
+
+  function buildDevPayload(filter){
+    if(!parsed) return null;
+    const rows = pickRowsByFilter(filter);
+    const totalHT = rows.reduce((s,r)=>s+(r.ht||0),0);
+    const totalQty = rows.reduce((s,r)=>s+(Number.isFinite(r.qty)?r.qty:0),0);
+
+    let title = "—";
+    if(filter.level === 'dashboard'){
+      title = filter.pickKey ? `Catégorie : ${filter.pickKey}` : "Dashboard : toutes catégories";
+    } else if(filter.level === 'category'){
+      if(filter.category === TOP.TCG){
+        title = filter.pickKey ? `TCG / ${prettyLicense(filter.pickKey)}` : "TCG (toutes licences)";
+      } else {
+        title = filter.pickKey ? `${filter.category} / ${filter.pickKey}` : `${filter.category} (toutes sous-catégories)`;
+      }
+    } else if(filter.level === 'tcgLicense'){
+      title = filter.pickKey ? `TCG / ${prettyLicense(filter.tcgLicense)} / ${filter.pickKey}` : `TCG / ${prettyLicense(filter.tcgLicense)} (toutes séries)`;
+    } else if(filter.level === 'kids'){
+      title = filter.pickKey ? `Jeux enfants / ${filter.pickKey}` : `Jeux enfants (toutes entrées)`;
+    } else if(filter.level === 'deletedCats'){
+      title = filter.pickKey ? `Catégories supprimées / ${filter.pickKey}` : `Catégories supprimées (toutes entrées)`;
+    }
+
+    return {
+      title,
+      totalHT,
+      totalQty: settings.showQty==='ON' ? totalQty : null,
+      lines: rows.map(r => ({
+        rawLine: r.rawLine,
+        why: r.why || [],
+        trace: r.trace || "—",
+      })),
+      dateTxt: parsed.dateTxt || "",
+      boutiqueLabel: boutiqueLabelForParsed(),
+    };
+  }
+
+  function doPasteOrClear(){
+    clearParseError();
+    clearDupWarn();
     const has = (els.raw.value || '').trim().length > 0;
 
     if(has){
@@ -1426,24 +2714,18 @@
       return;
     }
 
-    // try Clipboard API
-    try{
-      const text = await navigator.clipboard.readText();
+    navigator.clipboard.readText().then(text=>{
       if(text && text.trim()){
         els.raw.value = text;
         scheduleParse(true);
         els.raw.focus();
-        return;
+      } else {
+        els.raw.focus();
       }
-    }catch{}
-
-    // fallback: just focus and user Ctrl+V
-    els.raw.focus();
+    }).catch(()=> els.raw.focus());
   }
-
   els.btnPaste.addEventListener('click', doPasteOrClear);
 
-  // ===== Auto parse scheduling =====
   function scheduleParse(immediate=false){
     if(parseTimer) clearTimeout(parseTimer);
     parseTimer = setTimeout(()=>{
@@ -1458,28 +2740,27 @@
         els.warnTwo.style.display = 'none';
         els.leftSans.textContent = '—';
         els.leftTot.textContent  = '—';
+        clearDupWarn();
         render();
         return;
       }
       parseAll();
-    }, immediate ? 0 : 350);
+    }, immediate ? 0 : 280);
   }
-
   els.raw.addEventListener('input', ()=> scheduleParse(false));
   els.raw.addEventListener('paste', ()=> scheduleParse(false));
 
-  // ===== ESC closes modals =====
   document.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape'){
-      closeTut(); closeSet(); closeVer(); closeStats();
+      closeTut(); closeSet(); closeVer(); closeStats(); closeDev(); closeDupModal();
     }
   });
 
-  // ===== Init =====
   els.btnVer.textContent = VERSION;
   els.ver2.textContent = VERSION;
-
+  prevSettingsSnap = snapshotSettings();
   syncSettingsUI();
+  setThemeForBoutique('PIGALLE', false);
   renderMicroHistory();
   render();
 </script>
