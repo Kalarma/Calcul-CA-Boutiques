@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>LGDJ — Extracteur CA (Offline)</title>
+  <title>LGDJ — Extracteur CA v0.7.15 (Offline)</title>
   <style>
     :root{
       --ver:"v0.7.15";
@@ -607,7 +607,7 @@
 
           <div class="miniTotals">
             <div class="totalRow">
-              <div class="lbl">CA Jeux (hors TCG/Escape/Events)</div>
+              <div class="lbl">CA Total (hors TCG / Escape / Évt)</div>
               <div class="val valGreen"><span id="leftSans" class="copyable" title="Cliquer pour copier le montant">—</span></div>
             </div>
             <div class="totalRow">
@@ -1519,6 +1519,7 @@
       row.className = 'legRow';
       row.dataset.key = d.key;
 
+      const rawVal = Number.isFinite(d.value) ? d.value.toFixed(2).replace('.', ',') : '';
       row.innerHTML = `
         <div class="legL">
           <span class="sw" style="background:${d._color}"></span>
@@ -1526,12 +1527,16 @@
         </div>
         <div class="legR">
           <div class="legVal">
-            <span>${formatEUR(d.value)}${euroSuffix()} <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span></span>
-            ${settings.showQty==='ON' ? `<span class="qtyMini">Qté: ${qtyText(d.qty)}</span>` : ``}
+            <span class="copyable" data-raw-value="${rawVal}" title="Cliquer pour copier">${formatEUR(d.value)}${euroSuffix()} <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span></span>
+            ${settings.showQty==='ON' ? `<span class="qtyMini">Qt\u00e9: ${qtyText(d.qty)}</span>` : ``}
           </div>
-          <button class="eyeBtn" type="button" title="Voir le détail DEV" aria-label="Voir le détail DEV">👁</button>
+          <button class="eyeBtn" type="button" title="Voir le d\u00e9tail DEV" aria-label="Voir le d\u00e9tail DEV">&#128065;</button>
         </div>
       `;
+
+      // Attach copy-on-click to the value span
+      const valSpan = row.querySelector('.legVal .copyable');
+      if(valSpan) makeCopyable(valSpan);
 
       row.addEventListener('mouseenter', ()=>highlightSlice(d.key, true));
       row.addEventListener('mouseleave', ()=>highlightSlice(d.key, false));
@@ -1539,7 +1544,8 @@
       if(onPick) {
         row.addEventListener('click', (e)=>{
           const eye = e.target.closest('.eyeBtn');
-          if(eye) return;
+          const cp = e.target.closest('.copyable');
+          if(eye || cp) return;
           onPick(d);
         });
       }
@@ -2497,17 +2503,16 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
 
   function openVer(){
     els.verContent.innerHTML = `
-      <h3 class="pageTitle">${VERSION}</h3>
+      <h3 class="pageTitle">v0.7.15</h3>
       <div class="pageText">
         <ul>
+          <li><b>v0.7.15</b> • Tous les montants de la légende sont cliquables pour copier (sans €)</li>
           <li><b>v0.7.15</b> • CA Total (hors TCG) renommé "hors TCG / Escape / Évt" — exclut désormais aussi Escape Game et Événement</li>
-          <li><b>v0.7.15</b> • Clic sur les totaux pour copier le montant brut (sans €)</li>
+          <li><b>v0.7.15</b> • Clic sur les totaux gauche pour copier le montant brut (sans €)</li>
           <li><b>v0.7.14</b> • Retrait complet de l'épinglage</li>
           <li><b>v0.7.14</b> • DEV : retour au clic normal sur les lignes, ouverture des détails via bouton œil</li>
-          <li><b>v0.7.14</b> • Retrait du bouton DEV flottant</li>
           <li><b>v0.7.14</b> • Fix historique : bouton × stable, espace réservé, hitbox plus large</li>
           <li><b>v0.7.14</b> • Surbrillance blanche légère harmonisée sur parts du camembert et lignes</li>
-          <li><b>v0.7.14</b> • Avertissement doublon conservé</li>
         </ul>
       </div>
     `;
