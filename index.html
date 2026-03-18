@@ -6,7 +6,7 @@
   <title>LGDJ — Extracteur CA (Offline)</title>
   <style>
     :root{
-      --ver:"v0.7.14";
+      --ver:"v0.7.15";
 
       --bg0:#0b1020;
       --bg1:#0c1426;
@@ -219,6 +219,28 @@
     .totalRow .lbl{font-weight:950; letter-spacing:.15px}
     .totalRow .val{font-weight:980; font-size:16px}
     .valGreen{color:var(--ok)}
+
+    /* Copyable value spans */
+    .copyable{
+      cursor: pointer;
+      user-select: none;
+      border-radius: 6px;
+      padding: 1px 5px;
+      transition: background .12s;
+    }
+    .copyable:hover{
+      background: rgba(255,255,255,.10);
+    }
+    .copyable:active{
+      background: rgba(255,255,255,.20);
+    }
+    @keyframes copyFlash{
+      0%  { background: rgba(96,165,250,.40); }
+      100%{ background: transparent; }
+    }
+    .copyFlash{
+      animation: copyFlash .45s ease forwards;
+    }
 
     /* History */
     .histSearch{
@@ -585,12 +607,12 @@
 
           <div class="miniTotals">
             <div class="totalRow">
-              <div class="lbl">CA Total (hors TCG)</div>
-              <div class="val valGreen"><span id="leftSans">—</span></div>
+              <div class="lbl">CA Total (hors TCG / Escape / Évt)</div>
+              <div class="val valGreen"><span id="leftSans" class="copyable" title="Cliquer pour copier le montant">—</span></div>
             </div>
             <div class="totalRow">
               <div class="lbl">CA TOTAL GLOBAL</div>
-              <div class="val"><span id="leftTot">—</span></div>
+              <div class="val"><span id="leftTot" class="copyable" title="Cliquer pour copier le montant">—</span></div>
             </div>
 
             <div class="histSearch" id="histSearch">
@@ -624,7 +646,7 @@
 
     <div class="foot">
       <div class="mono">LGDJ — <span id="ver2">v0.7.14</span></div>
-      <div class="contact">Si problème ou suggestion d’amélioration : contacter Zao</div>
+      <div class="contact">Si problème ou suggestion d'amélioration : contacter Zao</div>
       <div>Offline • Drilldown • HT</div>
     </div>
   </div>
@@ -663,7 +685,7 @@
 
         <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:14px 0">
 
-        <div class="label" style="margin-bottom:8px">Classement (les boutons re-classent, ils ne “cachent” pas)</div>
+        <div class="label" style="margin-bottom:8px">Classement (les boutons re-classent, ils ne "cachent" pas)</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button id="toggleEvt" class="btnPrimary" type="button">Événements : CATÉGORIE</button>
           <button id="toggleJdr" class="btnPrimary" type="button">JDR : CATÉGORIE</button>
@@ -672,7 +694,7 @@
         </div>
 
         <div class="muted" style="margin-top:10px;font-size:12px;line-height:1.45">
-          Note : si la colonne Quantité n’est pas présente, l’app affiche “—”.
+          Note : si la colonne Quantité n'est pas présente, l'app affiche "—".
         </div>
 
         <div class="pager" style="justify-content:flex-end;margin-top:14px;gap:10px">
@@ -1328,9 +1350,12 @@
     }
   }
 
-  function calcSansTCG(bucket){
+  // ── MODIFIÉ : hors TCG + Escape Game + Événement ──────────────────────────
+  function calcSansExclus(bucket){
     const tcg = bucket.totalsHT.get(TOP.TCG) || 0;
-    return bucket.total - tcg;
+    const esc = bucket.totalsHT.get(TOP.ESC) || 0;
+    const evt = bucket.totalsHT.get(TOP.EVT) || 0;
+    return bucket.total - tcg - esc - evt;
   }
 
   function buildTopOrder(){
@@ -1673,7 +1698,7 @@
     const pct = Math.round((info.share||0)*100);
     els.dupWarn.innerHTML =
       `⚠️ <b>Doublon probable</b> : le tableau semble collé <b>2 fois</b> (ou +). ` +
-      `Beaucoup de lignes sont répétées (${pct}%). Clique ici pour confirmer si c’est voulu.`;
+      `Beaucoup de lignes sont répétées (${pct}%). Clique ici pour confirmer si c'est voulu.`;
     els.dupWarn.style.display = 'block';
     els.dupWarn.onclick = () => openDupModal(info);
   }
@@ -1689,7 +1714,7 @@
     els.dupModalText.innerHTML = `
       <b>Risque compta :</b> si le même tableau est collé 2 fois, les montants seront doublés.<br><br>
       Indice : ${pct}% des lignes semblent répétées (max répétition : ${info.maxRep}×).<br><br>
-      Si c’est volontaire, clique “OK, je confirme”.
+      Si c'est volontaire, clique "OK, je confirme".
     `;
     els.dupBg.style.display='flex';
     els.dupBg.setAttribute('aria-hidden','false');
@@ -1710,19 +1735,6 @@
     }
     closeDupModal();
   });
-
-  function makeBucket(){
-    return {
-      totalsHT: new Map(),
-      totalsQty: new Map(),
-      sub: new Map(),
-      total: 0,
-      totalQty: 0,
-      tcg: { licenses: new Map(), seriesByLicense: new Map() },
-      kidsLeaves: new Map(),
-      deletedLeaves: new Map(),
-    };
-  }
 
   function parseAll(){
     clearParseError();
@@ -1826,8 +1838,16 @@
     view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: two };
 
     const b = currentBucket();
-    els.leftSans.textContent = b ? (formatEUR(calcSansTCG(b)) + euroSuffix()) : "—";
-    els.leftTot.textContent  = b ? (formatEUR(b.total) + euroSuffix()) : "—";
+    if(b){
+      const sansTot = calcSansExclus(b);
+      els.leftSans.textContent = formatEUR(sansTot) + euroSuffix();
+      updateCopyableValue(els.leftSans, sansTot);
+      els.leftTot.textContent = formatEUR(b.total) + euroSuffix();
+      updateCopyableValue(els.leftTot, b.total);
+    } else {
+      els.leftSans.textContent = "—"; els.leftSans.dataset.rawValue = '';
+      els.leftTot.textContent  = "—"; els.leftTot.dataset.rawValue = '';
+    }
 
     if(parsed.dupLikely && dupConfirmedSig !== dupSig){
       showDupWarningBanner(dupInfo);
@@ -1868,7 +1888,7 @@
       els.btnBack.style.display = 'none';
       const empty = document.createElement('div');
       empty.className = 'empty dyn';
-      empty.innerHTML = 'Colle un export : l’analyse se fait automatiquement.';
+      empty.innerHTML = "Colle un export : l\u2019analyse se fait automatiquement.";
       els.rightBody.appendChild(empty);
       return;
     }
@@ -2327,7 +2347,7 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
       delBtn.addEventListener('click', (e)=>{
         e.preventDefault();
         e.stopPropagation();
-        const ok = confirm("Supprimer cet élément de l’historique ?");
+        const ok = confirm("Supprimer cet élément de l'historique ?");
         if(!ok) return;
         const all = loadHist().filter(x => x.id !== h.id);
         saveHistUnlimited(all);
@@ -2348,11 +2368,11 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
     const pages = [
       { title: "1) Choisir la boutique", text: "Dans PrestaShop, sélectionne la boutique Pigalle OU Gambetta depuis un onglet (ex : Tableau de bord)." },
       { title: "2) Accéder au rapport", text: "Va dans Commandes → Rapport Commandes TVA Bénéfices." },
-      { title: "3) Paramétrer l’export", text: "Préférences d’export : Type de rapport = Catégories ; Format = html (souvent déjà sélectionné)." },
+      { title: "3) Paramétrer l'export", text: "Préférences d'export : Type de rapport = Catégories ; Format = html (souvent déjà sélectionné)." },
       { title: "4) Définir la période", text: "Par date de commande : indique date de début et date de fin. Pour un jour : même date début/fin." },
       { title: "5) Statuts", text: "Tout décocher, puis cocher uniquement Store - Sale." },
       { title: "6) Export + copier", text: "Cliquer Exporter, puis Ctrl+A → Ctrl+C sur la page du tableau." },
-      { title: "7) Coller", text: "Ici : Ctrl+V. L’analyse se lance automatiquement et les résultats apparaissent." }
+      { title: "7) Coller", text: "Ici : Ctrl+V. L'analyse se lance automatiquement et les résultats apparaissent." }
     ];
     const p = pages[tutPage];
     els.tutContent.innerHTML = `
@@ -2480,7 +2500,9 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
       <h3 class="pageTitle">${VERSION}</h3>
       <div class="pageText">
         <ul>
-          <li><b>v0.7.14</b> • Retrait complet de l’épinglage</li>
+          <li><b>v0.7.15</b> • CA Total (hors TCG) renommé "hors TCG / Escape / Évt" — exclut désormais aussi Escape Game et Événement</li>
+          <li><b>v0.7.15</b> • Clic sur les totaux pour copier le montant brut (sans €)</li>
+          <li><b>v0.7.14</b> • Retrait complet de l'épinglage</li>
           <li><b>v0.7.14</b> • DEV : retour au clic normal sur les lignes, ouverture des détails via bouton œil</li>
           <li><b>v0.7.14</b> • Retrait du bouton DEV flottant</li>
           <li><b>v0.7.14</b> • Fix historique : bouton × stable, espace réservé, hitbox plus large</li>
@@ -2543,156 +2565,6 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
     }
   });
 
-  function openDevDetails(payload){
-    if(!payload || !parsed) return;
-    lastDevPayload = payload;
-
-    const linesCount = payload.lines?.length || 0;
-    els.devSummary.innerHTML = `
-<b>Filtre</b> : ${escapeHtml(payload.title || "—")}<br>
-<b>Totaux</b> : ${escapeHtml(formatEUR(payload.totalHT||0))}${escapeHtml(euroSuffix())}
-${settings.showQty==='ON' ? ` • <b>Qté</b> : ${escapeHtml(String(payload.totalQty ?? "—"))}` : ``}
-<br>
-<b>Lignes</b> : ${linesCount}
-${payload.dateTxt ? `<br><b>Période</b> : ${escapeHtml(payload.dateTxt)}` : ``}
-${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLabel)}` : ``}
-    `.trim();
-
-    els.devDiffBox.textContent = lastDiffText || "—";
-
-    if(linesCount === 0){
-      els.devLinesBox.textContent = "—";
-    } else {
-      const txt = payload.lines.map((x,i)=>{
-        const why = (x.why && x.why.length) ? x.why.join(" | ") : "—";
-        const trace = x.trace || "—";
-        return `#${i+1}\nPourquoi : ${why}\nTrace : ${trace}\nLigne : ${x.rawLine}`;
-      }).join("\n\n");
-      els.devLinesBox.textContent = txt;
-    }
-
-    els.devBg.style.display='flex';
-  }
-
-  function closeDev(){ els.devBg.style.display='none'; }
-  els.btnCloseDev.addEventListener('click', closeDev);
-  els.devBg.addEventListener('click', (e)=>{ if(e.target===els.devBg) closeDev(); });
-
-  els.btnCopyDev.addEventListener('click', async ()=>{
-    try{
-      const txt = [
-        (els.devSummary.textContent||'').trim(),
-        "\n\n---\nDiff de toggles\n---\n",
-        els.devDiffBox.textContent||'',
-        "\n\n---\nLignes + raisons\n---\n",
-        els.devLinesBox.textContent||'',
-      ].join("");
-      await navigator.clipboard.writeText(txt);
-      els.btnCopyDev.textContent = 'Copié';
-      setTimeout(()=> els.btnCopyDev.textContent='Copier détail', 900);
-    } catch {
-      const ta = document.createElement('textarea');
-      ta.value = (els.devLinesBox.textContent||'');
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      els.btnCopyDev.textContent = 'Copié';
-      setTimeout(()=> els.btnCopyDev.textContent='Copier détail', 900);
-    }
-  });
-
-  function boutiqueLabelForParsed(){
-    if(!parsed) return "";
-    if(parsed.two || parsed.activeKey === 'GLOBAL') return "2 boutiques / GLOBAL";
-    if(parsed.activeKey === 'GAMBETTA') return "Gambetta";
-    if(parsed.activeKey === 'PIGALLE') return "Pigalle";
-    return parsed.activeKey;
-  }
-
-  function pickRowsByFilter(filter){
-    if(!parsed) return [];
-    const rows = parsed.rows;
-    const needBoutique = (parsed.activeKey !== 'GLOBAL' && !parsed.two);
-    const keyBoutique = parsed.activeKey;
-    const inBoutique = (r)=> !needBoutique || r.boutiqueKey === keyBoutique;
-    const lvl = filter.level;
-
-    if(lvl === 'dashboard'){
-      if(!filter.pickKey) return rows.filter(inBoutique);
-      return rows.filter(r => inBoutique(r) && r.top === filter.pickKey);
-    }
-
-    if(lvl === 'category'){
-      const cat = filter.category;
-      if(cat === TOP.TCG){
-        if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === TOP.TCG);
-        return rows.filter(r => inBoutique(r) && r.top === TOP.TCG && r.license === filter.pickKey);
-      }
-      if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === cat);
-      return rows.filter(r => inBoutique(r) && r.top === cat && r.sub === filter.pickKey);
-    }
-
-    if(lvl === 'tcgLicense'){
-      const lic = filter.tcgLicense;
-      if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === TOP.TCG && r.license === lic);
-      return rows.filter(r => inBoutique(r) && r.top === TOP.TCG && r.license === lic && r.sub === filter.pickKey);
-    }
-
-    if(lvl === 'kids'){
-      if(!filter.pickKey){
-        return rows.filter(r => inBoutique(r) && r.top === TOP.JEUX && r.sub === TOP.JEUX_ENFANTS);
-      }
-      return rows.filter(r => inBoutique(r) && r.top === TOP.JEUX && r.sub === TOP.JEUX_ENFANTS && r.leafKids === filter.pickKey);
-    }
-
-    if(lvl === 'deletedCats'){
-      if(!filter.pickKey){
-        return rows.filter(r => inBoutique(r) && r.top === TOP.AUTRE && r.sub === TOP.AUTRE_DELETED);
-      }
-      return rows.filter(r => inBoutique(r) && r.top === TOP.AUTRE && r.sub === TOP.AUTRE_DELETED && (r.leafDeleted||r.category) === filter.pickKey);
-    }
-
-    return rows.filter(inBoutique);
-  }
-
-  function buildDevPayload(filter){
-    if(!parsed) return null;
-    const rows = pickRowsByFilter(filter);
-    const totalHT = rows.reduce((s,r)=>s+(r.ht||0),0);
-    const totalQty = rows.reduce((s,r)=>s+(Number.isFinite(r.qty)?r.qty:0),0);
-
-    let title = "—";
-    if(filter.level === 'dashboard'){
-      title = filter.pickKey ? `Catégorie : ${filter.pickKey}` : "Dashboard : toutes catégories";
-    } else if(filter.level === 'category'){
-      if(filter.category === TOP.TCG){
-        title = filter.pickKey ? `TCG / ${prettyLicense(filter.pickKey)}` : "TCG (toutes licences)";
-      } else {
-        title = filter.pickKey ? `${filter.category} / ${filter.pickKey}` : `${filter.category} (toutes sous-catégories)`;
-      }
-    } else if(filter.level === 'tcgLicense'){
-      title = filter.pickKey ? `TCG / ${prettyLicense(filter.tcgLicense)} / ${filter.pickKey}` : `TCG / ${prettyLicense(filter.tcgLicense)} (toutes séries)`;
-    } else if(filter.level === 'kids'){
-      title = filter.pickKey ? `Jeux enfants / ${filter.pickKey}` : `Jeux enfants (toutes entrées)`;
-    } else if(filter.level === 'deletedCats'){
-      title = filter.pickKey ? `Catégories supprimées / ${filter.pickKey}` : `Catégories supprimées (toutes entrées)`;
-    }
-
-    return {
-      title,
-      totalHT,
-      totalQty: settings.showQty==='ON' ? totalQty : null,
-      lines: rows.map(r => ({
-        rawLine: r.rawLine,
-        why: r.why || [],
-        trace: r.trace || "—",
-      })),
-      dateTxt: parsed.dateTxt || "",
-      boutiqueLabel: boutiqueLabelForParsed(),
-    };
-  }
-
   function doPasteOrClear(){
     clearParseError();
     clearDupWarn();
@@ -2707,8 +2579,8 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
       els.metaUsed.textContent = '0';
       els.metaErr.textContent = '0';
       els.warnTwo.style.display = 'none';
-      els.leftSans.textContent = '—';
-      els.leftTot.textContent  = '—';
+      els.leftSans.textContent = '—'; els.leftSans.dataset.rawValue = '';
+      els.leftTot.textContent  = '—'; els.leftTot.dataset.rawValue = '';
       render();
       els.raw.focus();
       return;
@@ -2738,8 +2610,8 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
         els.metaUsed.textContent = '0';
         els.metaErr.textContent = '0';
         els.warnTwo.style.display = 'none';
-        els.leftSans.textContent = '—';
-        els.leftTot.textContent  = '—';
+        els.leftSans.textContent = '—'; els.leftSans.dataset.rawValue = '';
+        els.leftTot.textContent  = '—'; els.leftTot.dataset.rawValue = '';
         clearDupWarn();
         render();
         return;
@@ -2755,6 +2627,45 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
       closeTut(); closeSet(); closeVer(); closeStats(); closeDev(); closeDupModal();
     }
   });
+
+  // ── MODIFIÉ : copie au clic sur les totaux ─────────────────────────────────
+  function updateCopyableValue(spanEl, numericValue){
+    if(!Number.isFinite(numericValue)){
+      spanEl.dataset.rawValue = '';
+      return;
+    }
+    // Nombre brut avec virgule décimale (format FR), sans € ni espace
+    spanEl.dataset.rawValue = numericValue.toFixed(2).replace('.', ',');
+  }
+
+  async function copyToClipboard(text){
+    try{
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+  }
+
+  function makeCopyable(spanEl){
+    spanEl.addEventListener('click', async ()=>{
+      const raw = spanEl.dataset.rawValue;
+      if(!raw) return;
+      await copyToClipboard(raw);
+      spanEl.classList.remove('copyFlash');
+      // Force reflow pour relancer l'animation si on clique plusieurs fois
+      void spanEl.offsetWidth;
+      spanEl.classList.add('copyFlash');
+      spanEl.addEventListener('animationend', ()=> spanEl.classList.remove('copyFlash'), {once:true});
+    });
+  }
+
+  makeCopyable(els.leftSans);
+  makeCopyable(els.leftTot);
 
   els.btnVer.textContent = VERSION;
   els.ver2.textContent = VERSION;
