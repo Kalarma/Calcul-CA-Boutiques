@@ -6,7 +6,7 @@
   <title>LGDJ — Extracteur CA v0.7.15 (Offline)</title>
   <style>
     :root{
-      --ver:"v0.7.15";
+      --ver:"v0.7.16";
 
       --bg0:#0b1020;
       --bg1:#0c1426;
@@ -572,7 +572,7 @@
             <div>Extracteur CA</div>
             <span class="devDot" id="devDot">DEV</span>
           </div>
-          <button class="verBtn" id="btnVer">v0.7.15</button>
+          <button class="verBtn" id="btnVer">v0.7.16</button>
         </div>
       </div>
 
@@ -645,7 +645,7 @@
     </div>
 
     <div class="foot">
-      <div class="mono">LGDJ — <span id="ver2">v0.7.15</span></div>
+      <div class="mono">LGDJ — <span id="ver2">v0.7.16</span></div>
       <div class="contact">Si problème ou suggestion d'amélioration : contacter Zao</div>
       <div>Offline • Drilldown • HT</div>
     </div>
@@ -778,7 +778,7 @@
   </div>
 
 <script>
-  const VERSION = "v0.7.15";
+  const VERSION = "v0.7.16";
 
   const BOUTIQUES = [
     { key: "GAMBETTA", label: "LGDJ Gambetta", needles: ["lgdj gambetta","gambetta"] },
@@ -1523,18 +1523,20 @@
       row.innerHTML = `
         <div class="legL">
           <span class="sw" style="background:${d._color}"></span>
-          <span class="legName">${escapeHtml(d.name)}</span>
+          <span class="legName copyable" data-raw-value="${escapeHtml(d.name)}" title="Cliquer pour copier le nom">${escapeHtml(d.name)}</span>
         </div>
         <div class="legR">
           <div class="legVal">
-            <span class="copyable" data-raw-value="${rawVal}" title="Cliquer pour copier">${formatEUR(d.value)}${euroSuffix()} <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span></span>
+            <span class="copyable" data-raw-value="${rawVal}" title="Cliquer pour copier le montant">${formatEUR(d.value)}${euroSuffix()} <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span></span>
             ${settings.showQty==='ON' ? `<span class="qtyMini">Qt\u00e9: ${qtyText(d.qty)}</span>` : ``}
           </div>
           <button class="eyeBtn" type="button" title="Voir le d\u00e9tail DEV" aria-label="Voir le d\u00e9tail DEV">&#128065;</button>
         </div>
       `;
 
-      // Attach copy-on-click to the value span
+      // Attach copy-on-click to name and value spans
+      const nameSpan = row.querySelector('.legName.copyable');
+      if(nameSpan) makeCopyable(nameSpan);
       const valSpan = row.querySelector('.legVal .copyable');
       if(valSpan) makeCopyable(valSpan);
 
@@ -1904,6 +1906,7 @@
     if(view.level === 'dashboard') renderDashboard();
     else if(view.level === 'category') renderCategory();
     else if(view.level === 'tcgLicense') renderTcgLicense();
+    else if(view.level === 'lorcanaCards') renderLorcanaCards();
     else if(view.level === 'kids') renderKids();
     else if(view.level === 'deletedCats') renderDeletedCats();
 
@@ -2060,13 +2063,36 @@
     els.rightBody.appendChild(combo);
   }
 
+  // Détecte si un nom de sous-catégorie Lorcana correspond à une carte vendue à l'unité.
+  // Exemples : "Disney Lorcana - Série 1", "Disney Lorcana - Série 12"
+  function isLorcanaSingleCard(name){
+    return /disney\s+lorcana\s*[-–]\s*s[eé]rie\s*\d+/i.test(name);
+  }
+
   function renderTcgLicense(){
     const b = currentBucket();
     const lic = view.tcgLicense;
     els.rightTitle.textContent = rightHeaderTitle();
 
     const seriesMap = b.tcg.seriesByLicense.get(lic) || new Map();
-    const entries = [...seriesMap.entries()]
+
+    // Pour Lorcana : fusionner toutes les entrées "Disney Lorcana - Série X" en "Cartes à l'unité"
+    const isLorcana = normalize(lic) === normalize("lorcana");
+    const mergedMap = new Map();
+    for(const [name, obj] of seriesMap.entries()){
+      let displayName = name;
+      if(isLorcana && isLorcanaSingleCard(name)){
+        displayName = "Cartes à l'unité";
+      }
+      if(!mergedMap.has(displayName)){
+        mergedMap.set(displayName, { value:0, qty:0, hasQty:false });
+      }
+      const cur = mergedMap.get(displayName);
+      cur.value += obj.value;
+      if(obj.hasQty){ cur.qty += obj.qty; cur.hasQty = true; }
+    }
+
+    const entries = [...mergedMap.entries()]
       .map(([name,obj]) => ({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
       .sort((a,b)=>b.value-a.value);
 
@@ -2074,9 +2100,46 @@
       ? `Qté ${prettyLicense(lic)}: ${qtyText(entries.reduce((s,x)=>s+(x.qty||0),0))}`
       : '';
 
+    // "Cartes à l'unité" est cliquable pour Lorcana — drill vers le détail par série
+    const onPickLicense = isLorcana
+      ? (d) => {
+          if(d.key === "Cartes à l'unité"){
+            view = { level:'lorcanaCards', category:TOP.TCG, tcgLicense:lic, globalOnly: parsed.two };
+            render();
+          }
+        }
+      : null;
+
     const combo = renderComboPieAndList(
       entries,
       `Répartition — ${prettyLicense(lic)} (séries)`,
+      meta,
+      onPickLicense,
+      (d) => buildDevPayload({ level:'tcgLicense', tcgLicense:lic, pickKey:d.key })
+    );
+    els.rightBody.appendChild(combo);
+  }
+
+  function renderLorcanaCards(){
+    const b = currentBucket();
+    const lic = view.tcgLicense;
+    els.rightTitle.textContent = rightHeaderTitle();
+
+    const seriesMap = b.tcg.seriesByLicense.get(lic) || new Map();
+
+    // N'afficher que les entrées "Disney Lorcana - Série X"
+    const entries = [...seriesMap.entries()]
+      .filter(([name]) => isLorcanaSingleCard(name))
+      .map(([name, obj]) => ({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
+      .sort((a,b) => b.value - a.value);
+
+    const meta = settings.showQty==='ON'
+      ? `Qté cartes à l'unité: ${qtyText(entries.reduce((s,x)=>s+(x.qty||0),0))}`
+      : '';
+
+    const combo = renderComboPieAndList(
+      entries,
+      `Lorcana — Cartes à l'unité (détail par série)`,
       meta,
       null,
       (d) => buildDevPayload({ level:'tcgLicense', tcgLicense:lic, pickKey:d.key })
@@ -2087,6 +2150,7 @@
   els.btnBack.addEventListener('click', ()=>{
     if(!parsed) return;
     if(view.level === 'tcgLicense') view = { level:'category', category:TOP.TCG, tcgLicense:null, globalOnly: parsed.two };
+    else if(view.level === 'lorcanaCards') view = { level:'tcgLicense', category:TOP.TCG, tcgLicense:view.tcgLicense, globalOnly: parsed.two };
     else if(view.level === 'kids') view = { level:'category', category:TOP.JEUX, tcgLicense:null, globalOnly: parsed.two };
     else if(view.level === 'deletedCats') view = { level:'category', category:TOP.AUTRE, tcgLicense:null, globalOnly: parsed.two };
     else if(view.level === 'category') view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed.two };
@@ -2503,16 +2567,14 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
 
   function openVer(){
     els.verContent.innerHTML = `
-      <h3 class="pageTitle">v0.7.15</h3>
+      <h3 class="pageTitle">v0.7.16</h3>
       <div class="pageText">
         <ul>
-          <li><b>v0.7.15</b> • Tous les montants de la légende sont cliquables pour copier (sans €)</li>
-          <li><b>v0.7.15</b> • CA Total (hors TCG) renommé "hors TCG / Escape / Évt" — exclut désormais aussi Escape Game et Événement</li>
-          <li><b>v0.7.15</b> • Clic sur les totaux gauche pour copier le montant brut (sans €)</li>
-          <li><b>v0.7.14</b> • Retrait complet de l'épinglage</li>
-          <li><b>v0.7.14</b> • DEV : retour au clic normal sur les lignes, ouverture des détails via bouton œil</li>
-          <li><b>v0.7.14</b> • Fix historique : bouton × stable, espace réservé, hitbox plus large</li>
-          <li><b>v0.7.14</b> • Surbrillance blanche légère harmonisée sur parts du camembert et lignes</li>
+          <li><b>v0.7.16</b> • Lorcana : "Cartes à l'unité" est désormais cliquable → drill-down par série</li>
+          <li><b>v0.7.16</b> • Clic sur le NOM d'une catégorie dans la légende → copie le nom dans le presse-papier</li>
+          <li><b>v0.7.16</b> • Lorcana : "Disney Lorcana - Série X" regroupées en "Cartes à l'unité"</li>
+          <li><b>v0.7.15</b> • Tous les montants cliquables pour copier · CA Total hors TCG/Escape/Évt</li>
+          <li><b>v0.7.14</b> • Retrait épinglage, bouton DEV flottant, fix historique</li>
         </ul>
       </div>
     `;
