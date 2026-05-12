@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>LGDJ — Extracteur CA v0.7.15 (Offline)</title>
+  <title>LGDJ — Extracteur CA v0.8.1 (Offline)</title>
   <style>
     :root{
-      --ver:"v0.7.16";
+      --ver:"v0.8.1";
 
       --bg0:#0b1020;
       --bg1:#0c1426;
@@ -33,7 +33,6 @@
       --chip: rgba(255,255,255,.06);
       --input: rgba(0,0,0,.18);
 
-      /* hover glow */
       --hoverWhite: rgba(255,255,255,.18);
       --hoverBox: 0 0 0 1px rgba(255,255,255,.14) inset, 0 0 18px rgba(255,255,255,.10);
       --hoverDrop: drop-shadow(0 0 10px rgba(255,255,255,.16));
@@ -114,6 +113,144 @@
     .btnTutor:hover{background: rgba(34,197,94,.18)}
     .btnGear{border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.10)}
     .btnGear:hover{background: rgba(245,158,11,.16)}
+
+    .btnUpdateNotif{
+      border-color: rgba(52,211,153,.35) !important;
+      background: rgba(52,211,153,.12) !important;
+      color:var(--text);
+      animation: updateBlink 0.6s ease-in-out 4;
+    }
+    .btnUpdateNotif:hover{background: rgba(52,211,153,.18) !important}
+    @keyframes updateBlink{
+      0%, 100%{opacity:1}
+      50%{opacity:0.4}
+    }
+
+    /* Menu tutoriel */
+    #btnTutBase, #btnTutProduits{
+      transition: all 0.2s ease;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+    }
+    #btnTutBase:hover{
+      border-color: rgba(34,197,94,.55) !important;
+      background: rgba(34,197,94,.20) !important;
+      transform: translateY(-2px);
+    }
+    #btnTutProduits:hover{
+      border-color: rgba(52,211,153,.55) !important;
+      background: rgba(52,211,153,.20) !important;
+      transform: translateY(-2px);
+    }
+
+    /* Tutoriel visuel */
+    .tutStep{
+      font-size:13px;
+      line-height:1.65;
+      color:var(--text);
+    }
+    .tutStep strong{color:#60a5fa}
+    .tutStepNum{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:28px;height:28px;
+      border-radius:50%;
+      background:rgba(96,165,250,.20);
+      border:1px solid rgba(96,165,250,.40);
+      font-weight:900;
+      font-size:12px;
+      color:#60a5fa;
+      margin-bottom:10px;
+    }
+    .tutImage{
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:var(--panel2);
+      padding:8px;
+      max-width:100%;
+      max-height:840px;
+      object-fit:contain;
+    }
+    .tutImagePlaceholder{
+      border-radius:10px;
+      border:2px dashed rgba(96,165,250,.30);
+      background:rgba(96,165,250,.05);
+      padding:20px;
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:400px;
+      font-style:italic;
+    }
+    .tutHighlight{
+      position:relative;
+      padding:6px 10px;
+      border-radius:6px;
+      background:rgba(96,165,250,.15);
+      border:1px solid rgba(96,165,250,.35);
+      display:inline-block;
+      margin:0 2px;
+      transition: all 0.3s ease;
+    }
+    .tutHighlight.active{
+      background:rgba(52,211,153,.25);
+      border-color:rgba(52,211,153,.50);
+      box-shadow: 0 0 12px rgba(52,211,153,.35);
+    }
+
+    /* Mode interactif du tutoriel */
+    .tutInteractiveOverlay{
+      position:fixed;
+      top:0;left:0;right:0;bottom:0;
+      pointer-events:none;
+      z-index:9990;
+    }
+    .tutHighlightElement{
+      position:absolute;
+      border:4px solid #34d399;
+      border-radius:10px;
+      box-shadow: 0 0 0 4px rgba(52,211,153,.25), 0 0 30px rgba(52,211,153,.50);
+      pointer-events:auto;
+      transition: all 0.3s ease;
+      cursor:pointer;
+      animation: tutGlow 1.5s ease-in-out infinite;
+    }
+    @keyframes tutGlow{
+      0%, 100%{box-shadow: 0 0 0 4px rgba(52,211,153,.25), 0 0 30px rgba(52,211,153,.50), inset 0 0 15px rgba(52,211,153,.25)}
+      50%{box-shadow: 0 0 0 4px rgba(52,211,153,.40), 0 0 50px rgba(52,211,153,.70), inset 0 0 25px rgba(52,211,153,.35)}
+    }
+    .tutArrow{
+      position:absolute;
+      color:#34d399;
+      font-size:32px;
+      font-weight:900;
+      animation: tutArrowBounce 1s ease-in-out infinite;
+      pointer-events:none;
+    }
+    @keyframes tutArrowBounce{
+      0%{transform:translateY(0)}
+      50%{transform:translateY(-10px)}
+      100%{transform:translateY(0)}
+    }
+    .tutInstructionBox{
+      position:absolute;
+      background:rgba(34,211,153,.15);
+      border:2px solid #34d399;
+      border-radius:10px;
+      padding:12px 16px;
+      color:#34d399;
+      font-weight:900;
+      font-size:13px;
+      white-space:nowrap;
+      pointer-events:none;
+      z-index:9999;
+    }
     .btnPrimary{border-color: color-mix(in srgb, var(--accent) 40%, transparent); background: color-mix(in srgb, var(--accent) 14%, transparent)}
     .btnPrimary:hover{background: color-mix(in srgb, var(--accent) 20%, transparent)}
 
@@ -220,7 +357,6 @@
     .totalRow .val{font-weight:980; font-size:16px}
     .valGreen{color:var(--ok)}
 
-    /* Copyable value spans */
     .copyable{
       cursor: pointer;
       user-select: none;
@@ -228,48 +364,153 @@
       padding: 1px 5px;
       transition: background .12s;
     }
-    .copyable:hover{
-      background: rgba(255,255,255,.10);
-    }
-    .copyable:active{
-      background: rgba(255,255,255,.20);
-    }
+    .copyable:hover{background: rgba(255,255,255,.10);}
+    .copyable:active{background: rgba(255,255,255,.20);}
     @keyframes copyFlash{
       0%  { background: rgba(96,165,250,.40); }
       100%{ background: transparent; }
     }
-    .copyFlash{
-      animation: copyFlash .45s ease forwards;
+    .copyFlash{animation: copyFlash .45s ease forwards;}
+
+    /* ── HISTORIQUE ─────────────────────────────────────── */
+    .histControls{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
     }
 
-    /* History */
+    .histFilterRow{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .histFilterBtn{
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: var(--chip);
+      color:var(--muted);
+      font-size:11px;
+      font-weight:900;
+      cursor:pointer;
+      transition: background .12s, color .12s;
+    }
+    .histFilterBtn:hover{background: rgba(255,255,255,.10); color:var(--text)}
+    .histFilterBtn.active{
+      background: color-mix(in srgb, var(--accent) 20%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      color:var(--text);
+    }
+    .histFilterBtn.fGambetta.active{
+      background: rgba(245,158,11,.18);
+      border-color: rgba(245,158,11,.45);
+      color:#f59e0b;
+    }
+    .histFilterBtn.fPigalle.active{
+      background: rgba(96,165,250,.18);
+      border-color: rgba(96,165,250,.45);
+      color:#60a5fa;
+    }
+    .histFilterBtn.fTwo.active{
+      background: rgba(34,197,94,.18);
+      border-color: rgba(34,197,94,.45);
+      color:#22c55e;
+    }
+
     .histSearch{
       display:none;
       gap:8px;
       align-items:center;
-      padding-top:6px;
     }
     .histSearch input{
-      height:36px;
-      padding:8px 10px;
+      height:34px;
+      padding:6px 10px;
       border-radius:12px;
       font-size:12px;
     }
 
+    /* Mini calendrier */
+    .histCalendar{
+      display:none;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      border-radius:14px;
+      padding:10px;
+      user-select:none;
+    }
+    .histCalendar.show{display:block;}
+
+    .calHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:8px;
+    }
+    .calMonthLabel{font-weight:900;font-size:12px;color:var(--text);text-transform:capitalize;}
+    .calNavBtn{
+      width:24px;height:24px;
+      border-radius:8px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:12px;
+      padding:0;
+      display:grid;place-items:center;
+      cursor:pointer;
+    }
+    .calNavBtn:hover{background: rgba(255,255,255,.12);color:var(--text);}
+
+    .calGrid{
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      gap:2px;
+    }
+    .calDayHead{
+      text-align:center;
+      font-size:10px;
+      font-weight:900;
+      color:var(--muted);
+      padding:2px 0;
+    }
+    .calDay{
+      text-align:center;
+      font-size:11px;
+      font-weight:900;
+      color: rgba(255,255,255,.25);
+      padding:4px 2px;
+      border-radius:6px;
+      cursor:default;
+    }
+    .calDay.hasData{
+      color:var(--text);
+      cursor:pointer;
+      background: rgba(255,255,255,.06);
+    }
+    .calDay.hasData:hover{
+      background: rgba(255,255,255,.12);
+    }
+    .calDay.today{
+      border:1px solid rgba(96,165,250,.40);
+    }
+    .calDay.selected{
+      background: color-mix(in srgb, var(--accent) 28%, transparent) !important;
+      color:var(--text) !important;
+    }
+
     .microHist{
       display:grid;
-      gap:8px;
-      padding:2px 0 0;
-      max-height:224px;
+      gap:6px;
+      max-height:200px;
       overflow:auto;
     }
-    .microHist.withSearch{max-height:264px;}
 
     .histCard{
       border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.06);
       border-radius: 14px;
-      padding:10px 42px 10px 10px; /* fixed space for delete */
+      padding:8px 42px 8px 10px;
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -281,7 +522,7 @@
       background: rgba(255,255,255,.10);
       box-shadow: var(--hoverBox);
     }
-    .histLeft{display:flex;align-items:center;gap:10px;min-width:0}
+    .histLeft{display:flex;align-items:center;gap:8px;min-width:0}
     .pill{
       height:18px;
       padding:0 8px;
@@ -295,12 +536,12 @@
     }
     .histText{
       color:var(--muted);
-      font-size:12px;
+      font-size:11px;
       font-weight:900;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-width: 240px;
+      max-width: 200px;
     }
     .histRight{
       text-align:right;
@@ -313,8 +554,8 @@
       right:8px;
       top:50%;
       transform:translateY(-50%);
-      width:30px;height:30px;
-      border-radius:10px;
+      width:28px;height:28px;
+      border-radius:9px;
       border:1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.24);
       color:var(--muted);
@@ -331,12 +572,121 @@
       color:var(--text);
     }
 
+    /* Badge "Dernière vérif" */
+    .histTimeBadge{
+      font-size:10px;
+      font-weight:900;
+      color: var(--warn);
+      white-space:nowrap;
+      padding:1px 5px;
+      border-radius:4px;
+      border:1px solid rgba(245,158,11,.30);
+      background: rgba(245,158,11,.10);
+    }
+
+    /* Badge mode Catégories / Produits dans l'historique */
+    .histModeBadge{
+      font-size:10px;
+      font-weight:900;
+      white-space:nowrap;
+      padding:1px 6px;
+      border-radius:4px;
+      flex-shrink:0;
+    }
+    .histModeProduits{
+      color:#34d399;
+      border:1px solid rgba(52,211,153,.30);
+      background: rgba(52,211,153,.10);
+    }
+    .histModeCats{
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+    }
+
+    /* Micro-tip "export Catégories" */
+    .modeTip{
+      display:none;
+      align-items:flex-start;
+      gap:10px;
+      border-radius:12px;
+      padding:9px 12px;
+      font-size:11.5px;
+      line-height:1.5;
+      color:var(--muted);
+      border:1px solid rgba(96,165,250,.22);
+      background: rgba(96,165,250,.07);
+      position:relative;
+    }
+    .modeTip strong{color:var(--text);}
+    .modeTip .modeTipIcon{font-size:14px;flex-shrink:0;margin-top:1px;}
+    .modeTip .modeTipClose{
+      position:absolute;top:6px;right:8px;
+      background:transparent;border:none;
+      font-size:13px;color:var(--muted);cursor:pointer;padding:0 3px;
+      line-height:1;opacity:.6;
+    }
+    .modeTip .modeTipClose:hover{opacity:1;}
+
+    /* ── ENCADRÉ VALIDATION SAVE ─────────────────────────── */
+    .saveBanner{
+      display:none;
+      border:1px solid rgba(96,165,250,.30);
+      background: rgba(96,165,250,.08);
+      border-radius:14px;
+      padding:10px 12px;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .saveBanner.show{display:flex;}
+    .saveBannerText{
+      font-size:12px;
+      font-weight:900;
+      color:var(--muted);
+      line-height:1.4;
+      flex:1;
+    }
+    .saveBannerText strong{color:var(--text);}
+    .saveBannerBtn{
+      white-space:nowrap;
+      font-size:12px;
+      padding:7px 12px;
+      border-radius:10px;
+      border:1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+      background: color-mix(in srgb, var(--accent) 16%, transparent);
+      color:var(--text);
+      font-weight:900;
+      cursor:pointer;
+      flex-shrink:0;
+    }
+    .saveBannerBtn:hover{background: color-mix(in srgb, var(--accent) 26%, transparent);}
+
+    /* Tooltip natif amélioré via title — pas besoin de JS ici */
+
+    /* ── PANNEAU DROIT ───────────────────────────────────── */
     .rightScroll{
       height:100%;
       overflow:auto;
       padding:12px;
       display:grid;
       gap:12px;
+    }
+
+    /* Badge heure */
+    .todayTimeBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      font-size:11px;
+      font-weight:900;
+      color: var(--warn);
+      border:1px solid rgba(245,158,11,.30);
+      background: rgba(245,158,11,.10);
+      border-radius:8px;
+      padding:3px 8px;
+      margin-left:6px;
+      vertical-align:middle;
     }
 
     .alert{
@@ -402,26 +752,14 @@
       user-select:none;
     }
     .legRow:last-child{border-bottom:none}
-    .legRow:hover{
-      box-shadow: var(--hoverBox);
-      border-radius:10px;
-    }
+    .legRow:hover{box-shadow: var(--hoverBox);border-radius:10px;}
     .legRow:hover .legName{color:var(--text)}
 
     .legL{display:flex;align-items:center;gap:10px; min-width:0; flex:1 1 auto;}
     .sw{width:10px;height:10px;border-radius:4px; flex:0 0 auto;}
-    .legName{
-      color:var(--muted);font-weight:950;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
+    .legName{color:var(--muted);font-weight:950;white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 
-    .legR{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex:0 0 auto;
-      min-width:0;
-    }
+    .legR{display:flex;align-items:center;gap:8px;flex:0 0 auto;min-width:0;}
     .legVal{
       font-weight:950;
       white-space:nowrap;
@@ -445,40 +783,22 @@
       color: var(--text);
       flex:0 0 auto;
     }
-    .eyeBtn:hover{
-      box-shadow: var(--hoverBox);
-    }
+    .eyeBtn:hover{box-shadow: var(--hoverBox);}
     .dev-on .eyeBtn{display:grid;}
 
     .legRow.hi .legName{color:color-mix(in srgb, var(--accent) 78%, var(--text));}
-    .legRow.hi{
-      box-shadow: var(--hoverBox);
-      border-radius:10px;
-    }
+    .legRow.hi{box-shadow: var(--hoverBox);border-radius:10px;}
 
-    .slice{
-      cursor:pointer;
-      transition: opacity .15s ease, filter .15s ease, stroke .15s ease;
-    }
-    .slice:hover{
-      opacity:.92;
-      filter: var(--hoverDrop);
-      stroke: rgba(255,255,255,.18);
-      stroke-width: 1.2;
-    }
-    .slice.hi{
-      opacity:.94;
-      filter: var(--hoverDrop);
-      stroke: rgba(255,255,255,.22);
-      stroke-width: 1.3;
-    }
+    .slice{cursor:pointer;transition: opacity .15s ease, filter .15s ease, stroke .15s ease;}
+    .slice:hover{opacity:.92;filter: var(--hoverDrop);stroke: rgba(255,255,255,.18);stroke-width: 1.2;}
+    .slice.hi{opacity:.94;filter: var(--hoverDrop);stroke: rgba(255,255,255,.22);stroke-width: 1.3;}
 
     .empty{padding:22px;color:var(--muted);text-align:center;font-weight:900}
 
     .modalBg{
       position:fixed;inset:0;background: rgba(0,0,0,.45);
       display:none;align-items:center;justify-content:center;
-      padding:16px;z-index:50;
+      padding:16px;z-index:9999;
     }
     .modal{
       width:min(980px, 100%);
@@ -504,11 +824,7 @@
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
 
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-    .tab{
-      padding:8px 10px;border-radius:12px;border:1px solid var(--line);
-      background: rgba(255,255,255,.06);
-      font-weight:900;font-size:12px;cursor:pointer
-    }
+    .tab{padding:8px 10px;border-radius:12px;border:1px solid var(--line);background: rgba(255,255,255,.06);font-weight:900;font-size:12px;cursor:pointer}
     .tab.active{background: color-mix(in srgb, var(--accent) 16%, transparent);border-color: color-mix(in srgb, var(--accent) 35%, transparent)}
 
     .codeBox{
@@ -551,6 +867,161 @@
       color:var(--text);
     }
     .devDot.on{display:inline-flex; align-items:center; gap:6px;}
+
+    /* ── Supplier overlay ─────────────────────────────────────────── */
+    #supplierOverlay{
+      position:fixed;inset:0;z-index:60;
+      display:none;flex-direction:column;
+      background:rgba(11,16,32,.98);
+      backdrop-filter:blur(14px);
+    }
+    .supHd{
+      padding:12px 20px;border-bottom:1px solid var(--line);
+      display:flex;align-items:center;gap:12px;
+      flex-shrink:0;background:rgba(0,0,0,.18);
+    }
+    /* ── Chips catégories ── */
+    .supCatRow{
+      padding:8px 20px;border-bottom:1px solid var(--line);
+      display:flex;gap:6px;flex-wrap:wrap;align-items:center;
+      flex-shrink:0;background:rgba(0,0,0,.10);
+    }
+    .supCatChip{
+      font-size:11px;font-weight:900;padding:4px 11px;border-radius:999px;
+      border:1px solid var(--line);background:rgba(255,255,255,.05);
+      color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;
+    }
+    .supCatChip:hover{background:rgba(255,255,255,.10);color:var(--text);}
+    .supCatChip.active{
+      background:color-mix(in srgb,var(--accent) 20%,transparent);
+      border-color:color-mix(in srgb,var(--accent) 50%,transparent);
+      color:var(--accent);
+    }
+    /* ── Filtres détaillés ── */
+    .supDetailRow{
+      padding:8px 20px;border-bottom:1px solid var(--line);
+      display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+      flex-shrink:0;
+    }
+    .supFilterSelect{
+      background:var(--input);border:1px solid var(--line);
+      border-radius:10px;color:var(--text);
+      padding:6px 10px;font-size:12px;font-weight:900;
+      min-width:180px;max-width:260px;flex:1;
+      appearance:none;cursor:pointer;
+    }
+    .supFilterSelect:focus{outline:none;border-color:var(--accent);}
+    .supFilterSelect option{background:#0b1020;color:var(--text);}
+    .supFilterInput{
+      flex:1;min-width:150px;max-width:280px;
+      background:var(--input);border:1px solid var(--line);
+      border-radius:10px;color:var(--text);
+      padding:6px 10px;font-size:12px;font-weight:900;
+    }
+    .supFilterInput:focus{outline:none;border-color:var(--accent);}
+    .supPriceWrap{display:flex;gap:4px;align-items:center;}
+    .supPriceInput{
+      width:80px;
+      background:var(--input);border:1px solid var(--line);
+      border-radius:10px;color:var(--text);
+      padding:6px 8px;font-size:12px;font-weight:900;
+    }
+    .supPriceInput:focus{outline:none;border-color:var(--accent);}
+    .supSortBtns{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:auto;}
+    .supSortBtn{
+      font-size:11px;padding:5px 10px;border-radius:10px;
+      border:1px solid var(--line);background:rgba(255,255,255,.06);
+      color:var(--muted);cursor:pointer;font-weight:900;white-space:nowrap;
+    }
+    .supSortBtn:hover{color:var(--text);}
+    .supSortBtn.active{
+      background:color-mix(in srgb,var(--accent) 22%,transparent);
+      border-color:color-mix(in srgb,var(--accent) 45%,transparent);
+      color:var(--accent);
+    }
+    /* ── Table unique avec sticky header ── */
+    .supBody{flex:1;overflow-y:auto;padding:0;}
+    .supTable{
+      width:100%;border-collapse:collapse;font-size:12px;
+      table-layout:fixed;
+    }
+    .supTable col.c-prod  {width:26%;}
+    .supTable col.c-sup   {width:14%;}
+    .supTable col.c-cat   {width:14%;}
+    .supTable col.c-qty   {width:6%;}
+    .supTable col.c-pvht  {width:12%;}
+    .supTable col.c-htot  {width:12%;}
+    .supTable col.c-paht  {display:none;}
+    .supTable thead th{
+      position:sticky;top:0;z-index:2;
+      text-align:left;padding:7px 10px;
+      color:var(--muted);font-weight:900;font-size:11px;
+      border-bottom:2px solid var(--line);
+      background:#0b1020;white-space:nowrap;
+    }
+    .supTable td{
+      padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.04);
+      vertical-align:middle;overflow:hidden;text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .supGroupRow td{
+      padding:7px 10px 6px;
+      font-weight:980;font-size:12px;color:var(--accent);
+      background:color-mix(in srgb,var(--accent) 9%,transparent);
+      border-top:1px solid color-mix(in srgb,var(--accent) 20%,transparent);
+      border-bottom:1px solid color-mix(in srgb,var(--accent) 15%,transparent);
+    }
+    .supGroupRow:first-child td{border-top:none;}
+    .supTable tbody tr:not(.supGroupRow):hover td{background:rgba(255,255,255,.03);}
+    .supCatBadge{
+      display:inline-block;font-size:10px;padding:1px 6px;border-radius:6px;
+      background:rgba(255,255,255,.08);color:var(--muted);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      max-width:100%;vertical-align:middle;
+    }
+    .supSupplierLink{
+      color:var(--accent);cursor:pointer;font-weight:900;
+      text-decoration:underline;text-underline-offset:2px;
+      background:none;border:none;padding:0;font-size:12px;
+    }
+    .supSupplierLink:hover{color:var(--accent2);}
+    /* ── Toggle vue fournisseurs / tous produits ── */
+    .supViewToggle{display:flex;gap:3px;background:rgba(0,0,0,.25);padding:3px;border-radius:12px;flex-shrink:0;}
+    .supToggleBtn{
+      font-size:11px;font-weight:900;padding:5px 12px;border-radius:9px;
+      border:none;background:transparent;color:var(--muted);cursor:pointer;
+      white-space:nowrap;transition:all .15s;
+    }
+    .supToggleBtn.active{background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent);}
+    .supToggleBtn:not(.active):hover{background:rgba(255,255,255,.07);color:var(--text);}
+    .btnFournisseurs{
+      font-size:11px;padding:5px 12px;border-radius:10px;
+      border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);
+      background:color-mix(in srgb,var(--accent) 12%,transparent);
+      color:var(--accent);font-weight:900;cursor:pointer;white-space:nowrap;
+    }
+    .btnFournisseurs:hover{background:color-mix(in srgb,var(--accent) 22%,transparent);}
+
+    /* ── Products view table ──────────────────────────────────────── */
+    .prodViewWrap{padding:8px 4px;}
+    .prodViewHd{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      margin-bottom:10px;flex-wrap:wrap;
+    }
+    .prodTable{width:100%;border-collapse:collapse;font-size:12px;}
+    .prodTable th{
+      text-align:left;padding:6px 8px;color:var(--muted);
+      font-weight:900;font-size:11px;border-bottom:1px solid var(--line);
+      white-space:nowrap;cursor:pointer;user-select:none;
+    }
+    .prodTable th:hover{color:var(--text);}
+    .prodTable th.sortActive{color:var(--accent);}
+    .prodTable td{
+      padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.04);
+      vertical-align:middle;
+    }
+    .prodTable tr:last-child td{border-bottom:none;}
+    .prodTable tr:hover td{background:rgba(255,255,255,.03);}
   </style>
 </head>
 
@@ -572,7 +1043,7 @@
             <div>Extracteur CA</div>
             <span class="devDot" id="devDot">DEV</span>
           </div>
-          <button class="verBtn" id="btnVer">v0.7.16</button>
+          <button class="verBtn" id="btnVer">v0.8.1</button>
         </div>
       </div>
 
@@ -582,6 +1053,7 @@
           Utilisées: <span class="mono" id="metaUsed">0</span> •
           Erreurs: <span class="mono" id="metaErr">0</span>
         </button>
+        <button class="btnUpdateNotif" id="btnUpdateNotif">Ajout de la mise à jour 0.8.1</button>
         <button class="btnTutor" id="btnTut">Tutoriel</button>
         <button class="btnGear" id="btnSettings">Paramètres</button>
       </div>
@@ -604,6 +1076,12 @@
 
           <div class="bannerErr" id="parseErr"></div>
           <div class="bannerWarn" id="dupWarn"></div>
+          <div class="modeTip" id="modeTip">
+            <span class="modeTipIcon">📋</span>
+            <span>Export <strong>Catégories</strong> détecté — ça fonctionne parfaitement 👌<br>
+            Pour voir le détail des produits, quantités et fournisseurs, utilise l'export <strong>Produits</strong> dans PrestaShop à la place.</span>
+            <button class="modeTipClose" id="modeTipClose" title="Fermer">×</button>
+          </div>
 
           <div class="miniTotals">
             <div class="totalRow">
@@ -615,9 +1093,28 @@
               <div class="val"><span id="leftTot" class="copyable" title="Cliquer pour copier le montant">—</span></div>
             </div>
 
-            <div class="histSearch" id="histSearch">
-              <input id="histQuery" type="text" placeholder="Filtrer l'historique (date / boutique)..." />
-              <button id="histClear" type="button">Effacer</button>
+            <!-- Encadré validation save -->
+            <div class="saveBanner" id="saveBanner">
+              <div class="saveBannerText">
+                <strong>Enregistrer dans l'historique ?</strong><br>
+                Ce CA correspond à aujourd'hui. Confirme qu'il s'agit bien de la <em>dernière vérification</em> avant de sauvegarder.
+              </div>
+              <button class="saveBannerBtn" id="btnSaveConfirm"
+                title="Pour éviter les erreurs et la mauvaise sauvegarde des CA dans l'historique de l'application, il est nécessaire de valider manuellement que ce CA correspond bien à la dernière vérification de la journée (Caisse fermée)">
+                ✓ Valider &amp; Sauvegarder
+              </button>
+            </div>
+
+            <!-- Contrôles historique -->
+            <div class="histControls" id="histControls">
+              <div class="histFilterRow" id="histFilterRow">
+                <span style="font-size:11px;color:var(--muted);font-weight:900;">Filtrer :</span>
+                <button class="histFilterBtn active" data-filter="all" id="fAll">Tout</button>
+                <button class="histFilterBtn fGambetta" data-filter="Gambetta" id="fGambetta">Gambetta</button>
+                <button class="histFilterBtn fPigalle" data-filter="Pigalle" id="fPigalle">Pigalle</button>
+                <button class="histFilterBtn fTwo" data-filter="2 boutiques" id="fTwo">2 Boutiques</button>
+              </div>
+
             </div>
 
             <div class="microHist" id="microHist"></div>
@@ -633,6 +1130,7 @@
         <div class="hd">
           <div class="hdTitle" id="rightTitle">Résultats</div>
           <div class="actions">
+            <button id="btnFournisseurs" class="btnFournisseurs" style="display:none" onclick="openSupplierOverlay('')">📦 Produits vendus</button>
             <button id="btnBack" style="display:none">Retour</button>
           </div>
         </div>
@@ -645,7 +1143,7 @@
     </div>
 
     <div class="foot">
-      <div class="mono">LGDJ — <span id="ver2">v0.7.16</span></div>
+      <div class="mono">LGDJ — <span id="ver2">v0.8.1</span></div>
       <div class="contact">Si problème ou suggestion d'amélioration : contacter Zao</div>
       <div>Offline • Drilldown • HT</div>
     </div>
@@ -653,48 +1151,50 @@
 
   <!-- Tutoriel -->
   <div class="modalBg" id="tutBg" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" aria-label="Tutoriel">
+    <div class="modal" style="max-width:1500px">
       <div class="mhd">
-        <div style="font-weight:980">Tutoriel</div>
+        <div style="font-weight:980" id="tutTitle">Tutoriel</div>
         <button id="btnCloseTut">Fermer</button>
       </div>
+      <div class="mbd" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-height:1000px">
+        <div id="tutContent" style="overflow-y:auto;padding-right:10px"></div>
+        <div id="tutVisual" style="display:flex;flex-direction:column;gap:10px;border-left:1px solid var(--line);padding-left:16px;overflow-y:auto"></div>
+      </div>
+      <div class="pager">
+        <button id="tutPrev">← Retour</button>
+        <div class="muted"><span id="tutIdx">1</span>/<span id="tutTotal">1</span></div>
+        <button id="tutNext" class="btnPrimary">Suivant →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mises à jour -->
+  <div class="modalBg" id="updateBg" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal">
+      <div class="mhd">
+        <div style="font-weight:980">Mises à jour — v0.8.1</div>
+        <button id="btnCloseUpdate">×</button>
+      </div>
       <div class="mbd">
-        <div id="tutContent"></div>
-        <div class="pager">
-          <button id="tutPrev">Précédent</button>
-          <div class="muted"><span id="tutIdx">1</span>/<span id="tutTotal">1</span></div>
-          <button id="tutNext" class="btnPrimary">Suivant</button>
-        </div>
+        <div id="updateContent"></div>
       </div>
     </div>
   </div>
 
   <!-- Settings -->
   <div class="modalBg" id="setBg" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" aria-label="Paramètres">
+    <div class="modal">
       <div class="mhd">
         <div style="font-weight:980">Paramètres</div>
         <button id="btnCloseSet">Fermer</button>
       </div>
       <div class="mbd">
-        <div class="label" style="margin-bottom:8px">Affichage</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button id="toggleQty" class="btnPrimary" type="button">Quantités : CACHÉES</button>
-          <button id="toggleEuro" type="button">Symbole € : VISIBLE</button>
-        </div>
-
-        <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:14px 0">
-
-        <div class="label" style="margin-bottom:8px">Classement (les boutons re-classent, ils ne "cachent" pas)</div>
+        <div class="label" style="margin-bottom:8px">Classement</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button id="toggleEvt" class="btnPrimary" type="button">Événements : CATÉGORIE</button>
           <button id="toggleJdr" class="btnPrimary" type="button">JDR : CATÉGORIE</button>
           <button id="toggleMergePC" type="button">Puzzles+Casse-tête : SÉPARÉS</button>
           <button id="toggleTcgAcc" class="btnPrimary" type="button">Accessoires TCG : DANS TCG</button>
-        </div>
-
-        <div class="muted" style="margin-top:10px;font-size:12px;line-height:1.45">
-          Note : si la colonne Quantité n'est pas présente, l'app affiche "—".
         </div>
 
         <div class="pager" style="justify-content:flex-end;margin-top:14px;gap:10px">
@@ -707,7 +1207,7 @@
 
   <!-- Changelog -->
   <div class="modalBg" id="verBg" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" aria-label="Changelog">
+    <div class="modal">
       <div class="mhd">
         <div style="font-weight:980">Changelog</div>
         <button id="btnCloseVer">Fermer</button>
@@ -718,7 +1218,7 @@
 
   <!-- Stats -->
   <div class="modalBg" id="statsBg" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" aria-label="Détails des lignes">
+    <div class="modal">
       <div class="mhd">
         <div style="font-weight:980">Détails des lignes</div>
         <button id="btnCloseStats">Fermer</button>
@@ -740,30 +1240,66 @@
 
   <!-- Dev Details -->
   <div class="modalBg" id="devBg" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" aria-label="Détails DEV">
+    <div class="modal">
       <div class="mhd">
         <div style="font-weight:980">Détails DEV</div>
         <button id="btnCloseDev">Fermer</button>
       </div>
       <div class="mbd">
         <div class="confirmBox" id="devSummary" style="margin-bottom:12px"></div>
-
         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
           <button id="btnCopyDev" class="btnPrimary" type="button">Copier détail</button>
         </div>
-
         <div class="label" style="margin:10px 0 8px">Diff de toggles (dernier changement)</div>
         <div class="codeBox" id="devDiffBox">—</div>
-
         <div class="label" style="margin:12px 0 8px">Lignes sources + raisons</div>
         <div class="codeBox" id="devLinesBox">—</div>
       </div>
     </div>
   </div>
 
+  <!-- Supplier overlay -->
+  <div id="supplierOverlay">
+    <!-- Entête -->
+    <div class="supHd">
+      <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">
+        <div style="font-weight:980;font-size:14px;white-space:nowrap">🏭 Produits par fournisseur</div>
+        <div id="supContextInfo" style="font-size:11px;color:var(--muted);font-weight:900;white-space:nowrap"></div>
+      </div>
+      <span id="supCount" style="font-size:11px;color:var(--muted);font-weight:900;margin-right:auto"></span>
+      <div class="supViewToggle">
+        <button id="supBtnBySupplier" class="supToggleBtn active" onclick="setSupViewMode('supplier')">Par fournisseur</button>
+        <button id="supBtnAllProducts" class="supToggleBtn"        onclick="setSupViewMode('all')">Tous les produits</button>
+      </div>
+      <button onclick="closeSupplierOverlay()" style="white-space:nowrap">✕ Fermer</button>
+    </div>
+    <!-- Ligne 1 : chips catégories -->
+    <div class="supCatRow" id="supCatChips"></div>
+    <!-- Ligne 2 : filtres + tri -->
+    <div class="supDetailRow">
+      <select id="supFilterSupplier" class="supFilterSelect">
+        <option value="">Tous les fournisseurs</option>
+      </select>
+      <input type="text" id="supFilterText" class="supFilterInput" placeholder="Rechercher produit, catégorie…">
+      <div class="supPriceWrap">
+        <span style="font-size:11px;color:var(--muted);font-weight:900">Prix&nbsp;:</span>
+        <input type="number" id="supMinPrice" class="supPriceInput" placeholder="Min €" min="0">
+        <span style="color:var(--muted)">—</span>
+        <input type="number" id="supMaxPrice" class="supPriceInput" placeholder="Max €" min="0">
+      </div>
+      <div class="supSortBtns">
+        <span style="font-size:11px;color:var(--muted);font-weight:900">Trier&nbsp;:</span>
+        <button id="supSortQty"  class="supSortBtn active" onclick="setSupSort('qty')">Qté ↓</button>
+        <button id="supSortPvht" class="supSortBtn"        onclick="setSupSort('pvht')">PVHT ↓</button>
+      </div>
+    </div>
+    <!-- Corps : tableau unique -->
+    <div class="supBody" id="supBody"></div>
+  </div>
+
   <!-- Duplicate warning -->
   <div class="modalBg" id="dupBg" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" aria-label="Avertissement doublon">
+    <div class="modal">
       <div class="mhd">
         <div style="font-weight:980">Attention : doublon probable</div>
         <button id="btnCloseDup">Fermer</button>
@@ -778,7 +1314,7 @@
   </div>
 
 <script>
-  const VERSION = "v0.7.16";
+  const VERSION = "v0.8.1";
 
   const BOUTIQUES = [
     { key: "GAMBETTA", label: "LGDJ Gambetta", needles: ["lgdj gambetta","gambetta"] },
@@ -880,11 +1416,10 @@
     leftSans: el('leftSans'),
     leftTot: el('leftTot'),
 
-    microHist: el('microHist'),
-    histSearch: el('histSearch'),
-    histQuery: el('histQuery'),
-    histClear: el('histClear'),
+    saveBanner: el('saveBanner'),
+    btnSaveConfirm: el('btnSaveConfirm'),
 
+    microHist: el('microHist'),
     parseErr: el('parseErr'),
     dupWarn: el('dupWarn'),
 
@@ -900,8 +1435,6 @@
     btnSettings: el('btnSettings'),
     setBg: el('setBg'),
     btnCloseSet: el('btnCloseSet'),
-    toggleQty: el('toggleQty'),
-    toggleEuro: el('toggleEuro'),
     toggleEvt: el('toggleEvt'),
     toggleJdr: el('toggleJdr'),
     toggleMergePC: el('toggleMergePC'),
@@ -914,6 +1447,11 @@
     verBg: el('verBg'),
     btnCloseVer: el('btnCloseVer'),
     verContent: el('verContent'),
+
+    btnUpdateNotif: el('btnUpdateNotif'),
+    updateBg: el('updateBg'),
+    btnCloseUpdate: el('btnCloseUpdate'),
+    updateContent: el('updateContent'),
 
     btnStats: el('btnStats'),
     statsBg: el('statsBg'),
@@ -934,11 +1472,26 @@
     btnCloseDup: el('btnCloseDup'),
     dupModalText: el('dupModalText'),
     btnDupProceed: el('btnDupProceed'),
+
+    btnFournisseurs: el('btnFournisseurs'),
+    supplierOverlay: el('supplierOverlay'),
+    supFilterSupplier: el('supFilterSupplier'),
+    supCatChips: el('supCatChips'),
+    supFilterText: el('supFilterText'),
+    supMinPrice: el('supMinPrice'),
+    supMaxPrice: el('supMaxPrice'),
+    supSortQty: el('supSortQty'),
+    supSortPvht: el('supSortPvht'),
+    supBody: el('supBody'),
+    supCount: el('supCount'),
+    supBtnBySupplier: el('supBtnBySupplier'),
+    supBtnAllProducts: el('supBtnAllProducts'),
+    supContextInfo: el('supContextInfo'),
+    modeTip: el('modeTip'),
+    modeTipClose: el('modeTipClose'),
   };
 
   const DEFAULTS = {
-    showQty: 'OFF',
-    showEuro: 'ON',
     eventsStandalone: 'YES',
     jdrStandalone: 'YES',
     mergePuzzleCasse: 'NO',
@@ -947,8 +1500,8 @@
   };
 
   const settings = {
-    showQty: (localStorage.getItem('lgdj_qty') || DEFAULTS.showQty),
-    showEuro: (localStorage.getItem('lgdj_euro') || DEFAULTS.showEuro),
+    showQty: 'ON',
+    showEuro: 'ON',
     eventsStandalone: (localStorage.getItem('lgdj_evt') || DEFAULTS.eventsStandalone),
     jdrStandalone: (localStorage.getItem('lgdj_jdr') || DEFAULTS.jdrStandalone),
     mergePuzzleCasse: (localStorage.getItem('lgdj_merge_pc') || DEFAULTS.mergePuzzleCasse),
@@ -957,14 +1510,73 @@
   };
 
   let parsed = null;
+  let tutorialParsing = false; // bloque la sauvegarde historique pendant le tuto
   let view = { level: 'dashboard', category: null, tcgLicense: null, globalOnly: false };
   let debug = { used: [], err: [], ignored: [] };
   let parseTimer = null;
+  let hourlyTimer = null;
 
   let lastDiffText = "—";
   let prevSettingsSnap = null;
   let lastDevPayload = null;
   let dupConfirmedSig = null;
+
+  // ── Filtre historique actif ─────────────────────────────
+  let histActiveFilter = 'all'; // 'all' | 'Gambetta' | 'Pigalle' | '2 boutiques'
+
+  // ── Utilitaires date ────────────────────────────────────
+  function todayMidnight(){
+    const n = new Date();
+    return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  }
+
+  function fmtHHMM(dt){
+    const hh = String(dt.getHours()).padStart(2,'0');
+    const mm = String(dt.getMinutes()).padStart(2,'0');
+    return `${hh}h${mm}`;
+  }
+
+  /**
+   * Calcule le label relatif d'une date EN FONCTION DE LA DATE ACTUELLE (maintenant),
+   * pas de la date de collage.
+   */
+  function computeRelativeLabel(toDt){
+    if(!toDt) return "";
+    const today = todayMidnight();
+    const delta = Math.round((today.getTime() - new Date(toDt.getFullYear(), toDt.getMonth(), toDt.getDate()).getTime()) / (24*3600*1000));
+    if(delta === 0) return "aujourd'hui";
+    if(delta === 1) return "hier";
+    if(delta >= 2 && delta <= 7) return weekdayFr(toDt);
+    return null;
+  }
+
+  /**
+   * Construit le label de date affiché (toujours recalculé à l'affichage).
+   */
+  function buildDateLabel(fromDt, toDt, caHour){
+    if(!fromDt || !toDt) return "";
+    const same = fmtFr(fromDt) === fmtFr(toDt);
+    const rel = computeRelativeLabel(toDt);
+
+    let base;
+    if(!same){
+      base = `du ${fmtFr(fromDt)} au ${fmtFr(toDt)}`;
+    } else {
+      base = fmtFr(toDt);
+    }
+
+    // Ajouter l'heure si c'est aujourd'hui
+    const isToday = (computeRelativeLabel(toDt) === "aujourd'hui");
+    let hourSuffix = '';
+    if(isToday && caHour){
+      hourSuffix = ` — vérifié à ${caHour}`;
+    }
+
+    if(rel){
+      return `${base} (${rel})${hourSuffix}`;
+    }
+    return `${base}${hourSuffix}`;
+  }
 
   function normalize(s){
     return (s||"").toString().normalize("NFD").replace(/\p{Diacritic}/gu,"").toLowerCase();
@@ -972,11 +1584,8 @@
 
   function escapeHtml(s){
     return (s||'').toString()
-      .replaceAll('&','&amp;')
-      .replaceAll('<','&lt;')
-      .replaceAll('>','&gt;')
-      .replaceAll('"','&quot;')
-      .replaceAll("'",'&#039;');
+      .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+      .replaceAll('"','&quot;').replaceAll("'",'&#039;');
   }
 
   function formatEUR(n){
@@ -984,13 +1593,8 @@
     return v.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2});
   }
 
-  function euroSuffix(){
-    return settings.showEuro === 'ON' ? ' €' : '';
-  }
-
-  function qtyText(q){
-    return Number.isFinite(q) ? String(q) : "—";
-  }
+  function euroSuffix(){ return settings.showEuro === 'ON' ? ' €' : ''; }
+  function qtyText(q){ return Number.isFinite(q) ? String(q) : "—"; }
 
   function parseMoneyToNumber(token){
     let t = token.replace(/[^0-9,.-]/g,"").replace(/\s+/g,"").trim();
@@ -1011,6 +1615,13 @@
   }
 
   function extractHTFromLine(line){
+    const parts = line.split("\t").map(p=>p.trim());
+    if(parts.length >= 26){
+      // Format "Produits" : colonne 13 = "Total produits HT"
+      const val = parseMoneyToNumber(parts[13] || "");
+      return (typeof val === 'number') ? val : null;
+    }
+    // Format "Catégories" (ancien)
     const moneyTokens = [...line.matchAll(/(-?\d[\d\s.,]*)(\$|€)/g)].map(m => m[0]);
     if(moneyTokens.length === 0) return null;
     const nums = moneyTokens.map(parseMoneyToNumber).filter(v => typeof v === 'number');
@@ -1020,6 +1631,14 @@
 
   function extractQtyFromLine(line){
     const parts = line.split("\t").map(p=>p.trim());
+    if(parts.length >= 26){
+      // Format "Produits" : colonne 8 = "Quantité totale vendue"
+      const raw = parts[8];
+      if(raw === "" || raw == null) return null;
+      const q = Number(String(raw).replace(',','.'));
+      return Number.isFinite(q) ? q : null;
+    }
+    // Format "Catégories" (ancien)
     if(parts.length >= 4){
       const raw = parts[3];
       if(raw === "" || raw == null) return null;
@@ -1030,8 +1649,14 @@
   }
 
   function extractCategoryName(line){
-    const parts = line.split("\t").map(p=>p.trim()).filter(Boolean);
-    if(parts.length >= 3) return parts[2];
+    const parts = line.split("\t").map(p=>p.trim());
+    if(parts.length >= 26){
+      // Format "Produits" : colonne 25 = "Nom de la catégorie"
+      return parts[25] || line.replace(/^LGDJ\s+(Gambetta|Pigalle)\s*/i,"").slice(0,120).trim();
+    }
+    // Format "Catégories" (ancien)
+    const filtered = parts.filter(Boolean);
+    if(filtered.length >= 3) return filtered[2];
     return line.replace(/^LGDJ\s+(Gambetta|Pigalle)\s*/i,"").slice(0,120).trim();
   }
 
@@ -1140,21 +1765,22 @@
   function weekdayFr(dt){
     return ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"][dt.getDay()];
   }
-  function dateLabel(fromDt, toDt){
-    if(!fromDt || !toDt) return "";
-    const same = fmtFr(fromDt) === fmtFr(toDt);
-    if(!same) return `du ${fmtFr(fromDt)} au ${fmtFr(toDt)}`;
-    const today = new Date();
-    const delta = daysDiff(toDt, today);
-    if(delta === 0) return `${fmtFr(toDt)} (aujourd'hui)`;
-    if(delta === 1) return `${fmtFr(toDt)} (hier)`;
-    if(delta >= 2 && delta <= 7) return `${fmtFr(toDt)} (${weekdayFr(toDt)})`;
-    return fmtFr(toDt);
-  }
+
   function extractDateRange(raw){
     const m = raw.match(/Date de la commande\s*:\s*du\s*(\d{2}\/\d{2}\/\d{4})\s*au\s*(\d{2}\/\d{2}\/\d{4})/i);
     if(!m) return { from:null, to:null };
     return { from: parseFrDate(m[1]), to: parseFrDate(m[2]) };
+  }
+
+  /**
+   * Vérifie si la date "to" du CA correspond à aujourd'hui.
+   */
+  function caIsToday(parsedObj){
+    if(!parsedObj) return false;
+    if(!parsedObj.toDate) return false;
+    const today = todayMidnight();
+    const caDay = new Date(parsedObj.toDate.getFullYear(), parsedObj.toDate.getMonth(), parsedObj.toDate.getDate());
+    return today.getTime() === caDay.getTime();
   }
 
   function classify(catName, rawLine){
@@ -1193,7 +1819,7 @@
     const catForNorm = normalize(catForClass);
 
     if(isKids(catForNorm)){
-      return { top: TOP.JEUX, sub: TOP.JEUX_ENFANTS, license:null, leafKids: catForClass, why: [whyEventDist, "Jeux enfants (Jeux X ans / Défis Nature)"].filter(Boolean) };
+      return { top: TOP.JEUX, sub: TOP.JEUX_ENFANTS, license:null, leafKids: catForClass, why: [whyEventDist, "Jeux enfants"].filter(Boolean) };
     }
 
     if(hasAny(catForNorm, JDR_KEYWORDS)){
@@ -1238,39 +1864,20 @@
   function buildTrace(cat, rawLine, cls){
     const cN = normalize(cat);
     const parts = [];
-
-    const deleted = isDeletedCategoryLike(rawLine, cat);
-    parts.push(`Deleted=${deleted?'OUI':'NON'}`);
-
-    const forcedOther = hasAny(cN, OTHER_FORCE);
-    parts.push(`ForcedAutre=${forcedOther?'OUI':'NON'}`);
-
-    const forcedJds = cN.includes("jeux de dessin");
-    parts.push(`ForceJDS=${forcedJds?'OUI':'NON'}`);
-
+    parts.push(`Deleted=${isDeletedCategoryLike(rawLine, cat)?'OUI':'NON'}`);
+    parts.push(`ForcedAutre=${hasAny(cN, OTHER_FORCE)?'OUI':'NON'}`);
+    parts.push(`ForceJDS=${cN.includes("jeux de dessin")?'OUI':'NON'}`);
     const isEvt = hasAny(cN, EVENT_KEYWORDS);
     parts.push(`Event=${isEvt?'OUI':'NON'} (standalone=${settings.eventsStandalone})`);
-
     const lic = detectLicense(cat);
     parts.push(`TCGLic=${lic ? prettyLicense(lic) : '—'}`);
-
     const accStrict = cN.startsWith("accessoires :") || cN.startsWith("accessoire :");
     parts.push(`AccStrict=${accStrict?'OUI':'NON'} (tcgAccInTcg=${settings.tcgAccessoriesInTcg})`);
-
-    const jdr = hasAny(cN, JDR_KEYWORDS);
-    parts.push(`JDR=${jdr?'OUI':'NON'} (standalone=${settings.jdrStandalone})`);
-
+    parts.push(`JDR=${hasAny(cN, JDR_KEYWORDS)?'OUI':'NON'} (standalone=${settings.jdrStandalone})`);
     const mergePC = settings.mergePuzzleCasse;
-    const isPuz = hasAny(cN, PUZZLE_KEYWORDS);
-    const isCasse = hasAny(cN, CASSE_KEYWORDS);
-    parts.push(`Puzzle=${isPuz?'OUI':'NON'} Casse=${isCasse?'OUI':'NON'} (merge=${mergePC})`);
-
-    const acc = hasAny(cN, ACCESSORY_KEYWORDS) || isAccessoryWord(cN);
-    parts.push(`Accessoires=${acc?'OUI':'NON'}`);
-
-    const kids = isKids(cN);
-    parts.push(`Kids=${kids?'OUI':'NON'}`);
-
+    parts.push(`Puzzle=${hasAny(cN, PUZZLE_KEYWORDS)?'OUI':'NON'} Casse=${hasAny(cN, CASSE_KEYWORDS)?'OUI':'NON'} (merge=${mergePC})`);
+    parts.push(`Accessoires=${(hasAny(cN, ACCESSORY_KEYWORDS)||isAccessoryWord(cN))?'OUI':'NON'}`);
+    parts.push(`Kids=${isKids(cN)?'OUI':'NON'}`);
     parts.push(`=> TOP="${cls.top}" SUB="${cls.sub}"`);
     return parts.join(" → ");
   }
@@ -1288,9 +1895,7 @@
     };
   }
 
-  function bumpMap(map, key, add){
-    map.set(key, (map.get(key) || 0) + add);
-  }
+  function bumpMap(map, key, add){ map.set(key, (map.get(key) || 0) + add); }
 
   function addToSub(bucket, topKey, subKey, ht, qty){
     if(!bucket.sub.has(topKey)) bucket.sub.set(topKey, new Map());
@@ -1306,7 +1911,6 @@
     const lic = bucket.tcg.licenses.get(licNorm);
     lic.value += ht;
     if(qty != null && Number.isFinite(qty)){ lic.qty += qty; lic.hasQty = true; }
-
     if(!bucket.tcg.seriesByLicense.has(licNorm)) bucket.tcg.seriesByLicense.set(licNorm, new Map());
     const sm = bucket.tcg.seriesByLicense.get(licNorm);
     if(!sm.has(seriesName)) sm.set(seriesName, { value:0, qty:0, hasQty:false });
@@ -1333,24 +1937,18 @@
   function addRow(bucket, r){
     bucket.total += r.ht;
     if(r.qty != null && Number.isFinite(r.qty)) bucket.totalQty += r.qty;
-
     bumpMap(bucket.totalsHT, r.top, r.ht);
     if(r.qty != null && Number.isFinite(r.qty)) bumpMap(bucket.totalsQty, r.top, r.qty);
-
     addToSub(bucket, r.top, r.sub, r.ht, r.qty);
-
     if(r.top === TOP.TCG && r.license) addToTcg(bucket, r.license, r.sub, r.ht, r.qty);
-
     if(r.top === TOP.JEUX && r.sub === TOP.JEUX_ENFANTS && r.leafKids){
       addKidsLeaf(bucket, r.leafKids, r.ht, r.qty);
     }
-
     if(r.top === TOP.AUTRE && r.sub === TOP.AUTRE_DELETED){
       addDeletedLeaf(bucket, r.leafDeleted || r.category, r.ht, r.qty);
     }
   }
 
-  // ── MODIFIÉ : hors TCG + Escape Game + Événement ──────────────────────────
   function calcSansExclus(bucket){
     const tcg = bucket.totalsHT.get(TOP.TCG) || 0;
     const esc = bucket.totalsHT.get(TOP.ESC) || 0;
@@ -1361,17 +1959,14 @@
   function buildTopOrder(){
     const mergePC = settings.mergePuzzleCasse === 'YES';
     const order = [
-      TOP.JEUX,
-      TOP.TCG,
+      TOP.JEUX, TOP.TCG,
       (settings.jdrStandalone === 'YES') ? TOP.JDR : null,
       TOP.ACC,
       mergePC ? TOP.PUZCASSE : TOP.PUZ,
       mergePC ? null : TOP.CASSE,
       (settings.eventsStandalone === 'YES') ? TOP.EVT : null,
-      TOP.ESC,
-      TOP.AUTRE
+      TOP.ESC, TOP.AUTRE
     ].filter(Boolean);
-
     return [...new Set(order)];
   }
 
@@ -1381,6 +1976,280 @@
     return parsed.byBoutique[parsed.activeKey];
   }
 
+  // ── Rendu du titre droit (recalcule label relatif dynamiquement) ────────────
+  function rightHeaderTitle(){
+    if(!parsed) return 'Résultats';
+    const label = parsed.activeKey === 'GLOBAL'
+      ? 'GLOBAL'
+      : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey);
+
+    let dt = '';
+    if(parsed.fromDate && parsed.toDate){
+      dt = ` • ${buildDateLabel(parsed.fromDate, parsed.toDate, parsed.caHour)}`;
+    }
+
+    return `${label}${dt}`;
+  }
+
+  // ── Bandeau "aujourd'hui" dans le titre droit ─────────────────────────────
+  function renderTodayBadge(){
+    el('todayBadge') && el('todayBadge').remove();
+    if(!parsed) return;
+    if(!caIsToday(parsed)) return;
+
+    const badge = document.createElement('span');
+    badge.id = 'todayBadge';
+    badge.className = 'todayTimeBadge';
+    badge.title = "CA du jour — peut-être pas la dernière vérification si la journée n'est pas terminée";
+    badge.innerHTML = `⏰ Vérif. à ${parsed.caHour || fmtHHMM(new Date())}`;
+    els.rightTitle.after(badge);
+  }
+
+  // ── Encadré de validation save ─────────────────────────────────────────────
+  function updateSaveBanner(){
+    if(!parsed) { els.saveBanner.classList.remove('show'); return; }
+    if(caIsToday(parsed) && parsed.dupSig && dupConfirmedSig !== parsed.dupSig){
+      const alreadySaved = isAlreadySavedToday(parsed);
+      if(alreadySaved){
+        els.saveBanner.classList.remove('show');
+        return;
+      }
+      els.saveBanner.classList.add('show');
+    } else {
+      els.saveBanner.classList.remove('show');
+    }
+  }
+
+  function isAlreadySavedToday(parsedObj){
+    if(!parsedObj || !parsedObj.dupSig) return false;
+    const hist = loadHist();
+    return hist.some(h => h.sig && h.sig.endsWith('__' + parsedObj.dupSig));
+  }
+
+  els.modeTipClose.addEventListener('click', ()=>{
+    const ok = confirm("Masquer ce message pour 7 jours ?");
+    if(!ok) return;
+    els.modeTip.style.display = 'none';
+    localStorage.setItem('lgdj_modeTip_dismiss', Date.now().toString());
+  });
+
+  els.btnSaveConfirm.addEventListener('click', ()=>{
+    if(!parsed) return;
+    dupConfirmedSig = parsed.dupSig || null;
+    pushHistorySnapshot(els.raw.value || '', parsed);
+    renderMicroHistory();
+    els.saveBanner.classList.remove('show');
+  });
+
+  // ── Parse ──────────────────────────────────────────────────────────────────
+  function parseAll(){
+    clearParseError();
+    clearDupWarn();
+
+    const raw = els.raw.value || '';
+    const lines = raw.split(/\r?\n/);
+    const { from, to } = extractDateRange(raw);
+
+    // Heure d'enregistrement au moment du collage
+    const caHour = fmtHHMM(new Date());
+
+    const rows = [];
+    let used = 0, err = 0, moneyFound = 0;
+    debug = { used: [], err: [], ignored: [] };
+
+    for(const line of lines){
+      const l = (line||'').trim();
+      if(!l){ debug.ignored.push({reason:'Ligne vide', line}); continue; }
+
+      const ln = normalize(line);
+
+      if(IGNORE_LINE_PATTERNS.some(p => ln.includes(p))){
+        debug.ignored.push({reason:'Ligne de statut (ignorée)', line});
+        continue;
+      }
+
+      const boutiqueKey = detectBoutique(ln);
+      if(!boutiqueKey){ debug.ignored.push({reason:'Boutique non détectée', line}); continue; }
+
+      const cat = extractCategoryName(line);
+      const catNorm = normalize(cat);
+
+      const ht = extractHTFromLine(line);
+      if(ht === null){
+        // Événements n'ont pas toujours de montant HT → ignorable
+        if(hasAny(catNorm, EVENT_KEYWORDS)){
+          debug.ignored.push({reason:'Événements (pas de montant HT)', line});
+          continue;
+        }
+        err++;
+        debug.err.push({reason:'Montant HT introuvable', line});
+        continue;
+      }
+      moneyFound++;
+      const qty = extractQtyFromLine(line);
+
+      const _rp = line.split("\t").map(p=>p.trim());
+      const _isProFmt = _rp.length >= 26;
+      const productName = _isProFmt ? (_rp[3] || null) : null;
+      const supplierName = _isProFmt ? (_rp[5] || null) : null;
+      const unitPriceHT = _isProFmt ? parseMoneyToNumber(_rp[9] || "") : null;
+      const purchasePriceTotalHT = _isProFmt ? parseMoneyToNumber(_rp[19] || "") : null;
+
+      const cls = classify(cat, line);
+      const rec = {
+        boutiqueKey, top: cls.top, sub: cls.sub, category: cat, categoryNorm: catNorm,
+        ht, qty, license: cls.license,
+        leafKids: cls.leafKids || null, leafDeleted: cls.leafDeleted || null,
+        why: cls.why || [], trace: buildTrace(cat, line, cls), rawLine: line,
+        productName, supplierName, unitPriceHT, purchasePriceTotalHT
+      };
+
+      rows.push(rec);
+      used++;
+      debug.used.push({reason:`OK → ${cls.top}`, line});
+    }
+
+    if(used === 0 || moneyFound === 0){
+      els.metaLines.textContent = String(lines.length);
+      els.metaUsed.textContent = '0';
+      els.metaErr.textContent = String(err);
+      parsed = null;
+      view = { level:'dashboard', category:null, tcgLicense:null, globalOnly:false };
+      render();
+      showParseError("Erreur : le contenu collé ne ressemble pas au tableau PrestaShop (aucune ligne exploitable / aucun montant trouvé).");
+      updateSaveBanner();
+      return;
+    }
+
+    els.metaLines.textContent = String(lines.length);
+    els.metaUsed.textContent = String(used);
+    els.metaErr.textContent = String(err);
+
+    const present = BOUTIQUES.filter(b => rows.some(r => r.boutiqueKey === b.key));
+    const two = present.length >= 2;
+    els.warnTwo.style.display = two ? 'block' : 'none';
+
+    const byBoutique = {};
+    for(const b of BOUTIQUES){ byBoutique[b.key] = makeBucket(); }
+    const global = makeBucket();
+
+    for(const r of rows){
+      addRow(byBoutique[r.boutiqueKey], r);
+      addRow(global, r);
+    }
+
+    const activeKey = (!two && present.length===1) ? present[0].key : 'GLOBAL';
+    parsed = {
+      rows, present, two, activeKey, byBoutique, global,
+      fromDate: from, toDate: to,
+      caHour,  // heure enregistrée au moment du collage
+      settingsSnap: snapshotSettings(),
+      isProductsMode: rows.some(r => r.productName !== null)
+    };
+    els.btnFournisseurs.style.display = parsed.isProductsMode ? 'inline-flex' : 'none';
+
+    // Micro-tip : si export Catégories, proposer le mode Produits
+    // (sauf si utilisateur a fermé le tip dans les 7 derniers jours)
+    if(!parsed.isProductsMode && rows.length > 0){
+      const dismissTime = localStorage.getItem('lgdj_modeTip_dismiss');
+      const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+      const isDismissed = dismissTime && parseInt(dismissTime) > sevenDaysAgo;
+      els.modeTip.style.display = isDismissed ? 'none' : 'flex';
+    } else {
+      els.modeTip.style.display = 'none';
+    }
+
+    // Recalcule le label en temps réel
+    parsed.dateTxt = (from && to) ? buildDateLabel(from, to, caHour) : "";
+
+    const dupInfo = detectLikelyDuplicatePaste(rows);
+    const dupSig = computeDupSignature(rows);
+    parsed.dupSig = dupSig;
+    parsed.dupLikely = dupInfo.likely;
+    parsed.dupInfo = dupInfo;
+
+    setThemeForBoutique(activeKey, two);
+    view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: two };
+
+    const b = currentBucket();
+    if(b){
+      const sansTot = calcSansExclus(b);
+      els.leftSans.textContent = formatEUR(sansTot) + euroSuffix();
+      updateCopyableValue(els.leftSans, sansTot);
+      els.leftTot.textContent = formatEUR(b.total) + euroSuffix();
+      updateCopyableValue(els.leftTot, b.total);
+    } else {
+      els.leftSans.textContent = "—"; els.leftSans.dataset.rawValue = '';
+      els.leftTot.textContent  = "—"; els.leftTot.dataset.rawValue = '';
+    }
+
+    if(parsed.dupLikely && dupConfirmedSig !== dupSig){
+      showDupWarningBanner(dupInfo);
+    } else if(!caIsToday(parsed)){
+      // CA d'une autre journée → sauvegarde auto
+      pushHistorySnapshot(els.raw.value || '', parsed);
+    }
+
+    updateSaveBanner();
+    renderMicroHistory();
+    render();
+
+    // Démarre le rafraîchissement horaire
+    startHourlyRefresh();
+  }
+
+  // ── Rafraîchissement horaire des labels relatifs ───────────────────────────
+  function startHourlyRefresh(){
+    if(hourlyTimer) clearInterval(hourlyTimer);
+    hourlyTimer = setInterval(()=>{
+      if(!parsed) return;
+      // Recalcule le label relatif
+      if(parsed.fromDate && parsed.toDate){
+        parsed.dateTxt = buildDateLabel(parsed.fromDate, parsed.toDate, parsed.caHour);
+      }
+      // Met à jour le titre + badge
+      els.rightTitle.textContent = rightHeaderTitle();
+      renderTodayBadge();
+      // Rafraîchit l'historique (les labels relatifs dedans aussi)
+      renderMicroHistory();
+    }, 60 * 60 * 1000); // toutes les heures
+  }
+
+  function showParseError(msg){ els.parseErr.textContent = msg; els.parseErr.style.display = 'block'; }
+  function clearParseError(){ els.parseErr.textContent = ''; els.parseErr.style.display = 'none'; }
+
+  function clearDyn(){ els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove()); }
+
+  function render(){
+    clearDyn();
+
+    if(!parsed){
+      els.rightTitle.textContent = 'Résultats';
+      els.btnBack.style.display = 'none';
+      el('todayBadge') && el('todayBadge').remove();
+      const empty = document.createElement('div');
+      empty.className = 'empty dyn';
+      empty.innerHTML = "Colle un export : l\u2019analyse se fait automatiquement.";
+      els.rightBody.appendChild(empty);
+      return;
+    }
+
+    els.btnBack.style.display = (view.level === 'dashboard') ? 'none' : 'inline-flex';
+    els.rightTitle.textContent = rightHeaderTitle();
+    renderTodayBadge();
+
+    if(view.level === 'dashboard') renderDashboard();
+    else if(view.level === 'category') renderCategory();
+    else if(view.level === 'tcgLicense') renderTcgLicense();
+    else if(view.level === 'lorcanaCards') renderLorcanaCards();
+    else if(view.level === 'kids') renderKids();
+    else if(view.level === 'deletedCats') renderDeletedCats();
+    else if(view.level === 'products') renderProducts();
+
+    els.warnTwo.style.display = parsed.two ? 'block' : 'none';
+  }
+
+  // ── Couleurs camembert ─────────────────────────────────────────────────────
   function hexToRgb(hex){
     const h = hex.replace('#','').trim();
     const full = h.length===3 ? h.split('').map(c=>c+c).join('') : h;
@@ -1434,9 +2303,7 @@
     bd.className = 'comboBd';
 
     const size = 200;
-    const cx = size/2;
-    const cy = size/2;
-    const r = 88;
+    const cx = size/2, cy = size/2, r = 88;
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.setAttribute('width', String(size));
@@ -1444,12 +2311,9 @@
     svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
 
     const bg = document.createElementNS('http://www.w3.org/2000/svg','circle');
-    bg.setAttribute('cx', cx);
-    bg.setAttribute('cy', cy);
-    bg.setAttribute('r', r);
+    bg.setAttribute('cx', cx); bg.setAttribute('cy', cy); bg.setAttribute('r', r);
     bg.setAttribute('fill', getVar('--panel2'));
-    bg.setAttribute('stroke', getVar('--line'));
-    bg.setAttribute('stroke-width', '1');
+    bg.setAttribute('stroke', getVar('--line')); bg.setAttribute('stroke-width', '1');
     svg.appendChild(bg);
 
     const base = getVar('--pieBase') || '#60a5fa';
@@ -1458,55 +2322,41 @@
     let angle = 0;
     items.forEach((d, i) => {
       const slice = total > 0 ? (d.value / total) * 360 : 0;
-      const start = angle;
-      const end = angle + slice;
+      const start = angle, end = angle + slice;
       angle = end;
 
       const t = items.length <= 1 ? 0.6 : (0.25 + (i/(items.length-1))*0.6);
-      const color = shadeHex(base, t);
-      d._color = color;
+      d._color = shadeHex(base, t);
 
       const path = document.createElementNS('http://www.w3.org/2000/svg','path');
       path.setAttribute('d', arcPath(cx, cy, r, start, end));
-      path.setAttribute('fill', color);
-      path.setAttribute('stroke', 'rgba(0,0,0,.12)');
-      path.setAttribute('stroke-width', '1');
-      path.classList.add('slice');
-      path.dataset.key = d.key;
+      path.setAttribute('fill', d._color);
+      path.setAttribute('stroke', 'rgba(0,0,0,.12)'); path.setAttribute('stroke-width', '1');
+      path.classList.add('slice'); path.dataset.key = d.key;
 
       path.addEventListener('mouseenter', ()=>highlightLegend(d.key, true));
       path.addEventListener('mouseleave', ()=>highlightLegend(d.key, false));
-
       if(onPick) path.addEventListener('click', () => onPick(d));
       svg.appendChild(path);
     });
 
     const hole = document.createElementNS('http://www.w3.org/2000/svg','circle');
-    hole.setAttribute('cx', cx);
-    hole.setAttribute('cy', cy);
-    hole.setAttribute('r', 50);
+    hole.setAttribute('cx', cx); hole.setAttribute('cy', cy); hole.setAttribute('r', 50);
     hole.setAttribute('fill', getVar('--bg0'));
-    hole.setAttribute('stroke', getVar('--line'));
-    hole.setAttribute('stroke-width', '1');
+    hole.setAttribute('stroke', getVar('--line')); hole.setAttribute('stroke-width', '1');
     svg.appendChild(hole);
 
     const t1 = document.createElementNS('http://www.w3.org/2000/svg','text');
-    t1.setAttribute('x', cx);
-    t1.setAttribute('y', cy - 4);
-    t1.setAttribute('text-anchor','middle');
-    t1.setAttribute('fill', getVar('--text'));
-    t1.setAttribute('font-size','13');
-    t1.setAttribute('font-weight','900');
+    t1.setAttribute('x', cx); t1.setAttribute('y', cy - 4);
+    t1.setAttribute('text-anchor','middle'); t1.setAttribute('fill', getVar('--text'));
+    t1.setAttribute('font-size','13'); t1.setAttribute('font-weight','900');
     t1.textContent = formatEUR(total);
     svg.appendChild(t1);
 
     const t2 = document.createElementNS('http://www.w3.org/2000/svg','text');
-    t2.setAttribute('x', cx);
-    t2.setAttribute('y', cy + 16);
-    t2.setAttribute('text-anchor','middle');
-    t2.setAttribute('fill', getVar('--muted'));
-    t2.setAttribute('font-size','10');
-    t2.setAttribute('font-weight','800');
+    t2.setAttribute('x', cx); t2.setAttribute('y', cy + 16);
+    t2.setAttribute('text-anchor','middle'); t2.setAttribute('fill', getVar('--muted'));
+    t2.setAttribute('font-size','10'); t2.setAttribute('font-weight','800');
     t2.textContent = settings.showEuro === 'ON' ? "€ HT" : "HT";
     svg.appendChild(t2);
 
@@ -1516,8 +2366,7 @@
     items.slice().sort((a,b)=>b.value-a.value).forEach(d=>{
       const pct = total > 0 ? (d.value/total*100) : 0;
       const row = document.createElement('div');
-      row.className = 'legRow';
-      row.dataset.key = d.key;
+      row.className = 'legRow'; row.dataset.key = d.key;
 
       const rawVal = Number.isFinite(d.value) ? d.value.toFixed(2).replace('.', ',') : '';
       row.innerHTML = `
@@ -1528,13 +2377,12 @@
         <div class="legR">
           <div class="legVal">
             <span class="copyable" data-raw-value="${rawVal}" title="Cliquer pour copier le montant">${formatEUR(d.value)}${euroSuffix()} <span style="color:${getVar('--muted')};font-weight:800">(${pct.toFixed(1)}%)</span></span>
-            ${settings.showQty==='ON' ? `<span class="qtyMini">Qt\u00e9: ${qtyText(d.qty)}</span>` : ``}
+            ${settings.showQty==='ON' ? `<span class="qtyMini">Qté: ${qtyText(d.qty)}</span>` : ``}
           </div>
-          <button class="eyeBtn" type="button" title="Voir le d\u00e9tail DEV" aria-label="Voir le d\u00e9tail DEV">&#128065;</button>
+          <button class="eyeBtn" type="button" title="Voir le détail DEV" aria-label="Voir le détail DEV">&#128065;</button>
         </div>
       `;
 
-      // Attach copy-on-click to name and value spans
       const nameSpan = row.querySelector('.legName.copyable');
       if(nameSpan) makeCopyable(nameSpan);
       const valSpan = row.querySelector('.legVal .copyable');
@@ -1543,7 +2391,7 @@
       row.addEventListener('mouseenter', ()=>highlightSlice(d.key, true));
       row.addEventListener('mouseleave', ()=>highlightSlice(d.key, false));
 
-      if(onPick) {
+      if(onPick){
         row.addEventListener('click', (e)=>{
           const eye = e.target.closest('.eyeBtn');
           const cp = e.target.closest('.copyable');
@@ -1555,8 +2403,7 @@
       if(settings.devMode === 'ON' && devPayloadBuilder){
         const eyeBtn = row.querySelector('.eyeBtn');
         eyeBtn.addEventListener('click', (e)=>{
-          e.preventDefault();
-          e.stopPropagation();
+          e.preventDefault(); e.stopPropagation();
           openDevDetails(devPayloadBuilder(d));
         });
       }
@@ -1576,9 +2423,7 @@
     const row = legend.querySelector(`.legRow[data-key="${CSS.escape(key)}"]`);
     if(!row) return;
     row.classList.toggle('hi', on);
-    if(on){
-      row.scrollIntoView({block:'nearest', inline:'nearest'});
-    }
+    if(on) row.scrollIntoView({block:'nearest', inline:'nearest'});
   }
 
   function highlightSlice(key, on){
@@ -1589,12 +2434,8 @@
 
   function snapshotSettings(){
     return JSON.stringify({
-      showQty: settings.showQty,
-      showEuro: settings.showEuro,
-      eventsStandalone: settings.eventsStandalone,
-      jdrStandalone: settings.jdrStandalone,
-      mergePuzzleCasse: settings.mergePuzzleCasse,
-      tcgAccessoriesInTcg: settings.tcgAccessoriesInTcg,
+      eventsStandalone: settings.eventsStandalone, jdrStandalone: settings.jdrStandalone,
+      mergePuzzleCasse: settings.mergePuzzleCasse, tcgAccessoriesInTcg: settings.tcgAccessoriesInTcg,
       devMode: settings.devMode,
     });
   }
@@ -1605,33 +2446,22 @@
       const after = JSON.parse(afterSnap);
       if(!sampleRows || sampleRows.length === 0) return "—";
 
-      const oldSettings = {...settings};
-
       function classifyWith(tempSettings, cat, line){
         const saved = {
-          eventsStandalone: settings.eventsStandalone,
-          jdrStandalone: settings.jdrStandalone,
-          mergePuzzleCasse: settings.mergePuzzleCasse,
-          tcgAccessoriesInTcg: settings.tcgAccessoriesInTcg,
+          eventsStandalone: settings.eventsStandalone, jdrStandalone: settings.jdrStandalone,
+          mergePuzzleCasse: settings.mergePuzzleCasse, tcgAccessoriesInTcg: settings.tcgAccessoriesInTcg,
         };
-        settings.eventsStandalone = tempSettings.eventsStandalone;
-        settings.jdrStandalone = tempSettings.jdrStandalone;
-        settings.mergePuzzleCasse = tempSettings.mergePuzzleCasse;
-        settings.tcgAccessoriesInTcg = tempSettings.tcgAccessoriesInTcg;
-
+        Object.assign(settings, {
+          eventsStandalone: tempSettings.eventsStandalone, jdrStandalone: tempSettings.jdrStandalone,
+          mergePuzzleCasse: tempSettings.mergePuzzleCasse, tcgAccessoriesInTcg: tempSettings.tcgAccessoriesInTcg,
+        });
         const res = classify(cat, line);
-
-        settings.eventsStandalone = saved.eventsStandalone;
-        settings.jdrStandalone = saved.jdrStandalone;
-        settings.mergePuzzleCasse = saved.mergePuzzleCasse;
-        settings.tcgAccessoriesInTcg = saved.tcgAccessoriesInTcg;
-
+        Object.assign(settings, saved);
         return res;
       }
 
       const moved = new Map();
       let movedTotal = 0;
-
       for(const r of sampleRows){
         const a = classifyWith(before, r.category, r.rawLine);
         const b = classifyWith(after, r.category, r.rawLine);
@@ -1642,8 +2472,6 @@
         }
       }
 
-      Object.assign(settings, oldSettings);
-
       const changedKeys = [];
       for(const k of ["eventsStandalone","jdrStandalone","mergePuzzleCasse","tcgAccessoriesInTcg"]){
         if(before[k] !== after[k]) changedKeys.push(`${k}:${before[k]}→${after[k]}`);
@@ -1651,20 +2479,14 @@
 
       const head = changedKeys.length ? `Changements : ${changedKeys.join(" • ")}` : "Changements : (affichage / aucun toggle de classement)";
       if(movedTotal === 0) return `${head}\nAucun déplacement de lignes entre catégories principales.`;
-
       const body = [...moved.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12).map(([k,c])=>`- ${k} : ${c}`).join("\n");
       return `${head}\nDéplacements (TOP) : ${movedTotal}\n${body}`;
-    } catch {
-      return "—";
-    }
+    } catch { return "—"; }
   }
 
   function hashString(s){
     let h = 2166136261;
-    for(let i=0;i<s.length;i++){
-      h ^= s.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
+    for(let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
     return (h>>>0).toString(16);
   }
 
@@ -1686,9 +2508,7 @@
     }
     const total = rows.length;
     if(total < 12) return { likely:false };
-
-    let dupCount = 0;
-    let maxRep = 1;
+    let dupCount = 0, maxRep = 1;
     for(const c of m.values()){
       if(c >= 2) dupCount += c;
       if(c > maxRep) maxRep = c;
@@ -1699,10 +2519,7 @@
   }
 
   function showDupWarningBanner(info){
-    if(!info || !info.likely){
-      clearDupWarn();
-      return;
-    }
+    if(!info || !info.likely){ clearDupWarn(); return; }
     const pct = Math.round((info.share||0)*100);
     els.dupWarn.innerHTML =
       `⚠️ <b>Doublon probable</b> : le tableau semble collé <b>2 fois</b> (ou +). ` +
@@ -1711,11 +2528,7 @@
     els.dupWarn.onclick = () => openDupModal(info);
   }
 
-  function clearDupWarn(){
-    els.dupWarn.textContent = '';
-    els.dupWarn.style.display = 'none';
-    els.dupWarn.onclick = null;
-  }
+  function clearDupWarn(){ els.dupWarn.textContent = ''; els.dupWarn.style.display = 'none'; els.dupWarn.onclick = null; }
 
   function openDupModal(info){
     const pct = Math.round((info.share||0)*100);
@@ -1724,13 +2537,9 @@
       Indice : ${pct}% des lignes semblent répétées (max répétition : ${info.maxRep}×).<br><br>
       Si c'est volontaire, clique "OK, je confirme".
     `;
-    els.dupBg.style.display='flex';
-    els.dupBg.setAttribute('aria-hidden','false');
+    els.dupBg.style.display='flex'; els.dupBg.setAttribute('aria-hidden','false');
   }
-  function closeDupModal(){
-    els.dupBg.style.display='none';
-    els.dupBg.setAttribute('aria-hidden','true');
-  }
+  function closeDupModal(){ els.dupBg.style.display='none'; els.dupBg.setAttribute('aria-hidden','true'); }
 
   els.btnCloseDup.addEventListener('click', closeDupModal);
   els.dupBg.addEventListener('click', (e)=>{ if(e.target===els.dupBg) closeDupModal(); });
@@ -1738,189 +2547,22 @@
     if(parsed){
       dupConfirmedSig = parsed.dupSig || null;
       els.dupWarn.style.display = 'none';
-      pushHistorySnapshot(els.raw.value || '', parsed);
-      renderMicroHistory();
+      if(!caIsToday(parsed)){
+        pushHistorySnapshot(els.raw.value || '', parsed);
+        renderMicroHistory();
+      } else {
+        updateSaveBanner();
+      }
     }
     closeDupModal();
   });
 
-  function parseAll(){
-    clearParseError();
-    clearDupWarn();
-
-    const raw = els.raw.value || '';
-    const lines = raw.split(/\r?\n/);
-    const { from, to } = extractDateRange(raw);
-    const dateTxt = (from && to) ? dateLabel(from, to) : "";
-
-    const rows = [];
-    let used = 0, err = 0, moneyFound = 0;
-    debug = { used: [], err: [], ignored: [] };
-
-    for(const line of lines){
-      const l = (line||'').trim();
-      if(!l){ debug.ignored.push({reason:'Ligne vide', line}); continue; }
-
-      const ln = normalize(line);
-
-      if(IGNORE_LINE_PATTERNS.some(p => ln.includes(p))){
-        debug.ignored.push({reason:'Ligne de statut (ignorée)', line});
-        continue;
-      }
-
-      const boutiqueKey = detectBoutique(ln);
-      if(!boutiqueKey){ debug.ignored.push({reason:'Boutique non détectée', line}); continue; }
-
-      const ht = extractHTFromLine(line);
-      if(ht === null){
-        err++;
-        debug.err.push({reason:'Montant HT introuvable', line});
-        continue;
-      }
-      moneyFound++;
-
-      const cat = extractCategoryName(line);
-      const catNorm = normalize(cat);
-      const qty = extractQtyFromLine(line);
-
-      const cls = classify(cat, line);
-      const rec = {
-        boutiqueKey,
-        top: cls.top,
-        sub: cls.sub,
-        category: cat,
-        categoryNorm: catNorm,
-        ht,
-        qty,
-        license: cls.license,
-        leafKids: cls.leafKids || null,
-        leafDeleted: cls.leafDeleted || null,
-        why: cls.why || [],
-        trace: buildTrace(cat, line, cls),
-        rawLine: line
-      };
-
-      rows.push(rec);
-      used++;
-      debug.used.push({reason:`OK → ${cls.top}`, line});
-    }
-
-    if(used === 0 || moneyFound === 0){
-      els.metaLines.textContent = String(lines.length);
-      els.metaUsed.textContent = '0';
-      els.metaErr.textContent = String(err);
-      parsed = null;
-      view = { level:'dashboard', category:null, tcgLicense:null, globalOnly:false };
-      render();
-      showParseError("Erreur : le contenu collé ne ressemble pas au tableau PrestaShop (aucune ligne exploitable / aucun montant trouvé).");
-      return;
-    }
-
-    els.metaLines.textContent = String(lines.length);
-    els.metaUsed.textContent = String(used);
-    els.metaErr.textContent = String(err);
-
-    const present = BOUTIQUES.filter(b => rows.some(r => r.boutiqueKey === b.key));
-    const two = present.length >= 2;
-    els.warnTwo.style.display = two ? 'block' : 'none';
-
-    const byBoutique = {};
-    for(const b of BOUTIQUES){ byBoutique[b.key] = makeBucket(); }
-    const global = makeBucket();
-
-    for(const r of rows){
-      addRow(byBoutique[r.boutiqueKey], r);
-      addRow(global, r);
-    }
-
-    const activeKey = (!two && present.length===1) ? present[0].key : 'GLOBAL';
-    parsed = { rows, present, two, activeKey, byBoutique, global, dateTxt, settingsSnap: snapshotSettings() };
-
-    const dupInfo = detectLikelyDuplicatePaste(rows);
-    const dupSig = computeDupSignature(rows);
-    parsed.dupSig = dupSig;
-    parsed.dupLikely = dupInfo.likely;
-    parsed.dupInfo = dupInfo;
-
-    setThemeForBoutique(activeKey, two);
-    view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: two };
-
-    const b = currentBucket();
-    if(b){
-      const sansTot = calcSansExclus(b);
-      els.leftSans.textContent = formatEUR(sansTot) + euroSuffix();
-      updateCopyableValue(els.leftSans, sansTot);
-      els.leftTot.textContent = formatEUR(b.total) + euroSuffix();
-      updateCopyableValue(els.leftTot, b.total);
-    } else {
-      els.leftSans.textContent = "—"; els.leftSans.dataset.rawValue = '';
-      els.leftTot.textContent  = "—"; els.leftTot.dataset.rawValue = '';
-    }
-
-    if(parsed.dupLikely && dupConfirmedSig !== dupSig){
-      showDupWarningBanner(dupInfo);
-    } else {
-      pushHistorySnapshot(raw, parsed);
-    }
-
-    renderMicroHistory();
-    render();
-  }
-
-  function showParseError(msg){
-    els.parseErr.textContent = msg;
-    els.parseErr.style.display = 'block';
-  }
-  function clearParseError(){
-    els.parseErr.textContent = '';
-    els.parseErr.style.display = 'none';
-  }
-
-  function rightHeaderTitle(){
-    const label = parsed.activeKey === 'GLOBAL'
-      ? 'GLOBAL'
-      : (BOUTIQUES.find(x=>x.key===parsed.activeKey)?.label || parsed.activeKey);
-    const dt = parsed.dateTxt ? ` • ${parsed.dateTxt}` : "";
-    return `${label}${dt}`;
-  }
-
-  function clearDyn(){
-    els.rightBody.querySelectorAll('.dyn').forEach(n => n.remove());
-  }
-
-  function render(){
-    clearDyn();
-
-    if(!parsed){
-      els.rightTitle.textContent = 'Résultats';
-      els.btnBack.style.display = 'none';
-      const empty = document.createElement('div');
-      empty.className = 'empty dyn';
-      empty.innerHTML = "Colle un export : l\u2019analyse se fait automatiquement.";
-      els.rightBody.appendChild(empty);
-      return;
-    }
-
-    els.btnBack.style.display = (view.level === 'dashboard') ? 'none' : 'inline-flex';
-
-    if(view.level === 'dashboard') renderDashboard();
-    else if(view.level === 'category') renderCategory();
-    else if(view.level === 'tcgLicense') renderTcgLicense();
-    else if(view.level === 'lorcanaCards') renderLorcanaCards();
-    else if(view.level === 'kids') renderKids();
-    else if(view.level === 'deletedCats') renderDeletedCats();
-
-    els.warnTwo.style.display = parsed.two ? 'block' : 'none';
-  }
-
+  // ── Rendu dashboard & catégories ──────────────────────────────────────────
   function renderDashboard(){
     const b = currentBucket();
-    els.rightTitle.textContent = rightHeaderTitle();
-
     const order = buildTopOrder();
     const data = order.map(k => ({
-      key:k,
-      name:k,
+      key:k, name:k,
       value: b.totalsHT.get(k) || 0,
       qty: (b.totalsQty.get(k) ?? null)
     })).filter(x => x.value > 0);
@@ -1932,30 +2574,20 @@
       (d) => { view = { level:'category', category:d.key, tcgLicense:null, globalOnly: parsed.two }; render(); },
       (d) => buildDevPayload({ level:'dashboard', pickKey:d.key })
     );
-
     els.rightBody.appendChild(combo);
   }
 
   function renderCategory(){
     const b = currentBucket();
     const cat = view.category;
-    els.rightTitle.textContent = rightHeaderTitle();
 
     if(cat === TOP.TCG){
       const entries = [...b.tcg.licenses.entries()]
-        .map(([lic,obj]) => ({
-          key: lic,
-          name: prettyLicense(lic),
-          value: obj.value,
-          qty: obj.hasQty ? obj.qty : null
-        }))
+        .map(([lic,obj]) => ({ key: lic, name: prettyLicense(lic), value: obj.value, qty: obj.hasQty ? obj.qty : null }))
         .sort((a,b)=>b.value-a.value);
-
       const meta = settings.showQty==='ON' ? `Qté TCG: ${qtyText(b.totalsQty.get(TOP.TCG))}` : '';
       const combo = renderComboPieAndList(
-        entries,
-        `Répartition — ${TOP.TCG} (licences)`,
-        meta,
+        entries, `Répartition — ${TOP.TCG} (licences)`, meta,
         (d)=>{ view = { level:'tcgLicense', category:TOP.TCG, tcgLicense:d.key, globalOnly: parsed.two }; render(); },
         (d) => buildDevPayload({ level:'category', category:TOP.TCG, pickKey:d.key })
       );
@@ -1968,17 +2600,16 @@
       const entries = [...map.entries()]
         .map(([name,obj])=>({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
         .sort((a,b)=>b.value-a.value);
-
       const meta = settings.showQty==='ON' ? `Qté ${TOP.JEUX}: ${qtyText(b.totalsQty.get(TOP.JEUX))}` : '';
       const combo = renderComboPieAndList(
-        entries,
-        `Répartition — ${TOP.JEUX} (sous-catégories)`,
-        meta,
+        entries, `Répartition — ${TOP.JEUX} (sous-catégories)`, meta,
         (d)=>{
           if(d.key === TOP.JEUX_ENFANTS){
-            view = { level:'kids', category:TOP.JEUX, tcgLicense:null, globalOnly: parsed.two };
-            render();
-          }
+            view = { level:'kids', category:TOP.JEUX, tcgLicense:null, globalOnly:parsed.two };
+          } else if(parsed.isProductsMode){
+            view = { level:'products', category:TOP.JEUX, filterSubcat:d.key, filterLeaf:null, filterSeries:null, tcgLicense:null, lorcanaCards:false, prevLevel:'category', globalOnly:parsed.two };
+          } else { return; }
+          render();
         },
         (d) => buildDevPayload({ level:'category', category:TOP.JEUX, pickKey:d.key })
       );
@@ -1991,17 +2622,16 @@
       const entries = [...map.entries()]
         .map(([name,obj])=>({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
         .sort((a,b)=>b.value-a.value);
-
       const meta = settings.showQty==='ON' ? `Qté ${TOP.AUTRE}: ${qtyText(b.totalsQty.get(TOP.AUTRE))}` : '';
       const combo = renderComboPieAndList(
-        entries,
-        `Détail — ${TOP.AUTRE}`,
-        meta,
+        entries, `Détail — ${TOP.AUTRE}`, meta,
         (d)=>{
           if(d.key === TOP.AUTRE_DELETED){
-            view = { level:'deletedCats', category:TOP.AUTRE, tcgLicense:null, globalOnly: parsed.two };
-            render();
-          }
+            view = { level:'deletedCats', category:TOP.AUTRE, tcgLicense:null, globalOnly:parsed.two };
+          } else if(parsed.isProductsMode){
+            view = { level:'products', category:TOP.AUTRE, filterSubcat:d.key, filterLeaf:null, filterSeries:null, tcgLicense:null, lorcanaCards:false, prevLevel:'category', globalOnly:parsed.two };
+          } else { return; }
+          render();
         },
         (d) => buildDevPayload({ level:'category', category:TOP.AUTRE, pickKey:d.key })
       );
@@ -2013,13 +2643,12 @@
     const entries = [...map.entries()]
       .map(([name,obj])=>({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
       .sort((a,b)=>b.value-a.value);
-
     const meta = settings.showQty==='ON' ? `Qté ${cat}: ${qtyText(b.totalsQty.get(cat))}` : '';
     const combo = renderComboPieAndList(
-      entries,
-      `Répartition — ${cat} (sous-catégories)`,
-      meta,
-      null,
+      entries, `Répartition — ${cat} (sous-catégories)`, meta,
+      parsed.isProductsMode
+        ? (d)=>{ view = { level:'products', category:cat, filterSubcat:d.key, filterLeaf:null, filterSeries:null, tcgLicense:null, lorcanaCards:false, prevLevel:'category', globalOnly:parsed.two }; render(); }
+        : null,
       (d) => buildDevPayload({ level:'category', category:cat, pickKey:d.key })
     );
     els.rightBody.appendChild(combo);
@@ -2027,18 +2656,15 @@
 
   function renderKids(){
     const b = currentBucket();
-    els.rightTitle.textContent = rightHeaderTitle();
-
     const entries = [...(b.kidsLeaves || new Map()).entries()]
       .map(([name,obj]) => ({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
       .sort((a,b)=>b.value-a.value);
-
     const meta = settings.showQty==='ON' ? `Qté ${TOP.JEUX_ENFANTS}: ${qtyText(entries.reduce((s,x)=>s+(x.qty||0),0))}` : '';
     const combo = renderComboPieAndList(
-      entries,
-      `Détail — ${TOP.JEUX_ENFANTS} (Jeux X ans / Défis Nature)`,
-      meta,
-      null,
+      entries, `Détail — ${TOP.JEUX_ENFANTS} (Jeux X ans / Défis Nature)`, meta,
+      parsed.isProductsMode
+        ? (d)=>{ view = { level:'products', category:TOP.JEUX, filterSubcat:TOP.JEUX_ENFANTS, filterLeaf:d.key, filterSeries:null, tcgLicense:null, lorcanaCards:false, prevLevel:'kids', globalOnly:parsed.two }; render(); }
+        : null,
       (d) => buildDevPayload({ level:'kids', pickKey:d.key })
     );
     els.rightBody.appendChild(combo);
@@ -2046,25 +2672,20 @@
 
   function renderDeletedCats(){
     const b = currentBucket();
-    els.rightTitle.textContent = rightHeaderTitle();
-
     const entries = [...(b.deletedLeaves || new Map()).entries()]
       .map(([name,obj]) => ({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
       .sort((a,b)=>b.value-a.value);
-
     const meta = settings.showQty==='ON' ? `Qté ${TOP.AUTRE_DELETED}: ${qtyText(entries.reduce((s,x)=>s+(x.qty||0),0))}` : '';
     const combo = renderComboPieAndList(
-      entries,
-      `Détail — ${TOP.AUTRE_DELETED}`,
-      meta,
-      null,
+      entries, `Détail — ${TOP.AUTRE_DELETED}`, meta,
+      parsed.isProductsMode
+        ? (d)=>{ view = { level:'products', category:TOP.AUTRE, filterSubcat:TOP.AUTRE_DELETED, filterLeaf:d.key, filterSeries:null, tcgLicense:null, lorcanaCards:false, prevLevel:'deletedCats', globalOnly:parsed.two }; render(); }
+        : null,
       (d) => buildDevPayload({ level:'deletedCats', pickKey:d.key })
     );
     els.rightBody.appendChild(combo);
   }
 
-  // Détecte si un nom de sous-catégorie Lorcana correspond à une carte vendue à l'unité.
-  // Exemples : "Disney Lorcana - Série 1", "Disney Lorcana - Série 12"
   function isLorcanaSingleCard(name){
     return /disney\s+lorcana\s*[-–]\s*s[eé]rie\s*\d+/i.test(name);
   }
@@ -2072,21 +2693,14 @@
   function renderTcgLicense(){
     const b = currentBucket();
     const lic = view.tcgLicense;
-    els.rightTitle.textContent = rightHeaderTitle();
-
     const seriesMap = b.tcg.seriesByLicense.get(lic) || new Map();
 
-    // Pour Lorcana : fusionner toutes les entrées "Disney Lorcana - Série X" en "Cartes à l'unité"
     const isLorcana = normalize(lic) === normalize("lorcana");
     const mergedMap = new Map();
     for(const [name, obj] of seriesMap.entries()){
       let displayName = name;
-      if(isLorcana && isLorcanaSingleCard(name)){
-        displayName = "Cartes à l'unité";
-      }
-      if(!mergedMap.has(displayName)){
-        mergedMap.set(displayName, { value:0, qty:0, hasQty:false });
-      }
+      if(isLorcana && isLorcanaSingleCard(name)) displayName = "Cartes à l'unité";
+      if(!mergedMap.has(displayName)) mergedMap.set(displayName, { value:0, qty:0, hasQty:false });
       const cur = mergedMap.get(displayName);
       cur.value += obj.value;
       if(obj.hasQty){ cur.qty += obj.qty; cur.hasQty = true; }
@@ -2100,21 +2714,20 @@
       ? `Qté ${prettyLicense(lic)}: ${qtyText(entries.reduce((s,x)=>s+(x.qty||0),0))}`
       : '';
 
-    // "Cartes à l'unité" est cliquable pour Lorcana — drill vers le détail par série
-    const onPickLicense = isLorcana
-      ? (d) => {
-          if(d.key === "Cartes à l'unité"){
-            view = { level:'lorcanaCards', category:TOP.TCG, tcgLicense:lic, globalOnly: parsed.two };
-            render();
-          }
-        }
-      : null;
+    const onPickLicense = (d) => {
+      if(d.key === "Cartes à l'unité"){
+        // Lorcana cartes à l'unité : vue intermédiaire (séries détaillées)
+        view = { level:'lorcanaCards', category:TOP.TCG, tcgLicense:lic, globalOnly:parsed.two };
+        render();
+      } else if(parsed.isProductsMode){
+        // Autre série TCG : aller directement aux produits
+        view = { level:'products', category:TOP.TCG, filterSubcat:null, filterLeaf:null, filterSeries:d.key, tcgLicense:lic, lorcanaCards:false, prevLevel:'tcgLicense', globalOnly:parsed.two };
+        render();
+      }
+    };
 
     const combo = renderComboPieAndList(
-      entries,
-      `Répartition — ${prettyLicense(lic)} (séries)`,
-      meta,
-      onPickLicense,
+      entries, `Répartition — ${prettyLicense(lic)} (séries)`, meta, onPickLicense,
       (d) => buildDevPayload({ level:'tcgLicense', tcgLicense:lic, pickKey:d.key })
     );
     els.rightBody.appendChild(combo);
@@ -2123,29 +2736,473 @@
   function renderLorcanaCards(){
     const b = currentBucket();
     const lic = view.tcgLicense;
-    els.rightTitle.textContent = rightHeaderTitle();
-
     const seriesMap = b.tcg.seriesByLicense.get(lic) || new Map();
-
-    // N'afficher que les entrées "Disney Lorcana - Série X"
     const entries = [...seriesMap.entries()]
       .filter(([name]) => isLorcanaSingleCard(name))
       .map(([name, obj]) => ({ key:name, name, value:obj.value, qty: obj.hasQty ? obj.qty : null }))
       .sort((a,b) => b.value - a.value);
-
     const meta = settings.showQty==='ON'
       ? `Qté cartes à l'unité: ${qtyText(entries.reduce((s,x)=>s+(x.qty||0),0))}`
       : '';
-
     const combo = renderComboPieAndList(
-      entries,
-      `Lorcana — Cartes à l'unité (détail par série)`,
-      meta,
-      null,
+      entries, `Lorcana — Cartes à l'unité (détail par série)`, meta,
+      parsed.isProductsMode
+        ? (d)=>{ view = { level:'products', category:TOP.TCG, filterSubcat:null, filterLeaf:null, filterSeries:d.key, tcgLicense:lic, lorcanaCards:false, prevLevel:'lorcanaCards', globalOnly:parsed.two }; render(); }
+        : null,
       (d) => buildDevPayload({ level:'tcgLicense', tcgLicense:lic, pickKey:d.key })
     );
     els.rightBody.appendChild(combo);
   }
+
+  // ── Vue produits ────────────────────────────────────────────────────────────
+  let prodSort = 'ht', prodSortDir = 'desc';
+
+  function renderProducts(){
+    const products = (parsed.rows || []).filter(r => {
+      if(!r.productName) return false;
+      if(!parsed.two && parsed.activeKey !== 'GLOBAL' && r.boutiqueKey !== parsed.activeKey) return false;
+      if(r.top !== view.category) return false;
+
+      // TCG : filtrer par licence, puis par série
+      if(view.tcgLicense){
+        if(r.license !== view.tcgLicense) return false;
+        if(view.filterSeries) return r.sub === view.filterSeries;
+        return true;
+      }
+      // Jeux enfants : filtrer par feuille (Jeux 4 ans, etc.)
+      if(view.filterSubcat === TOP.JEUX_ENFANTS && view.filterLeaf){
+        return r.sub === TOP.JEUX_ENFANTS && r.leafKids === view.filterLeaf;
+      }
+      // Catégories supprimées : filtrer par feuille
+      if(view.filterSubcat === TOP.AUTRE_DELETED && view.filterLeaf){
+        return r.sub === TOP.AUTRE_DELETED && (r.leafDeleted || r.category) === view.filterLeaf;
+      }
+      // Cas général : filtrer par sous-catégorie classify()
+      if(view.filterSubcat) return r.sub === view.filterSubcat;
+      return true;
+    });
+
+    // Construire le libellé du niveau affiché
+    let prodLabel = view.category;
+    if(view.tcgLicense){
+      prodLabel = prettyLicense(view.tcgLicense);
+      if(view.filterSeries) prodLabel += ' — ' + view.filterSeries;
+    } else if(view.filterLeaf){
+      prodLabel = view.filterLeaf;
+    } else if(view.filterSubcat){
+      prodLabel = view.filterSubcat;
+    }
+
+    const wrap = document.createElement('div');
+    wrap.className = 'prodViewWrap dyn';
+
+    const hd = document.createElement('div');
+    hd.className = 'prodViewHd';
+    const totalHT = products.reduce((s,r)=>s+r.ht,0);
+    const totalQty = products.reduce((s,r)=>s+(r.qty||0),0);
+    hd.innerHTML = `
+      <div style="font-size:12px;color:var(--muted);font-weight:900">
+        <span style="color:var(--text);font-weight:980">${escapeHtml(prodLabel)}</span>
+        &nbsp;·&nbsp; ${products.length} produit${products.length>1?'s':''}
+        &nbsp;·&nbsp; Total&nbsp;: <span style="color:var(--accent)">${formatEUR(totalHT)}${euroSuffix()}</span>
+        ${settings.showQty==='ON' ? `&nbsp;·&nbsp; Qté&nbsp;: ${totalQty}` : ''}
+      </div>
+      <div class="supSortBtns">
+        <span style="font-size:11px;color:var(--muted);font-weight:900">Trier&nbsp;:</span>
+        <button id="pSortHt"   class="supSortBtn active" onclick="setProdSort('ht')">PVHT total</button>
+        <button id="pSortQty"  class="supSortBtn" onclick="setProdSort('qty')">Qté</button>
+        <button id="pSortUnit" class="supSortBtn" onclick="setProdSort('unit')">PVHT unit.</button>
+        <button id="pSortPaht" class="supSortBtn" onclick="setProdSort('paht')">PAHT</button>
+      </div>
+    `;
+    wrap.appendChild(hd);
+
+    const tableWrap = document.createElement('div');
+    tableWrap.style.overflowX = 'auto';
+    const table = document.createElement('table');
+    table.className = 'prodTable';
+    table.innerHTML = `
+      <thead><tr>
+        <th id="phName">Produit</th>
+        <th id="phSup">Fournisseur</th>
+        <th id="phQty">Qté</th>
+        <th id="phUnit">PVHT unit.</th>
+        <th id="phHt">Total HT</th>
+        <th id="phPaht">PAHT total</th>
+        <th>Catégorie</th>
+      </tr></thead>
+      <tbody id="prodTbody"></tbody>
+    `;
+    tableWrap.appendChild(table);
+    wrap.appendChild(tableWrap);
+    els.rightBody.appendChild(wrap);
+
+    // Clics sur les en-têtes
+    const headerSorts = { phName:'name', phSup:'supplier', phQty:'qty', phUnit:'unit', phHt:'ht', phPaht:'paht' };
+    for(const [id, key] of Object.entries(headerSorts)){
+      const th = table.querySelector('#'+id);
+      if(th) th.addEventListener('click', ()=>setProdSort(key));
+    }
+
+    refreshProdTable(table.querySelector('#prodTbody'), products);
+    updateProdSortBtns();
+  }
+
+  function refreshProdTable(tbody, products){
+    const sorted = sortProductsList(products, prodSort, prodSortDir);
+    tbody.innerHTML = '';
+    if(!sorted.length){
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">Aucun produit</td></tr>`;
+      return;
+    }
+    for(const r of sorted){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight:900;max-width:220px;white-space:normal">${escapeHtml(r.productName||'—')}</td>
+        <td class="supCell"></td>
+        <td>${r.qty != null ? r.qty : '—'}</td>
+        <td>${r.unitPriceHT != null ? formatEUR(r.unitPriceHT)+euroSuffix() : '—'}</td>
+        <td>${formatEUR(r.ht)+euroSuffix()}</td>
+        <td>${r.purchasePriceTotalHT != null ? formatEUR(r.purchasePriceTotalHT)+euroSuffix() : '—'}</td>
+        <td><span class="supCatBadge" title="${escapeHtml(r.category||'')}">${escapeHtml(r.category||'—')}</span></td>
+      `;
+      // Cellule fournisseur : addEventListener pour éviter les problèmes de guillemets
+      const supTd = tr.querySelector('.supCell');
+      if(r.supplierName){
+        const btn = document.createElement('button');
+        btn.className = 'supSupplierLink';
+        btn.textContent = r.supplierName;
+        btn.addEventListener('click', () => openSupplierOverlay(r.supplierName));
+        supTd.appendChild(btn);
+      } else {
+        supTd.innerHTML = `<span style="color:var(--muted)">—</span>`;
+      }
+      tbody.appendChild(tr);
+    }
+  }
+
+  function sortProductsList(products, key, dir){
+    const m = dir === 'desc' ? -1 : 1;
+    return products.slice().sort((a,b)=>{
+      if(key==='name')     return m*(a.productName||'').localeCompare(b.productName||'');
+      if(key==='supplier') return m*(a.supplierName||'').localeCompare(b.supplierName||'');
+      if(key==='qty')   { const va=a.qty??-Infinity, vb=b.qty??-Infinity; return m*(vb-va); }
+      if(key==='unit')  { const va=a.unitPriceHT??-Infinity, vb=b.unitPriceHT??-Infinity; return m*(vb-va); }
+      if(key==='paht')  { const va=a.purchasePriceTotalHT??-Infinity, vb=b.purchasePriceTotalHT??-Infinity; return m*(vb-va); }
+      return m*((b.ht??0)-(a.ht??0)); // 'ht' par défaut
+    });
+  }
+
+  function setProdSort(key){
+    if(prodSort===key) prodSortDir = (prodSortDir==='desc')?'asc':'desc';
+    else { prodSort=key; prodSortDir='desc'; }
+    if(view.level==='products') render();
+  }
+
+  function updateProdSortBtns(){
+    const map = { ht:'pSortHt', qty:'pSortQty', unit:'pSortUnit', paht:'pSortPaht' };
+    for(const [k,id] of Object.entries(map)){
+      const btn = document.getElementById(id);
+      if(btn) btn.classList.toggle('active', prodSort===k);
+    }
+    // En-têtes de colonne
+    const hMap = { name:'phName', supplier:'phSup', qty:'phQty', unit:'phUnit', ht:'phHt', paht:'phPaht' };
+    for(const [k,id] of Object.entries(hMap)){
+      const th = document.getElementById(id);
+      if(th) th.classList.toggle('sortActive', prodSort===k);
+    }
+  }
+
+  // ── Overlay fournisseurs ─────────────────────────────────────────────────────
+  let supSort = 'qty', supSortDir = 'desc';
+  let supFilterCatTop = '';   // '' = tout, ou un TOP.xxx, ou 'ACC_PUZ'
+  let supViewMode = 'supplier'; // 'supplier' | 'all'
+
+  // Définition des chips catégorie (clé→label→tops matchés)
+  const SUP_CAT_CHIPS = [
+    { key:'',        label:'Tout' },
+    { key:'JEUX',    label:'🎲 Jeux de société',    tops:[TOP.JEUX] },
+    { key:'TCG',     label:'🃏 TCG',                tops:[TOP.TCG] },
+    { key:'ACC_PUZ', label:'🛍 Accessoires/Puzzles', tops:[TOP.ACC, TOP.PUZ, TOP.CASSE, TOP.PUZCASSE] },
+    { key:'JDR',     label:'📖 JDR',                tops:[TOP.JDR] },
+    { key:'ESC',     label:'🔐 Escape Game',        tops:[TOP.ESC] },
+    { key:'EVT',     label:'🎉 Événements',         tops:[TOP.EVT] },
+    { key:'AUTRE',   label:'❓ Autre',              tops:[TOP.AUTRE] },
+  ];
+
+  function chipMatchesRow(chipKey, r){
+    if(!chipKey) return true;
+    const chip = SUP_CAT_CHIPS.find(c=>c.key===chipKey);
+    if(!chip || !chip.tops) return true;
+    return chip.tops.includes(r.top);
+  }
+
+  function setSupCatFilter(key){
+    supFilterCatTop = key;
+    renderSupplierList();
+  }
+
+  function openSupplierOverlay(filterSupplier){
+    if(!parsed || !parsed.isProductsMode) return;
+    // Réinitialiser les filtres sauf le fournisseur cible
+    supFilterCatTop = '';
+    els.supFilterText.value = '';
+    els.supMinPrice.value = '';
+    els.supMaxPrice.value = '';
+
+    // ── Contexte date + boutique ──
+    const boutique = parsed.two ? '2 boutiques'
+      : parsed.activeKey === 'GAMBETTA' ? 'Gambetta'
+      : parsed.activeKey === 'PIGALLE'  ? 'Pigalle'
+      : parsed.activeKey === 'GLOBAL'   ? 'Global'
+      : (parsed.activeKey || '');
+
+    let dateTxt = parsed.dateTxt || '';
+    let dayCountTxt = '';
+    // Ajouter le nombre de jours si plage > 1 jour
+    if(parsed.fromDate && parsed.toDate && parsed.fromDate.getTime() !== parsed.toDate.getTime()){
+      const dayDiff = Math.round((parsed.toDate.getTime() - parsed.fromDate.getTime()) / (1000*60*60*24)) + 1;
+      dayCountTxt = ` <span style="opacity:0.8">(${dayDiff} jour${dayDiff > 1 ? 's' : ''})</span>`;
+    }
+
+    // Mode badge (Catégories/Produits)
+    const modeBadge = parsed.isProductsMode ? '📦 Produits' : '📋 Catégories';
+
+    // Format multi-ligne : boutique | date + jours | mode
+    els.supContextInfo.innerHTML = `
+      <div>${escapeHtml(boutique)}</div>
+      <div>${escapeHtml(dateTxt)}${dayCountTxt}</div>
+      <div style="opacity:0.75;font-size:10px">${modeBadge}</div>
+    `;
+
+    // Peupler le dropdown fournisseurs, puis sélectionner le bon
+    buildSupplierDropdown(filterSupplier || '');
+    renderSupplierList();
+    els.supplierOverlay.style.display = 'flex';
+  }
+
+  function closeSupplierOverlay(){
+    els.supplierOverlay.style.display = 'none';
+  }
+
+  function setSupSort(key){
+    if(supSort===key) supSortDir = (supSortDir==='desc')?'asc':'desc';
+    else { supSort=key; supSortDir='desc'; }
+    updateSupSortBtns();
+    renderSupplierList();
+  }
+
+  function updateSupSortBtns(){
+    const dir = supSortDir==='desc'?'↓':'↑';
+    const labels = { qty:'Qté', pvht:'PVHT' };
+    for(const [k,id] of Object.entries({ qty:'supSortQty', pvht:'supSortPvht' })){
+      const btn = els[id];
+      if(!btn) continue;
+      btn.classList.toggle('active', supSort===k);
+      btn.textContent = labels[k] + (supSort===k ? ' '+dir : ' ↓');
+    }
+  }
+
+  function buildSupplierDropdown(preselect){
+    if(!parsed) return;
+    const all = (parsed.rows||[]).filter(r=>r.productName);
+    const names = [...new Set(all.map(r=>r.supplierName||'—'))].sort((a,b)=>a.localeCompare(b));
+    const sel = els.supFilterSupplier;
+    sel.innerHTML = '<option value="">Tous les fournisseurs</option>';
+    for(const n of names){
+      const opt = document.createElement('option');
+      opt.value = n; opt.textContent = n;
+      if(n === preselect) opt.selected = true;
+      sel.appendChild(opt);
+    }
+  }
+
+  function setSupViewMode(mode){
+    supViewMode = mode;
+    els.supBtnBySupplier.classList.toggle('active', mode === 'supplier');
+    els.supBtnAllProducts.classList.toggle('active', mode === 'all');
+    renderSupplierList();
+  }
+
+  function renderSupplierList(){
+    if(!parsed) return;
+
+    const text      = normalize(els.supFilterText.value || '');
+    const minP      = parseFloat(els.supMinPrice.value) || null;
+    const maxP      = parseFloat(els.supMaxPrice.value) || null;
+    const supName   = els.supFilterSupplier.value || '';
+
+    // ── Filtrer les produits ──
+    const products = (parsed.rows || []).filter(r => {
+      if(!r.productName) return false;
+      if(!parsed.two && parsed.activeKey !== 'GLOBAL' && r.boutiqueKey !== parsed.activeKey) return false;
+      if(!chipMatchesRow(supFilterCatTop, r)) return false;
+      if(supName && (r.supplierName||'—') !== supName) return false;
+      if(text){
+        const n = normalize(r.productName||'');
+        const c = normalize(r.category||'');
+        if(!n.includes(text) && !c.includes(text)) return false;
+      }
+      if(minP !== null && (r.unitPriceHT ?? 0) < minP) return false;
+      if(maxP !== null && (r.unitPriceHT ?? 0) > maxP) return false;
+      return true;
+    });
+
+    // ── Tri dans chaque groupe ──
+    const m = supSortDir==='desc' ? -1 : 1;
+    const sortFn = (a,b) => {
+      if(supSort==='qty')  return m*((b.qty??-Infinity)-(a.qty??-Infinity));
+      if(supSort==='pvht') return m*((b.unitPriceHT??0)-(a.unitPriceHT??0));
+      return 0;
+    };
+
+    // ── Grouper par fournisseur (trié par total HT décroissant) ──
+    const bySupplier = new Map();
+    for(const r of products){
+      const k = r.supplierName || '—';
+      if(!bySupplier.has(k)) bySupplier.set(k,[]);
+      bySupplier.get(k).push(r);
+    }
+    const supplierOrder = [...bySupplier.entries()].sort((a,b)=>{
+      return b[1].reduce((s,r)=>s+r.ht,0) - a[1].reduce((s,r)=>s+r.ht,0);
+    });
+
+    // ── Mettre à jour compteur ──
+    if(supViewMode === 'all'){
+      els.supCount.textContent = `${products.length} produit${products.length>1?'s':''}`;
+    } else {
+      els.supCount.textContent = `${products.length} produit${products.length>1?'s':''} · ${supplierOrder.length} fournisseur${supplierOrder.length>1?'s':''}`;
+    }
+
+    // ── Chips catégories ──
+    const chipsEl = els.supCatChips;
+    chipsEl.innerHTML = '';
+    for(const chip of SUP_CAT_CHIPS){
+      const count = (parsed.rows||[]).filter(r=>r.productName && chipMatchesRow(chip.key,r)).length;
+      if(count === 0 && chip.key !== '') continue;
+      const btn = document.createElement('button');
+      btn.className = 'supCatChip' + (supFilterCatTop===chip.key?' active':'');
+      btn.textContent = chip.label + (chip.key ? ` (${count})` : '');
+      btn.onclick = ()=>setSupCatFilter(chip.key);
+      chipsEl.appendChild(btn);
+    }
+
+    // ── Remplir le corps ──
+    els.supBody.innerHTML = '';
+
+    if(!products.length){
+      els.supBody.innerHTML = `<div class="empty" style="padding:30px;text-align:center">Aucun produit trouvé.</div>`;
+      return;
+    }
+
+    // ── Vue "Tous les produits" (flat) ──────────────────────────
+    if(supViewMode === 'all'){
+      const allRows = [...products].sort(sortFn);
+      const table = document.createElement('table');
+      table.className = 'supTable';
+      table.innerHTML = `
+        <colgroup>
+          <col class="c-prod"><col class="c-sup"><col class="c-cat">
+          <col class="c-qty"><col class="c-pvht">
+          <col class="c-htot">
+        </colgroup>
+        <thead><tr>
+          <th>Produit</th>
+          <th>Fournisseur</th>
+          <th>Catégorie</th>
+          <th style="text-align:center">Qté</th>
+          <th style="text-align:right">PVHT unit.</th>
+          <th style="text-align:right">Total HT</th>
+        </tr></thead>
+        <tbody id="supTbodyAll"></tbody>
+      `;
+      const tbody = table.querySelector('#supTbodyAll');
+      for(const r of allRows){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight:900" title="${escapeHtml(r.productName||'')}">${escapeHtml(r.productName||'—')}</td>
+          <td class="supCell"></td>
+          <td><span class="supCatBadge" title="${escapeHtml(r.category||'')}">${escapeHtml(r.category||'—')}</span></td>
+          <td style="text-align:center">${r.qty!=null?r.qty:'—'}</td>
+          <td style="text-align:right">${r.unitPriceHT!=null?formatEUR(r.unitPriceHT)+euroSuffix():'—'}</td>
+          <td style="text-align:right">${formatEUR(r.ht)+euroSuffix()}</td>
+        `;
+        const supTd = tr.querySelector('.supCell');
+        if(r.supplierName){
+          const btn = document.createElement('button');
+          btn.className = 'supSupplierLink';
+          btn.textContent = r.supplierName;
+          btn.addEventListener('click', ()=>openSupplierOverlay(r.supplierName));
+          supTd.appendChild(btn);
+        } else {
+          supTd.textContent = '—';
+        }
+        tbody.appendChild(tr);
+      }
+      els.supBody.appendChild(table);
+      return;
+    }
+
+    // ── Vue "Par fournisseur" (groupée) ─────────────────────────
+    const table = document.createElement('table');
+    table.className = 'supTable';
+    table.innerHTML = `
+      <colgroup>
+        <col class="c-prod"><col class="c-cat">
+        <col class="c-qty"><col class="c-pvht">
+        <col class="c-htot">
+      </colgroup>
+      <thead><tr>
+        <th>Produit</th>
+        <th>Catégorie</th>
+        <th style="text-align:center">Qté</th>
+        <th style="text-align:right">PVHT unit.</th>
+        <th style="text-align:right">Total HT</th>
+      </tr></thead>
+      <tbody id="supTbody"></tbody>
+    `;
+    const tbody = table.querySelector('#supTbody');
+
+    for(const [sup, rows] of supplierOrder){
+      rows.sort(sortFn);
+      const totHT  = rows.reduce((s,r)=>s+r.ht,0);
+      const totQty = rows.reduce((s,r)=>s+(r.qty||0),0);
+
+      // Ligne groupe fournisseur
+      const grTr = document.createElement('tr');
+      grTr.className = 'supGroupRow';
+      grTr.innerHTML = `<td colspan="5">
+        🏭 <strong>${escapeHtml(sup)}</strong>
+        <span style="font-weight:500;margin-left:10px;font-size:11px;opacity:.75">
+          ${rows.length} produit${rows.length>1?'s':''}
+          &nbsp;·&nbsp; ${formatEUR(totHT)}${euroSuffix()} HT
+          ${settings.showQty==='ON' ? `&nbsp;·&nbsp; Qté&nbsp;: ${totQty}` : ''}
+        </span>
+      </td>`;
+      tbody.appendChild(grTr);
+
+      // Lignes produits
+      for(const r of rows){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight:900" title="${escapeHtml(r.productName||'')}">${escapeHtml(r.productName||'—')}</td>
+          <td><span class="supCatBadge" title="${escapeHtml(r.category||'')}">${escapeHtml(r.category||'—')}</span></td>
+          <td style="text-align:center">${r.qty!=null?r.qty:'—'}</td>
+          <td style="text-align:right">${r.unitPriceHT!=null?formatEUR(r.unitPriceHT)+euroSuffix():'—'}</td>
+          <td style="text-align:right">${formatEUR(r.ht)+euroSuffix()}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    els.supBody.appendChild(table);
+  }
+
+  // Filtres en temps réel
+  els.supFilterText.addEventListener('input', renderSupplierList);
+  els.supMinPrice.addEventListener('input', renderSupplierList);
+  els.supMaxPrice.addEventListener('input', renderSupplierList);
+  els.supFilterSupplier.addEventListener('change', renderSupplierList);
 
   els.btnBack.addEventListener('click', ()=>{
     if(!parsed) return;
@@ -2154,10 +3211,19 @@
     else if(view.level === 'kids') view = { level:'category', category:TOP.JEUX, tcgLicense:null, globalOnly: parsed.two };
     else if(view.level === 'deletedCats') view = { level:'category', category:TOP.AUTRE, tcgLicense:null, globalOnly: parsed.two };
     else if(view.level === 'category') view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed.two };
+    else if(view.level === 'products'){
+      const pv = view.prevLevel || 'category';
+      if(pv === 'tcgLicense')   view = { level:'tcgLicense',   category:TOP.TCG,  tcgLicense:view.tcgLicense, globalOnly:parsed.two };
+      else if(pv === 'lorcanaCards') view = { level:'lorcanaCards', category:TOP.TCG,  tcgLicense:view.tcgLicense, globalOnly:parsed.two };
+      else if(pv === 'kids')    view = { level:'kids',    category:TOP.JEUX,  tcgLicense:null, globalOnly:parsed.two };
+      else if(pv === 'deletedCats') view = { level:'deletedCats', category:TOP.AUTRE, tcgLicense:null, globalOnly:parsed.two };
+      else view = { level:'category', category:view.category, tcgLicense:null, globalOnly:parsed.two };
+    }
     else view = { level:'dashboard', category:null, tcgLicense:null, globalOnly: parsed.two };
     render();
   });
 
+  // ── Historique ─────────────────────────────────────────────────────────────
   function boutiqueLabelForParsed(){
     if(!parsed) return "";
     if(parsed.two || parsed.activeKey === 'GLOBAL') return "2 boutiques / GLOBAL";
@@ -2166,58 +3232,213 @@
     return parsed.activeKey;
   }
 
+  const HIST_KEY = "lgdj_hist_v0714";
+
+  function loadHist(){
+    try{
+      const a = JSON.parse(localStorage.getItem(HIST_KEY) || "[]");
+      return Array.isArray(a) ? a : [];
+    }catch{ return []; }
+  }
+
+  function saveHistUnlimited(arr){
+    let a = arr.slice();
+    while(a.length){
+      try{ localStorage.setItem(HIST_KEY, JSON.stringify(a)); return; }
+      catch(e){ a.pop(); }
+    }
+    try{ localStorage.removeItem(HIST_KEY); }catch{}
+  }
+
+  function histBoutiqueLabel(parsedObj){
+    if(parsedObj.two || parsedObj.activeKey === 'GLOBAL') return "2 boutiques";
+    if(parsedObj.activeKey === 'GAMBETTA') return "Gambetta";
+    if(parsedObj.activeKey === 'PIGALLE') return "Pigalle";
+    return "GLOBAL";
+  }
+
+  function boutiqueColorHex(parsedObj){
+    if(parsedObj.two || parsedObj.activeKey === 'GLOBAL') return '#22c55e';
+    if(parsedObj.activeKey === 'GAMBETTA') return '#f59e0b';
+    return '#60a5fa';
+  }
+
+  function pushHistorySnapshot(rawText, parsedObj){
+    if(!rawText || !rawText.trim()) return;
+    if(tutorialParsing) return; // ne pas sauvegarder pendant le tutoriel
+
+    const hist = loadHist();
+    const label = histBoutiqueLabel(parsedObj);
+    const color = boutiqueColorHex(parsedObj);
+    const total = (parsedObj.activeKey === 'GLOBAL') ? parsedObj.global.total :
+      (parsedObj.byBoutique[parsedObj.activeKey]?.total ?? parsedObj.global.total);
+
+    // Stocke les dates brutes (pas le label relatif qui est recalculé à l'affichage)
+    const fromStr = parsedObj.fromDate ? fmtFr(parsedObj.fromDate) : "";
+    const toStr = parsedObj.toDate ? fmtFr(parsedObj.toDate) : "";
+
+    // Stocke aussi l'heure si c'était un CA du jour au moment de la sauvegarde
+    const caHour = parsedObj.caHour || "";
+
+    const sig = `${label}__${toStr}__${parsedObj.dupSig || hashString(rawText.trim().slice(0,1200))}`;
+
+    const next = [{
+      id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
+      sig,
+      label,
+      fromStr,
+      toStr,
+      caHour,
+      color,
+      total,
+      rawText,
+      isProductsMode: parsedObj.isProductsMode === true,
+      ts: Date.now()
+    }, ...hist.filter(x=>x.sig!==sig)];
+
+    saveHistUnlimited(next);
+  }
+
+  /**
+   * Calcule le label de date d'un élément d'historique AU MOMENT DE L'AFFICHAGE
+   * en utilisant les dates brutes stockées (fromStr/toStr).
+   */
+  function buildHistDateLabel(h){
+    const from = parseFrDate(h.fromStr);
+    const to = parseFrDate(h.toStr);
+    if(!from && !to) return h.dateStr || "—"; // fallback ancien format
+
+    return buildDateLabel(from, to, h.caHour);
+  }
+
+  /**
+   * Vérifie si un élément historique correspond à aujourd'hui.
+   */
+  function histIsToday(h){
+    const to = parseFrDate(h.toStr);
+    if(!to) return false;
+    return computeRelativeLabel(to) === "aujourd'hui";
+  }
+
+  // ── Filtres historique ─────────────────────────────────────────────────────
+  document.querySelectorAll('.histFilterBtn[data-filter]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      histActiveFilter = btn.dataset.filter;
+      document.querySelectorAll('.histFilterBtn[data-filter]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderMicroHistory();
+    });
+  });
+
+
+
+  function renderMicroHistory(){
+    const hist = loadHist();
+
+    // Filtre boutique
+    let list = hist;
+    if(histActiveFilter !== 'all'){
+      list = hist.filter(h => (h.label||'').toLowerCase() === histActiveFilter.toLowerCase());
+    }
+
+    els.microHist.innerHTML = '';
+    if(list.length === 0) return;
+
+    list.forEach(h=>{
+      const card = document.createElement('div');
+      card.className = 'histCard';
+
+      const dateLabel = buildHistDateLabel(h); // recalculé maintenant
+      const isToday = histIsToday(h);
+
+      // Badge heure si aujourd'hui
+      let timeBadge = '';
+      if(isToday && h.caHour){
+        timeBadge = `<span class="histTimeBadge" title="Heure de la dernière vérification enregistrée">⏰ ${escapeHtml(h.caHour)}</span>`;
+      }
+
+      // Badge mode Catégories / Produits (uniquement si l'info est connue)
+      let modeBadge = '';
+      if(h.isProductsMode === true){
+        modeBadge = `<span class="histModeBadge histModeProduits" title="Export Produits — détail produits disponible">📦 Produits</span>`;
+      } else if(h.isProductsMode === false){
+        modeBadge = `<span class="histModeBadge histModeCats" title="Export Catégories — collé sans détail produit">📋 Catégories</span>`;
+      }
+
+      card.innerHTML = `
+        <div class="histLeft">
+          <span class="pill" style="border-color:${h.color}55;color:${h.color}">${escapeHtml(h.label)}</span>
+          <span class="histText">${escapeHtml(dateLabel)}</span>
+          ${timeBadge}
+          ${modeBadge}
+        </div>
+        <div class="histRight">${formatEUR(h.total)}${euroSuffix()}</div>
+        <button class="histDel" type="button" title="Supprimer" aria-label="Supprimer">×</button>
+      `;
+
+      card.addEventListener('click', (e)=>{
+        const isDel = e.target.closest('.histDel');
+        if(isDel) return;
+        els.raw.value = h.rawText || '';
+        scheduleParse(true);
+        els.raw.focus();
+      });
+
+      const delBtn = card.querySelector('.histDel');
+      delBtn.addEventListener('click', (e)=>{
+        e.preventDefault(); e.stopPropagation();
+        const ok = confirm("Supprimer cet élément de l'historique ?");
+        if(!ok) return;
+        const all = loadHist().filter(x => x.id !== h.id);
+        saveHistUnlimited(all);
+        renderCalendar();
+        renderMicroHistory();
+      });
+
+      els.microHist.appendChild(card);
+    });
+  }
+
+  // ── Dev details ────────────────────────────────────────────────────────────
   function pickRowsByFilter(filter){
     if(!parsed) return [];
     const rows = parsed.rows;
     const needBoutique = (parsed.activeKey !== 'GLOBAL' && !parsed.two);
     const keyBoutique = parsed.activeKey;
     const inBoutique = (r)=> !needBoutique || r.boutiqueKey === keyBoutique;
-
     const lvl = filter.level;
 
     if(lvl === 'dashboard'){
       if(!filter.pickKey) return rows.filter(inBoutique);
       return rows.filter(r => inBoutique(r) && r.top === filter.pickKey);
     }
-
     if(lvl === 'category'){
       const cat = filter.category;
       if(cat === TOP.TCG){
         if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === TOP.TCG);
         return rows.filter(r => inBoutique(r) && r.top === TOP.TCG && r.license === filter.pickKey);
       }
-      if(!filter.pickKey){
-        return rows.filter(r => inBoutique(r) && r.top === cat);
-      }
+      if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === cat);
       return rows.filter(r => inBoutique(r) && r.top === cat && r.sub === filter.pickKey);
     }
-
     if(lvl === 'tcgLicense'){
       const lic = filter.tcgLicense;
       if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === TOP.TCG && r.license === lic);
       return rows.filter(r => inBoutique(r) && r.top === TOP.TCG && r.license === lic && r.sub === filter.pickKey);
     }
-
     if(lvl === 'kids'){
-      if(!filter.pickKey){
-        return rows.filter(r => inBoutique(r) && r.top === TOP.JEUX && r.sub === TOP.JEUX_ENFANTS);
-      }
+      if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === TOP.JEUX && r.sub === TOP.JEUX_ENFANTS);
       return rows.filter(r => inBoutique(r) && r.top === TOP.JEUX && r.sub === TOP.JEUX_ENFANTS && r.leafKids === filter.pickKey);
     }
-
     if(lvl === 'deletedCats'){
-      if(!filter.pickKey){
-        return rows.filter(r => inBoutique(r) && r.top === TOP.AUTRE && r.sub === TOP.AUTRE_DELETED);
-      }
+      if(!filter.pickKey) return rows.filter(r => inBoutique(r) && r.top === TOP.AUTRE && r.sub === TOP.AUTRE_DELETED);
       return rows.filter(r => inBoutique(r) && r.top === TOP.AUTRE && r.sub === TOP.AUTRE_DELETED && (r.leafDeleted||r.category) === filter.pickKey);
     }
-
     return rows.filter(inBoutique);
   }
 
   function buildDevPayload(filter){
     if(!parsed) return null;
-
     const rows = pickRowsByFilter(filter);
     const totalHT = rows.reduce((s,r)=>s+(r.ht||0),0);
     const totalQty = rows.reduce((s,r)=>s+(Number.isFinite(r.qty)?r.qty:0),0);
@@ -2240,14 +3461,9 @@
     }
 
     return {
-      title,
-      totalHT,
+      title, totalHT,
       totalQty: settings.showQty==='ON' ? totalQty : null,
-      lines: rows.map(r => ({
-        rawLine: r.rawLine,
-        why: r.why || [],
-        trace: r.trace || "—",
-      })),
+      lines: rows.map(r => ({ rawLine: r.rawLine, why: r.why || [], trace: r.trace || "—" })),
       dateTxt: parsed.dateTxt || "",
       boutiqueLabel: boutiqueLabelForParsed(),
     };
@@ -2262,8 +3478,7 @@
 <b>Filtre</b> : ${escapeHtml(payload.title || "—")}<br>
 <b>Totaux</b> : ${escapeHtml(formatEUR(payload.totalHT||0))}${escapeHtml(euroSuffix())}
 ${settings.showQty==='ON' ? ` • <b>Qté</b> : ${escapeHtml(String(payload.totalQty ?? "—"))}` : ``}
-<br>
-<b>Lignes</b> : ${linesCount}
+<br><b>Lignes</b> : ${linesCount}
 ${payload.dateTxt ? `<br><b>Période</b> : ${escapeHtml(payload.dateTxt)}` : ``}
 ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLabel)}` : ``}
     `.trim();
@@ -2273,23 +3488,16 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
     if(linesCount === 0){
       els.devLinesBox.textContent = "—";
     } else {
-      const txt = payload.lines.map((x,i)=>{
+      els.devLinesBox.textContent = payload.lines.map((x,i)=>{
         const why = (x.why && x.why.length) ? x.why.join(" | ") : "—";
-        const trace = x.trace || "—";
-        return `#${i+1}\nPourquoi : ${why}\nTrace : ${trace}\nLigne : ${x.rawLine}`;
+        return `#${i+1}\nPourquoi : ${why}\nTrace : ${x.trace}\nLigne : ${x.rawLine}`;
       }).join("\n\n");
-      els.devLinesBox.textContent = txt;
     }
 
-    els.devBg.style.display='flex';
-    els.devBg.setAttribute('aria-hidden','false');
+    els.devBg.style.display='flex'; els.devBg.setAttribute('aria-hidden','false');
   }
 
-  function closeDev(){
-    els.devBg.style.display='none';
-    els.devBg.setAttribute('aria-hidden','true');
-  }
-
+  function closeDev(){ els.devBg.style.display='none'; els.devBg.setAttribute('aria-hidden','true'); }
   els.btnCloseDev.addEventListener('click', closeDev);
   els.devBg.addEventListener('click', (e)=>{ if(e.target===els.devBg) closeDev(); });
 
@@ -2297,194 +3505,452 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
     try{
       const txt = [
         (els.devSummary.textContent||'').trim(),
-        "\n\n---\nDiff de toggles\n---\n",
-        els.devDiffBox.textContent||'',
-        "\n\n---\nLignes + raisons\n---\n",
-        els.devLinesBox.textContent||'',
+        "\n\n---\nDiff de toggles\n---\n", els.devDiffBox.textContent||'',
+        "\n\n---\nLignes + raisons\n---\n", els.devLinesBox.textContent||'',
       ].join("");
       await navigator.clipboard.writeText(txt);
       els.btnCopyDev.textContent = 'Copié';
       setTimeout(()=> els.btnCopyDev.textContent='Copier détail', 900);
     } catch {
       const ta = document.createElement('textarea');
-      ta.value = (els.devLinesBox.textContent||'');
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+      ta.value = els.devLinesBox.textContent||'';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
       els.btnCopyDev.textContent = 'Copié';
       setTimeout(()=> els.btnCopyDev.textContent='Copier détail', 900);
     }
   });
 
-  const HIST_KEY = "lgdj_hist_v0714";
-
-  function loadHist(){
-    try{
-      const a = JSON.parse(localStorage.getItem(HIST_KEY) || "[]");
-      return Array.isArray(a) ? a : [];
-    }catch{ return []; }
-  }
-
-  function saveHistUnlimited(arr){
-    let a = arr.slice();
-    while(a.length){
-      try{
-        localStorage.setItem(HIST_KEY, JSON.stringify(a));
-        return;
-      } catch(e){
-        a.pop();
-      }
+  // ── Tutoriel ───────────────────────────────────────────────────────────────
+  const TUT_PAGES_BASE = [
+    { title: "📖 Utilisation classique", text: "", isHeader: true },
+    {
+      title: "1) Choisir la boutique",
+      text: "Dans PrestaShop, sélectionne la boutique <strong>Pigalle</strong> OU <strong>Gambetta</strong> depuis un onglet (ex : Tableau de bord).",
+      step: 1,
+      highlights: ['Pigalle', 'Gambetta'],
+      image: "tutoriel/base-1.png",
+      imageCaption: "Capture: Menu PrestaShop avec sélection boutique"
+    },
+    {
+      title: "2) Accéder au rapport",
+      text: "Va dans <strong>Commandes</strong> → <strong>Rapport Commandes TVA Bénéfices</strong>.",
+      step: 2,
+      highlights: ['Commandes', 'Rapport Commandes TVA Bénéfices'],
+      image: "tutoriel/base-2.png",
+      imageCaption: "Capture: Menu PrestaShop — Accès au rapport"
+    },
+    {
+      title: "3) Paramétrer l'export",
+      text: "Préférences d'export : Type de rapport = <strong>Produits</strong> (recommandé) ; Format = <strong>html</strong>.",
+      step: 3,
+      highlights: ['Produits', 'html'],
+      image: "tutoriel/base-3.png",
+      imageCaption: "Capture: Paramètres d'export PrestaShop"
+    },
+    {
+      title: "4) Définir la période",
+      text: "Par date de commande : indique <strong>date de début</strong> et <strong>date de fin</strong>. Pour un jour : même date début/fin.",
+      step: 4,
+      highlights: ['date de début', 'date de fin'],
+      image: "tutoriel/base-4.png",
+      imageCaption: "Capture: Calendrier de sélection période"
+    },
+    {
+      title: "5) Statuts",
+      text: "Tout décocher, puis cocher uniquement <strong>Store - Sale</strong>.",
+      step: 5,
+      highlights: ['Store - Sale'],
+      image: "tutoriel/base-5.png",
+      imageCaption: "Capture: Sélection des statuts"
+    },
+    {
+      title: "6) Export + copier",
+      text: "Cliquer <strong>Exporter</strong>, puis sur la page du tableau : <strong>Ctrl+A → Ctrl+C</strong>.",
+      step: 6,
+      highlights: ['Exporter', 'Ctrl+A', 'Ctrl+C'],
+      image: "tutoriel/base-6.png",
+      imageCaption: "Capture: Bouton Exporter et tableau"
+    },
+    {
+      title: "7) Coller ici",
+      text: "Viens ici et appuie sur <strong>Ctrl+V</strong>. L'analyse se lance automatiquement et les résultats apparaissent.",
+      step: 7,
+      highlights: ['Coller', 'Ctrl+V'],
+      image: "tutoriel/base-7.png",
+      imageCaption: "Capture: Zone de colle-coller"
+    },
+    { title: "💰 Fermeture de caisse", text: "", isHeader: true },
+    {
+      title: "Copier le CA rapidement",
+      text: "Dans le panneau gauche, le montant <strong>« CA Total (hors TCG / Escape / Évt) »</strong> est cliquable → copie automatiquement dans le presse-papier.",
+      step: 8,
+      highlights: ['CA Total', 'cliquer'],
+      image: "tutoriel/base-8.png",
+      imageCaption: "Zone des CA cliquables — Pratique pour copier vite!"
     }
-    try{ localStorage.removeItem(HIST_KEY); }catch{}
-  }
+  ];
 
-  function histBoutiqueLabel(parsedObj){
-    if(parsedObj.two || parsedObj.activeKey === 'GLOBAL') return "2 boutiques";
-    if(parsedObj.activeKey === 'GAMBETTA') return "Gambetta";
-    if(parsedObj.activeKey === 'PIGALLE') return "Pigalle";
-    return "GLOBAL";
-  }
-
-  function boutiqueColorHex(parsedObj){
-    if(parsedObj.two || parsedObj.activeKey === 'GLOBAL') return '#22c55e';
-    if(parsedObj.activeKey === 'GAMBETTA') return '#f59e0b';
-    return '#60a5fa';
-  }
-
-  function pushHistorySnapshot(rawText, parsedObj){
-    if(!rawText || !rawText.trim()) return;
-
-    const hist = loadHist();
-    const label = histBoutiqueLabel(parsedObj);
-    const dateStr = parsedObj.dateTxt || "";
-    const color = boutiqueColorHex(parsedObj);
-    const total = (parsedObj.activeKey === 'GLOBAL') ? parsedObj.global.total :
-      (parsedObj.byBoutique[parsedObj.activeKey]?.total ?? parsedObj.global.total);
-
-    const sig = `${label}__${dateStr}__${parsedObj.dupSig || hashString(rawText.trim().slice(0,1200))}`;
-
-    const next = [{
-      id: `${Date.now()}_${Math.random().toString(16).slice(2)}`,
-      sig,
-      label,
-      dateStr,
-      color,
-      total,
-      rawText,
-      ts: Date.now()
-    }, ...hist.filter(x=>x.sig!==sig)];
-
-    saveHistUnlimited(next);
-  }
-
-  function renderMicroHistory(){
-    const hist = loadHist();
-    const showSearch = hist.length >= 8;
-    els.histSearch.style.display = showSearch ? 'flex' : 'none';
-    els.microHist.classList.toggle('withSearch', showSearch);
-
-    const q = (els.histQuery.value || '').trim().toLowerCase();
-    let list = hist;
-    if(showSearch && q){
-      list = hist.filter(h => (`${h.label||''} ${h.dateStr||''}`).toLowerCase().includes(q));
+  const TUT_PAGES_PRODUITS = [
+    {
+      title: "1) Importer en mode Produits",
+      text: "La vue produits nécessite un export <strong>Type = Produits</strong> dans PrestaShop (pas Catégories).\n\n(Pour ce tutoriel, on va importer un fichier de démo — ça ne sera pas sauvegardé dans l'historique)\n\n→ Clique sur la zone de collage ci-contre pour charger les données.",
+      interactive: true,
+      targetElement: 'raw',
+      tutorialAction: 'loadDemo',
+      step: 1,
+      image: "tutoriel/base-3.png",
+      imageCaption: "Type = Produits dans PrestaShop"
+    },
+    {
+      title: "2) Ouvrir les produits vendus",
+      text: "✅ Données chargées ! Clique sur le bouton <strong>📦 Produits vendus</strong> pour ouvrir la vue par fournisseur.",
+      interactive: true,
+      targetElement: 'btnFournisseurs',
+      step: 2,
+      image: null,
+      imageCaption: "Bouton Produits vendus"
+    },
+    {
+      title: "3) Choisir la vue",
+      text: "Groupée <strong>par fournisseur</strong> (défaut) ou <strong>tous les produits</strong> à plat. Clique pour tester →",
+      interactive: true,
+      targetElements: ['supBtnBySupplier', 'supBtnAllProducts'],
+      step: 3,
+      image: null,
+      imageCaption: "Boutons de vue"
+    },
+    {
+      title: "4) Trier les produits",
+      text: "Trier par <strong>quantités vendues</strong> ou par <strong>prix HT</strong>. Clique pour explorer →",
+      interactive: true,
+      targetElements: ['supSortQty', 'supSortPvht'],
+      step: 4,
+      image: null,
+      imageCaption: "Boutons de tri"
+    },
+    {
+      title: "5) Filtrer par catégorie",
+      text: "Les chips en haut filtrent par catégorie. Essaie un filtre →",
+      interactive: true,
+      targetElement: 'supCatChips',
+      step: 5,
+      image: null,
+      imageCaption: "Chips de catégories"
+    },
+    {
+      title: "✅ Terminé !",
+      text: "Tu sais maintenant utiliser la vue Produits vendus !",
+      step: 6,
+      image: null,
+      imageCaption: null
     }
+  ];
 
-    els.microHist.innerHTML = '';
-    if(list.length === 0) return;
+  let tutPage = 0;
+  let tutMode = null; // 'base' ou 'produits'
+  let TUT_PAGES = [];
+  function renderTut(){
+    const p = TUT_PAGES[tutPage];
+    let content = '';
+    let visual = '';
 
-    list.forEach(h=>{
-      const card = document.createElement('div');
-      card.className = 'histCard';
-      card.innerHTML = `
-        <div class="histLeft">
-          <span class="pill" style="border-color:${h.color}55;color:${h.color}">${escapeHtml(h.label)}</span>
-          <span class="histText">${escapeHtml(h.dateStr || "—")}</span>
+    // Nettoyer l'overlay interactif existant
+    const oldOverlay = document.getElementById('tutInteractiveOverlay');
+    if(oldOverlay) oldOverlay.remove();
+
+    if(p.isHeader){
+      // Restaurer le fond de la modal sur les pages header
+      els.tutBg.style.pointerEvents = '';
+      els.tutBg.style.background = '';
+      const modal = els.tutBg.querySelector('.modal');
+      if(modal) modal.style.pointerEvents = '';
+      content = `<h3 class="pageTitle" style="font-size:18px;margin-bottom:6px;">${escapeHtml(p.title)}</h3>`;
+      document.getElementById('tutTitle').textContent = p.title;
+    } else if(p.interactive){
+      // Mode interactif — le fond de la modal devient transparent aux clics
+      // pour laisser l'utilisateur interagir avec l'interface
+      els.tutBg.style.pointerEvents = 'none';
+      els.tutBg.style.background = 'transparent';
+      // La modal elle-même reste cliquable
+      els.tutBg.querySelector('.modal').style.pointerEvents = 'auto';
+
+      document.getElementById('tutTitle').textContent = p.title;
+
+      const interactiveText = p.text.replace(/<strong>(.*?)<\/strong>/g, '<span class="tutHighlight active">$1</span>');
+      content = `
+        <div class="tutStep">
+          ${p.step ? `<div class="tutStepNum">${p.step}</div>` : ''}
+          <h3 class="pageTitle" style="font-size:14px;margin:0 0 8px 0">${escapeHtml(p.title)}</h3>
+          <div style="color:var(--text);line-height:1.65">${interactiveText}</div>
+          <div style="margin-top:12px;padding:10px;border-radius:8px;background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.25);color:var(--muted);font-size:11px">
+            ✨ Clique sur l'élément surligné en vert pour continuer
+          </div>
         </div>
-        <div class="histRight">${formatEUR(h.total)}${euroSuffix()}</div>
-        <button class="histDel" type="button" title="Supprimer" aria-label="Supprimer">×</button>
       `;
 
-      card.addEventListener('click', (e)=>{
-        const isDel = e.target.closest('.histDel');
-        if(isDel) return;
-        els.raw.value = h.rawText || '';
-        scheduleParse(true);
-        els.raw.focus();
-      });
+      visual = `
+        <div style="color:var(--muted);text-align:center;padding:20px;font-size:12px">
+          Clic sur l'interface →
+        </div>
+      `;
 
-      const delBtn = card.querySelector('.histDel');
-      delBtn.addEventListener('click', (e)=>{
-        e.preventDefault();
-        e.stopPropagation();
-        const ok = confirm("Supprimer cet élément de l'historique ?");
-        if(!ok) return;
-        const all = loadHist().filter(x => x.id !== h.id);
-        saveHistUnlimited(all);
-        renderMicroHistory();
-      });
+      // Créer l'overlay interactif après le rendu
+      setTimeout(()=>{
+        const overlay = document.createElement('div');
+        overlay.id = 'tutInteractiveOverlay';
+        overlay.className = 'tutInteractiveOverlay';
 
-      els.microHist.appendChild(card);
+        const targetIds = p.targetElements ? (Array.isArray(p.targetElements) ? p.targetElements : [p.targetElements]) : [p.targetElement];
+
+        for(const targetId of targetIds){
+          const el = document.getElementById(targetId);
+          if(el){
+            // Montrer le bouton s'il est caché
+            const wasHidden = el.style.display === 'none' || window.getComputedStyle(el).display === 'none';
+            if(wasHidden) el.style.display = 'inline-flex';
+
+            // Scroller jusqu'à l'élément
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Récupérer la position après le scroll
+            setTimeout(()=>{
+              const rect = el.getBoundingClientRect();
+
+              if(rect.width > 0 && rect.height > 0){
+                const highlight = document.createElement('div');
+                highlight.className = 'tutHighlightElement';
+                highlight.style.cssText = `
+                  top: ${rect.top}px;
+                  left: ${rect.left}px;
+                  width: ${rect.width}px;
+                  height: ${rect.height}px;
+                `;
+                highlight.addEventListener('click', async (e)=>{
+                  e.stopPropagation();
+
+                  if(p.tutorialAction === 'loadDemo'){
+                    // Charger les données de démo depuis colle2.txt
+                    highlight.style.opacity = '0.5';
+                    highlight.style.cursor = 'wait';
+                    await generateTestDataForTutorial();
+                    highlight.style.opacity = '';
+                    highlight.style.cursor = '';
+                  } else {
+                    // Déclencher l'action réelle du bouton
+                    if(el.onclick) el.onclick.call(el);
+                    else el.click();
+                  }
+
+                  // Continuer le tutoriel
+                  setTimeout(()=>{
+                    els.tutBg.style.display = 'flex';
+                    if(tutPage < TUT_PAGES.length-1){
+                      tutPage++;
+                      renderTut();
+                    } else {
+                      closeTut();
+                    }
+                  }, 300);
+                });
+                overlay.appendChild(highlight);
+
+                // Ajouter une flèche
+                const arrow = document.createElement('div');
+                arrow.className = 'tutArrow';
+                arrow.textContent = '↓';
+                arrow.style.cssText = `
+                  top: ${rect.top - 50}px;
+                  left: ${rect.left + rect.width/2 - 16}px;
+                `;
+                overlay.appendChild(arrow);
+              }
+            }, 50);
+          }
+        }
+
+        document.body.appendChild(overlay);
+      }, 100);
+    } else {
+      // Mode texte classique — restaurer le fond de la modal
+      els.tutBg.style.pointerEvents = '';
+      els.tutBg.style.background = '';
+      const modal = els.tutBg.querySelector('.modal');
+      if(modal) modal.style.pointerEvents = '';
+      document.getElementById('tutTitle').textContent = p.title;
+
+      const textWithHighlights = p.text.replace(/<strong>(.*?)<\/strong>/g, '<span class="tutHighlight active">$1</span>');
+
+      content = `
+        <div class="tutStep">
+          ${p.step ? `<div class="tutStepNum">${p.step}</div>` : ''}
+          <h3 class="pageTitle" style="font-size:14px;margin:0 0 8px 0">${escapeHtml(p.title)}</h3>
+          <div style="color:var(--text);line-height:1.65">${textWithHighlights}</div>
+        </div>
+      `;
+
+      // Contenu visuel — uniquement si une image est définie
+      if(p.image){
+        visual = `<img src="${escapeHtml(p.image)}" class="tutImage" alt="Capture" />`;
+      } else {
+        visual = '';
+      }
+    }
+
+    els.tutContent.innerHTML = content;
+    const tutVisual = document.getElementById('tutVisual');
+    if(p.isHeader || p.interactive){
+      if(p.isHeader){
+        tutVisual.innerHTML = '';
+      } else {
+        tutVisual.innerHTML = visual;
+      }
+    } else {
+      tutVisual.innerHTML = visual;
+    }
+
+    els.tutIdx.textContent = String(tutPage+1);
+    els.tutTotal.textContent = String(TUT_PAGES.length);
+    els.tutPrev.disabled = tutPage === 0;
+
+    // Pages interactives : bouton Suivant caché, on avance par clic sur l'élément surligné
+    if(p.interactive){
+      els.tutNext.style.display = 'none';
+    } else {
+      els.tutNext.style.display = '';
+      els.tutNext.textContent = (tutPage === TUT_PAGES.length-1) ? 'Terminer ✓' : 'Suivant →';
+    }
+  }
+
+  // Données de démo embarquées (export PrestaShop mode Produits - Gambetta 28/04/2026)
+  const TUTORIAL_DEMO_DATA = `Date de la commande : du 28/04/2026 au 28/04/2026
+Nom de la boutique\tID produit\tRéférence produit\tNom du produit\tRéférence fournisseur\tNom du fournisseur\tCode EAN\tCode UPC\tQuantité totale vendue\tPrix unitaire moyen HT\tTaux de TVA\tTotal réductions HT\tTVA totale sur les réductions\tTotal produits HT\tTotal produits incluant les réductions, HT\tTVA totale sur les produits\tTotal de l'écotaxe HT\tTVA totale sur l'écotaxe\tTVA totale\tTotal des prix d'achat des produits\tBénéfices bruts\tMarge brute\tBénéfices nets\tMarge nette\tNom du fabricant\tNom de la catégorie\t% du total des ventes\tCumul du % du total des ventes\t% du total des bénéfices bruts\tCumul du % du total des bénéfices bruts\t% du total des bénéfices nets\tCumul du % du total des bénéfices nets
+LGDJ Gambetta\t139\tMATAVA001746\tAvalon\tMATAVA001746\tSurfin Meeple\t3760146647466\t\t1\t20.75$\t20%\t0$\t0$\t20.75$\t20.75$\t4.15$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tMatagot\tJeux Familiaux\t1.22%\t1.22%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t1971\tDEFEXT\tDéfis Nature : Animaux Extraordinaires\tDEFEXT\tBioviva\t3569160286015\t\t1\t8.25$\t20%\t0$\t0$\t8.25$\t8.25$\t1.65$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tBioviva\tDéfis Nature\t0.49%\t1.71%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t2105\tRP7DU03\t7 Wonders Duel : Agora (Ext.)\tRP7DU03\tAsmodée\t5425016924310\t\t1\t17.42$\t20%\t0$\t0$\t17.42$\t17.42$\t3.48$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tRepos Production\tJeux 2 Joueurs\t1.03%\t2.73%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t2121\tLMELG01FRN\tLoups Garous\tLMELG01FRN\tAsmodée\t3558380086000\t\t1\t9.92$\t20%\t0$\t0$\t9.92$\t9.92$\t1.98$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tAsmodée\tJeux de Bluff\t0.58%\t3.32%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t2277\tOYAGAM01\tThe Game\tOYAGAM01\tOya\t3760207030213\t\t1\t12.42$\t20%\t0$\t0$\t12.42$\t12.42$\t2.48$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tOya\tJeux Familiaux\t0.73%\t4.05%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t4666\tFUN001SA\tShashibo (Terre)\tFUN001SA\tBlackrock Games\t\t\t1\t20.75$\t20%\t0$\t0$\t20.75$\t20.75$\t4.15$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tFun In Motion Toys\tCasse-Tête\t1.22%\t14.48%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t5613\tSG 307\tIQ Gears\tSG 307\tSMART GAMES\t5414301525691\t\t1\t12.42$\t20%\t0$\t0$\t12.42$\t12.42$\t2.48$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tSMART GAMES\tCasse-Tête\t0.73%\t15.21%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t6658\t70262\tPiña Coladice\t70262\tIello\t3701551702623\t\t1\t16.58$\t20%\t0$\t0$\t16.58$\t16.58$\t3.32$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tIello\tJeux pour l'Apéro\t0.98%\t16.19%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t6716\t\tPokémon EV07 : Tripack Forgelina Couronne Stellaire\t\tAsmodée\t\t\t2\t17.42$\t20%\t0$\t0$\t34.83$\t34.83$\t6.97$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tPokémon\tPokémon EV07 : Couronne Stellaire\t2.05%\t18.24%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t8668\tPOEV0902\tPokémon EV09 : Boosters Aventures Ensemble\t\tAsmodée\t0196214107984\t\t3\t5$\t20%\t0$\t0$\t15$\t15$\t3$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tPokémon\tPokémon EV09 : Aventures Ensemble\t0.88%\t25.71%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t9796\tOPPB02\tOne Piece : Display 20 Boosters PRB-02\tOPPB02\tAsmodée\t4582769865527\t\t1\t112.42$\t20%\t0$\t0$\t112.42$\t112.42$\t22.48$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tFabricant non renseigné ou supprimé\tOne Piece PRB-02 : The Best Vol.2\t6.62%\t37.25%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t10813\tPOEV1203\tPokémon ME03 : Display 36 boosters Equilibre Parfait\tPOEV1203\tAsmodée\t\t\t1\t183.25$\t20%\t0$\t0$\t183.25$\t183.25$\t36.65$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tPokémon\tPokémon ME03 : Equilibre Parfait\t10.8%\t62.48%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t11220\tBLM134CE\tMagic The Gathering - Lord of the Rings Set Booster\t\tFournisseur non renseigné ou supprimé\t5010994187712\t\t3\t6.67$\t20%\t0$\t0$\t20$\t20$\t4$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tWizards of The Coast\tMagic The Gathering - The Lord of the Rings\t1.18%\t63.66%\t0%\t0%\t0%\t0%
+LGDJ Gambetta\t11421\tPOMES016B\tPokémon ME2.5 : Bundle 6 Boosters Héros Transcendants\tPOEV126B\tAsmodée\t\t\t10\t43.33$\t20%\t0$\t0$\t433.33$\t433.33$\t86.67$\t0$\t0$\t0$\t0$\t0$\t0%\t0$\t0%\tPokémon\tPokémon ME2.5 : Héros Transcendants\t25.53%\t99.56%\t0%\t0%\t0%\t0%`;
+
+  function generateTestDataForTutorial(){
+    const previousRaw = els.raw.value;
+    tutorialParsing = true;
+    els.raw.value = TUTORIAL_DEMO_DATA;
+    parseAll();
+    tutorialParsing = false;
+    els.raw.value = previousRaw;
+    if(parsed && parsed.isProductsMode){
+      els.btnFournisseurs.style.display = 'inline-flex';
+    }
+  }
+
+  function showTutorialMenu(){
+    document.getElementById('tutTitle').textContent = 'Sélectionner un tutoriel';
+    els.tutContent.innerHTML = `
+      <div style="display:grid;gap:16px;align-items:center;justify-content:center;min-height:250px">
+        <h3 class="pageTitle" style="margin:0;text-align:center">Quel tutoriel ?</h3>
+        <div style="display:grid;gap:10px;grid-template-columns:1fr 1fr">
+          <button style="padding:20px;border-radius:12px;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.12);color:var(--text);cursor:pointer;font-weight:900;font-size:14px" id="btnTutBase">
+            📖 Fonctionnement de base<br><span style="font-size:11px;font-weight:500;opacity:.7">Import, filtre, CA</span>
+          </button>
+          <button style="padding:20px;border-radius:12px;border:1px solid rgba(52,211,153,.35);background:rgba(52,211,153,.12);color:var(--text);cursor:pointer;font-weight:900;font-size:14px" id="btnTutProduits">
+            🛍️ Voir les produits<br><span style="font-size:11px;font-weight:500;opacity:.7">Nouveau — fournisseurs</span>
+          </button>
+        </div>
+        <div style="padding:12px;border-radius:8px;background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.25);font-size:12px;color:var(--muted);line-height:1.5">
+          ⚠️ <strong>Important :</strong> Pour le tutoriel des produits, vous devez importer un rapport en <strong>Type = Produits</strong> (pas Catégories)
+        </div>
+      </div>
+    `;
+    document.getElementById('tutVisual').innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:12px;text-align:center;padding:20px">
+        Sélectionne un tutoriel pour commencer →
+      </div>
+    `;
+    els.tutIdx.textContent = '—';
+    els.tutTotal.textContent = '—';
+    els.tutPrev.disabled = true;
+    els.tutNext.style.display = 'none';
+
+    document.getElementById('btnTutBase').addEventListener('click', ()=>{
+      tutMode = 'base';
+      TUT_PAGES = TUT_PAGES_BASE;
+      tutPage = 0;
+      renderTut();
+      els.tutNext.style.display = 'block';
+    });
+
+    document.getElementById('btnTutProduits').addEventListener('click', async ()=>{
+      tutMode = 'produits';
+      TUT_PAGES = TUT_PAGES_PRODUITS;
+      tutPage = 0;
+      renderTut();
+      els.tutNext.style.display = 'block';
     });
   }
 
-  els.histClear.addEventListener('click', ()=>{
-    els.histQuery.value = '';
-    renderMicroHistory();
-  });
-  els.histQuery.addEventListener('input', ()=> renderMicroHistory());
-
-  function renderTut(){
-    const pages = [
-      { title: "1) Choisir la boutique", text: "Dans PrestaShop, sélectionne la boutique Pigalle OU Gambetta depuis un onglet (ex : Tableau de bord)." },
-      { title: "2) Accéder au rapport", text: "Va dans Commandes → Rapport Commandes TVA Bénéfices." },
-      { title: "3) Paramétrer l'export", text: "Préférences d'export : Type de rapport = Catégories ; Format = html (souvent déjà sélectionné)." },
-      { title: "4) Définir la période", text: "Par date de commande : indique date de début et date de fin. Pour un jour : même date début/fin." },
-      { title: "5) Statuts", text: "Tout décocher, puis cocher uniquement Store - Sale." },
-      { title: "6) Export + copier", text: "Cliquer Exporter, puis Ctrl+A → Ctrl+C sur la page du tableau." },
-      { title: "7) Coller", text: "Ici : Ctrl+V. L'analyse se lance automatiquement et les résultats apparaissent." }
-    ];
-    const p = pages[tutPage];
-    els.tutContent.innerHTML = `
-      <h3 class="pageTitle">${escapeHtml(p.title)}</h3>
-      <div class="pageText">${escapeHtml(p.text)}</div>
-      <div class="muted" style="margin-top:10px">Si 2 boutiques sont collées : mode GLOBAL (catégories uniquement).</div>
-    `;
-    els.tutIdx.textContent = String(tutPage+1);
-    els.tutTotal.textContent = String(pages.length);
-    els.tutPrev.disabled = tutPage === 0;
-    els.tutNext.textContent = (tutPage === pages.length-1) ? 'Terminer' : 'Suivant';
+  function openTut(){
+    tutPage=0;
+    tutMode=null;
+    TUT_PAGES=[];
+    showTutorialMenu();
+    els.tutBg.style.display='flex';
   }
-  let tutPage = 0;
-  function openTut(){ tutPage=0; renderTut(); els.tutBg.style.display='flex'; }
   function closeTut(){ els.tutBg.style.display='none'; }
   els.btnTut.addEventListener('click', openTut);
   els.btnCloseTut.addEventListener('click', closeTut);
   els.tutBg.addEventListener('click', (e)=>{ if(e.target===els.tutBg) closeTut(); });
-  els.tutPrev.addEventListener('click', ()=>{ if(tutPage>0){ tutPage--; renderTut(); }});
-  els.tutNext.addEventListener('click', ()=>{ if(tutPage<6){ tutPage++; renderTut(); } else closeTut(); });
+  els.tutPrev.addEventListener('click', ()=>{
+    if(tutPage>0){
+      tutPage--;
+      renderTut();
+    } else if(tutMode){
+      tutMode=null;
+      TUT_PAGES=[];
+      tutPage=0;
+      showTutorialMenu();
+    }
+  });
+  els.tutNext.addEventListener('click', async ()=>{
+    const currentPage = TUT_PAGES[tutPage];
 
+    // Si la page demande de charger les données démo au clic Suivant
+    if(currentPage && currentPage.loadDemoOnNext){
+      els.tutNext.disabled = true;
+      els.tutNext.textContent = '⏳ Chargement...';
+      await generateTestDataForTutorial();
+      els.tutNext.disabled = false;
+      els.tutNext.textContent = 'Suivant →';
+    }
+
+    if(tutPage<TUT_PAGES.length-1){
+      tutPage++;
+      renderTut();
+    } else closeTut();
+  });
+
+  // ── Paramètres ─────────────────────────────────────────────────────────────
   function syncSettingsUI(){
-    els.toggleQty.textContent = `Quantités : ${settings.showQty==='ON' ? 'VISIBLES' : 'CACHÉES'}`;
-    els.toggleEuro.textContent = `Symbole € : ${settings.showEuro==='ON' ? 'VISIBLE' : 'CACHÉ'}`;
-
     els.toggleEvt.textContent = `Événements : ${settings.eventsStandalone==='YES' ? 'CATÉGORIE' : 'RÉPARTIS'}`;
     els.toggleJdr.textContent = `JDR : ${settings.jdrStandalone==='YES' ? 'CATÉGORIE' : 'DANS JEUX'}`;
     els.toggleMergePC.textContent = `Puzzles+Casse-tête : ${settings.mergePuzzleCasse==='YES' ? 'FUSIONNÉS' : 'SÉPARÉS'}`;
     els.toggleTcgAcc.textContent = `Accessoires TCG : ${settings.tcgAccessoriesInTcg==='YES' ? 'DANS TCG' : 'DANS ACCESSOIRES'}`;
     els.toggleDev.textContent = `DEV : ${settings.devMode==='ON' ? 'ON' : 'OFF'}`;
 
-    els.toggleQty.classList.toggle('btnPrimary', settings.showQty==='ON');
     els.toggleEvt.classList.toggle('btnPrimary', settings.eventsStandalone==='YES');
     els.toggleJdr.classList.toggle('btnPrimary', settings.jdrStandalone==='YES');
     els.toggleTcgAcc.classList.toggle('btnPrimary', settings.tcgAccessoriesInTcg==='YES');
-
     els.devDot.classList.toggle('on', settings.devMode==='ON');
   }
 
   function persistSettings(){
-    localStorage.setItem('lgdj_qty', settings.showQty);
-    localStorage.setItem('lgdj_euro', settings.showEuro);
     localStorage.setItem('lgdj_evt', settings.eventsStandalone);
     localStorage.setItem('lgdj_jdr', settings.jdrStandalone);
     localStorage.setItem('lgdj_merge_pc', settings.mergePuzzleCasse);
@@ -2492,14 +3958,8 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
     localStorage.setItem('lgdj_dev', settings.devMode);
   }
 
-  function openSet(){
-    syncSettingsUI();
-    els.setBg.style.display='flex';
-  }
-  function closeSet(){
-    els.setBg.style.display='none';
-  }
-
+  function openSet(){ syncSettingsUI(); els.setBg.style.display='flex'; }
+  function closeSet(){ els.setBg.style.display='none'; }
   els.btnSettings.addEventListener('click', openSet);
   els.btnCloseSet.addEventListener('click', closeSet);
   els.setBg.addEventListener('click', (e)=>{ if(e.target===els.setBg) closeSet(); });
@@ -2518,63 +3978,43 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
     prevSettingsSnap = after;
     syncSettingsUI();
 
-    if(parsed){
-      parseAll();
-    } else {
-      renderMicroHistory();
-      render();
-    }
+    if(parsed){ parseAll(); }
+    else { renderMicroHistory(); render(); }
   }
 
-  els.toggleQty.addEventListener('click', ()=>{
-    settings.showQty = (settings.showQty==='ON') ? 'OFF' : 'ON';
-    applySettingsAndReparse();
-  });
-  els.toggleEuro.addEventListener('click', ()=>{
-    settings.showEuro = (settings.showEuro==='ON') ? 'OFF' : 'ON';
-    applySettingsAndReparse();
-  });
-  els.toggleEvt.addEventListener('click', ()=>{
-    settings.eventsStandalone = (settings.eventsStandalone==='YES') ? 'NO' : 'YES';
-    applySettingsAndReparse();
-  });
-  els.toggleJdr.addEventListener('click', ()=>{
-    settings.jdrStandalone = (settings.jdrStandalone==='YES') ? 'NO' : 'YES';
-    applySettingsAndReparse();
-  });
-  els.toggleMergePC.addEventListener('click', ()=>{
-    settings.mergePuzzleCasse = (settings.mergePuzzleCasse==='YES') ? 'NO' : 'YES';
-    applySettingsAndReparse();
-  });
-  els.toggleTcgAcc.addEventListener('click', ()=>{
-    settings.tcgAccessoriesInTcg = (settings.tcgAccessoriesInTcg==='YES') ? 'NO' : 'YES';
-    applySettingsAndReparse();
-  });
-  els.toggleDev.addEventListener('click', ()=>{
-    settings.devMode = (settings.devMode==='ON') ? 'OFF' : 'ON';
-    applySettingsAndReparse();
-  });
+  els.toggleEvt.addEventListener('click', ()=>{ settings.eventsStandalone = (settings.eventsStandalone==='YES') ? 'NO' : 'YES'; applySettingsAndReparse(); });
+  els.toggleJdr.addEventListener('click', ()=>{ settings.jdrStandalone = (settings.jdrStandalone==='YES') ? 'NO' : 'YES'; applySettingsAndReparse(); });
+  els.toggleMergePC.addEventListener('click', ()=>{ settings.mergePuzzleCasse = (settings.mergePuzzleCasse==='YES') ? 'NO' : 'YES'; applySettingsAndReparse(); });
+  els.toggleTcgAcc.addEventListener('click', ()=>{ settings.tcgAccessoriesInTcg = (settings.tcgAccessoriesInTcg==='YES') ? 'NO' : 'YES'; applySettingsAndReparse(); });
+  els.toggleDev.addEventListener('click', ()=>{ settings.devMode = (settings.devMode==='ON') ? 'OFF' : 'ON'; applySettingsAndReparse(); });
 
   els.btnReset.addEventListener('click', ()=>{
     const ok = confirm("Réinitialiser les paramètres par défaut ?");
     if(!ok) return;
     Object.assign(settings, DEFAULTS);
-    lastDiffText = "—";
-    prevSettingsSnap = snapshotSettings();
-    dupConfirmedSig = null;
+    lastDiffText = "—"; prevSettingsSnap = snapshotSettings(); dupConfirmedSig = null;
     applySettingsAndReparse();
   });
 
+  // ── Changelog ──────────────────────────────────────────────────────────────
   function openVer(){
     els.verContent.innerHTML = `
-      <h3 class="pageTitle">v0.7.16</h3>
+      <h3 class="pageTitle">v0.8.1</h3>
       <div class="pageText">
         <ul>
-          <li><b>v0.7.16</b> • Lorcana : "Cartes à l'unité" est désormais cliquable → drill-down par série</li>
-          <li><b>v0.7.16</b> • Clic sur le NOM d'une catégorie dans la légende → copie le nom dans le presse-papier</li>
-          <li><b>v0.7.16</b> • Lorcana : "Disney Lorcana - Série X" regroupées en "Cartes à l'unité"</li>
-          <li><b>v0.7.15</b> • Tous les montants cliquables pour copier · CA Total hors TCG/Escape/Évt</li>
-          <li><b>v0.7.14</b> • Retrait épinglage, bouton DEV flottant, fix historique</li>
+          <li><b>v0.8.1</b> • Support du format d'export PrestaShop "Produits" (détection automatique vs. Catégories)</li>
+          <li><b>v0.8.1</b> • Drilldown produits : cliquer sur une sous-catégorie feuille affiche les produits vendus</li>
+          <li><b>v0.8.1</b> • Overlay "📦 Produits vendus" : liste complète par fournisseur ou flat, filtres chips catégories, tri Qté/PVHT</li>
+          <li><b>v0.8.1</b> • Overlay : affichage boutique + période avec nombre de jours ; badges mode (Catégories/Produits) dans l'historique</li>
+          <li><b>v0.8.1</b> • Micro-tip intelligente : « Export Catégories détecté » avec dismissal 7 jours (localStorage)</li>
+          <li><b>v0.8.1</b> • Paramètres : quantités et € toujours affichés (simplification UI)</li>
+          <li><b>v0.7.17</b> • Labels relatifs (aujourd'hui/hier) recalculés à l'affichage, pas au collage. Refresh toutes les heures si la page reste ouverte.</li>
+          <li><b>v0.7.17</b> • Filtres boutique dans l'historique (Gambetta / Pigalle / 2 Boutiques)</li>
+          <li><b>v0.7.17</b> • Mini calendrier dans l'historique — les jours avec données sont cliquables</li>
+          <li><b>v0.7.17</b> • Heure affichée si le CA correspond à aujourd'hui (badge ⏰ + info dans l'historique)</li>
+          <li><b>v0.7.17</b> • Encadré "Valider &amp; Sauvegarder" pour les CA du jour (validation manuelle de caisse fermée)</li>
+          <li><b>v0.7.16</b> • Lorcana "Cartes à l'unité" cliquable + clic nom catégorie = copie</li>
+          <li><b>v0.7.15</b> • Montants cliquables · CA hors TCG/Escape/Évt</li>
         </ul>
       </div>
     `;
@@ -2585,13 +4025,11 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
   els.btnCloseVer.addEventListener('click', closeVer);
   els.verBg.addEventListener('click', (e)=>{ if(e.target===els.verBg) closeVer(); });
 
+  // ── Stats ──────────────────────────────────────────────────────────────────
   let activeTab = 'used';
   function statsText(tab){
     const arr = debug[tab] || [];
-    const head =
-      tab === 'used' ? 'Lignes utilisées (prises en compte)' :
-      tab === 'err'  ? 'Erreurs (boutique détectée mais montant HT introuvable)' :
-                       'Ignorées (hors tableau / non pertinentes)';
+    const head = tab === 'used' ? 'Lignes utilisées' : tab === 'err' ? 'Erreurs' : 'Ignorées';
     els.statsHint.textContent = `${head} — ${arr.length}`;
     return arr.map((x,i)=>`#${i+1} • ${x.reason}\n${x.line}`).join("\n\n");
   }
@@ -2601,8 +4039,7 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
   function openStats(){
     activeTab = 'used';
     document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===activeTab));
-    renderStats();
-    els.statsBg.style.display='flex';
+    renderStats(); els.statsBg.style.display='flex';
   }
   function closeStats(){ els.statsBg.style.display='none'; }
   els.btnStats.addEventListener('click', openStats);
@@ -2623,18 +4060,15 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
     } catch {
       const ta = document.createElement('textarea');
       ta.value = els.statsBox.textContent || '';
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
       els.btnCopyStats.textContent = 'Copié';
       setTimeout(()=> els.btnCopyStats.textContent='Copier', 900);
     }
   });
 
+  // ── Coller / vider ─────────────────────────────────────────────────────────
   function doPasteOrClear(){
-    clearParseError();
-    clearDupWarn();
+    clearParseError(); clearDupWarn();
     const has = (els.raw.value || '').trim().length > 0;
 
     if(has){
@@ -2642,25 +4076,19 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
       parsed = null;
       view = { level:'dashboard', category:null, tcgLicense:null, globalOnly:false };
       debug = { used: [], err: [], ignored: [] };
-      els.metaLines.textContent = '0';
-      els.metaUsed.textContent = '0';
-      els.metaErr.textContent = '0';
+      els.metaLines.textContent = '0'; els.metaUsed.textContent = '0'; els.metaErr.textContent = '0';
       els.warnTwo.style.display = 'none';
       els.leftSans.textContent = '—'; els.leftSans.dataset.rawValue = '';
       els.leftTot.textContent  = '—'; els.leftTot.dataset.rawValue = '';
-      render();
-      els.raw.focus();
+      els.saveBanner.classList.remove('show');
+      if(hourlyTimer){ clearInterval(hourlyTimer); hourlyTimer = null; }
+      render(); els.raw.focus();
       return;
     }
 
     navigator.clipboard.readText().then(text=>{
-      if(text && text.trim()){
-        els.raw.value = text;
-        scheduleParse(true);
-        els.raw.focus();
-      } else {
-        els.raw.focus();
-      }
+      if(text && text.trim()){ els.raw.value = text; scheduleParse(true); els.raw.focus(); }
+      else els.raw.focus();
     }).catch(()=> els.raw.focus());
   }
   els.btnPaste.addEventListener('click', doPasteOrClear);
@@ -2673,15 +4101,13 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
         parsed = null;
         view = { level:'dashboard', category:null, tcgLicense:null, globalOnly:false };
         debug = { used: [], err: [], ignored: [] };
-        els.metaLines.textContent = '0';
-        els.metaUsed.textContent = '0';
-        els.metaErr.textContent = '0';
+        els.metaLines.textContent = '0'; els.metaUsed.textContent = '0'; els.metaErr.textContent = '0';
         els.warnTwo.style.display = 'none';
         els.leftSans.textContent = '—'; els.leftSans.dataset.rawValue = '';
         els.leftTot.textContent  = '—'; els.leftTot.dataset.rawValue = '';
-        clearDupWarn();
-        render();
-        return;
+        clearDupWarn(); els.saveBanner.classList.remove('show');
+        if(hourlyTimer){ clearInterval(hourlyTimer); hourlyTimer = null; }
+        render(); return;
       }
       parseAll();
     }, immediate ? 0 : 280);
@@ -2690,31 +4116,21 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
   els.raw.addEventListener('paste', ()=> scheduleParse(false));
 
   document.addEventListener('keydown', (e)=>{
-    if(e.key === 'Escape'){
-      closeTut(); closeSet(); closeVer(); closeStats(); closeDev(); closeDupModal();
-    }
+    if(e.key === 'Escape'){ closeTut(); closeSet(); closeVer(); closeStats(); closeDev(); closeDupModal(); }
   });
 
-  // ── MODIFIÉ : copie au clic sur les totaux ─────────────────────────────────
+  // ── Copyable ───────────────────────────────────────────────────────────────
   function updateCopyableValue(spanEl, numericValue){
-    if(!Number.isFinite(numericValue)){
-      spanEl.dataset.rawValue = '';
-      return;
-    }
-    // Nombre brut avec virgule décimale (format FR), sans € ni espace
+    if(!Number.isFinite(numericValue)){ spanEl.dataset.rawValue = ''; return; }
     spanEl.dataset.rawValue = numericValue.toFixed(2).replace('.', ',');
   }
 
   async function copyToClipboard(text){
-    try{
-      await navigator.clipboard.writeText(text);
-    } catch {
+    try{ await navigator.clipboard.writeText(text); }
+    catch {
       const ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
     }
   }
 
@@ -2724,7 +4140,6 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
       if(!raw) return;
       await copyToClipboard(raw);
       spanEl.classList.remove('copyFlash');
-      // Force reflow pour relancer l'animation si on clique plusieurs fois
       void spanEl.offsetWidth;
       spanEl.classList.add('copyFlash');
       spanEl.addEventListener('animationend', ()=> spanEl.classList.remove('copyFlash'), {once:true});
@@ -2734,11 +4149,99 @@ ${payload.boutiqueLabel ? `<br><b>Boutique</b> : ${escapeHtml(payload.boutiqueLa
   makeCopyable(els.leftSans);
   makeCopyable(els.leftTot);
 
+  // ── Init ───────────────────────────────────────────────────────────────────
   els.btnVer.textContent = VERSION;
   els.ver2.textContent = VERSION;
   prevSettingsSnap = snapshotSettings();
   syncSettingsUI();
   setThemeForBoutique('PIGALLE', false);
+
+  // ── Mises à jour (v0.8.1) ─────────────────────────────────────────────────────
+  function openUpdate(){
+    els.updateContent.innerHTML = `
+      <div style="display:grid;gap:16px">
+        <div>
+          <h4 style="margin:0 0 12px 0;color:#34d399;font-size:14px;font-weight:900">1️⃣  Export Produits : nouveau format recommandé</h4>
+          <div style="font-size:13px;line-height:1.65;color:var(--text)">
+            <p style="margin:0 0 8px 0"><b>Ça change quoi ?</b> Tu peux maintenant coller directement l'export « Produits » de PrestaShop (au lieu de « Catégories »). Ça te donne beaucoup plus de détails.</p>
+            <p style="margin:0 0 8px 0"><b>Comment ça marche :</b></p>
+            <ul style="margin:0;padding-left:20px">
+              <li>PrestaShop → Commandes → Rapport → <b>Type = Produits</b></li>
+              <li>Copie l'export complet (Ctrl+A → Ctrl+C)</li>
+              <li>Colle ici (Ctrl+V) — ça marche comme avant</li>
+            </ul>
+            <p style="margin:8px 0 0 0"><i>L'app détecte automatiquement le format. Pas besoin de changer les paramètres.</i></p>
+          </div>
+        </div>
+
+        <div>
+          <h4 style="margin:0 0 12px 0;color:#34d399;font-size:14px;font-weight:900">2️⃣  Voir les produits vendus par fournisseur</h4>
+          <div style="font-size:13px;line-height:1.65;color:var(--text)">
+            <p style="margin:0 0 8px 0"><b>Ça change quoi ?</b> Après avoir collé un export « Produits », un bouton « 📦 Produits vendus » apparaît. Clic dessus pour explorer qui a vendu quoi, chez quel fournisseur.</p>
+            <p style="margin:0 0 8px 0"><b>Comment ça marche :</b></p>
+            <ul style="margin:0;padding-left:20px">
+              <li>Cliquer sur « 📦 Produits vendus » → liste de tous les produits</li>
+              <li>Groupe par fournisseur par défaut (ou « Tous les produits » pour une liste plate)</li>
+              <li>Trier : Qté (quantités vendues) ou PVHT (prix HT)</li>
+              <li>Filtrer par catégories avec les chips en haut</li>
+            </ul>
+            <p style="margin:8px 0 0 0"><i>Astuce : tu peux aussi cliquer directement sur une catégorie de produit dans les résultats → affiche les produits de cette catégorie.</i></p>
+          </div>
+        </div>
+
+        <div>
+          <h4 style="margin:0 0 12px 0;color:#34d399;font-size:14px;font-weight:900">3️⃣  Copier le CA rapidement</h4>
+          <div style="font-size:13px;line-height:1.65;color:var(--text)">
+            <p style="margin:0 0 8px 0"><b>Ça change quoi ?</b> Les montants CA (« CA Total hors TCG/Escape/Évt » et « CA TOTAL GLOBAL ») sont maintenant cliquables pour copier directement dans le presse-papier.</p>
+            <p style="margin:0 0 8px 0"><b>Comment ça marche :</b></p>
+            <ul style="margin:0;padding-left:20px">
+              <li>Voir un montant CA à gauche</li>
+              <li>Cliquer dessus → copié automatiquement</li>
+              <li>Coller n'importe où (Excel, formulaire, etc.)</li>
+            </ul>
+            <p style="margin:8px 0 0 0"><i>Pratique pour fermer la caisse rapidement sans recopier les chiffres.</i></p>
+          </div>
+        </div>
+
+        <div style="padding:12px;border-radius:10px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.20)">
+          <div style="font-size:12px;color:var(--muted);line-height:1.6">
+            <b style="color:#34d399">💡 Conseil</b> : Pour avoir tous les détails (fournisseurs, quantités, prix unitaires), privilégie l'export « <b>Produits</b> » dans PrestaShop. C'est l'export recommandé à partir de maintenant. L'export « Catégories » fonctionne toujours mais c'est moins détaillé.
+          </div>
+        </div>
+
+        <div style="padding:10px;border-radius:8px;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.20)">
+          <div style="font-size:11px;color:var(--muted);line-height:1.5">
+            <b>ℹ️ Info</b> : L'historique des exports est conservé — tu retrouves tes précédents collages avec les filtres et le calendrier.
+          </div>
+        </div>
+      </div>
+    `;
+    els.updateBg.style.display='flex';
+  }
+  function closeUpdate(){
+    els.updateBg.style.display='none';
+    // Arrêter le clignotement après 2.5 secondes (si c'est le premier lancement)
+    setTimeout(()=>{
+      els.btnUpdateNotif.style.animation = 'none';
+    }, 2500);
+  }
+
+  els.btnCloseUpdate.addEventListener('click', closeUpdate);
+  els.updateBg.addEventListener('click', (e)=>{ if(e.target===els.updateBg) closeUpdate(); });
+  els.btnUpdateNotif.addEventListener('click', openUpdate);
+
+  // Vérifier si c'est le premier lancement (localStorage check)
+  const HAS_SEEN_UPDATE_081 = 'lgdj_seen_update_v081';
+  if(!localStorage.getItem(HAS_SEEN_UPDATE_081)){
+    setTimeout(()=>{
+      openUpdate();
+      localStorage.setItem(HAS_SEEN_UPDATE_081, 'true');
+    }, 600);
+  } else {
+    // Au chargement, arrêter l'animation du bouton (si elle était appliquée)
+    els.btnUpdateNotif.style.animation = 'none';
+  }
+
   renderMicroHistory();
   render();
 </script>
