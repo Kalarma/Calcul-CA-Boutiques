@@ -375,8 +375,9 @@
     /* ── HISTORIQUE ─────────────────────────────────────── */
     .histControls{
       display:flex;
-      flex-direction:column;
       gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
     }
 
     .histFilterRow{
@@ -512,9 +513,9 @@
       border-radius: 14px;
       padding:8px 42px 8px 10px;
       display:flex;
+      flex-wrap:wrap;
       align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      gap:4px 10px;
       cursor:pointer;
       position:relative;
     }
@@ -522,7 +523,7 @@
       background: rgba(255,255,255,.10);
       box-shadow: var(--hoverBox);
     }
-    .histLeft{display:flex;align-items:center;gap:8px;min-width:0}
+    .histLeft{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;flex:1;min-width:0}
     .pill{
       height:18px;
       padding:0 8px;
@@ -541,13 +542,16 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-width: 200px;
+      flex:1;
+      min-width:80px;
     }
     .histRight{
       text-align:right;
       font-weight:980;
       white-space:nowrap;
       font-size:12px;
+      margin-left:auto;
+      flex-shrink:0;
     }
     .histDel{
       position:absolute;
@@ -584,24 +588,12 @@
       background: rgba(245,158,11,.10);
     }
 
-    /* Badge mode Catégories / Produits dans l'historique */
+    /* Badge mode Catégories / Produits dans l'historique — emoji seul */
     .histModeBadge{
-      font-size:10px;
-      font-weight:900;
-      white-space:nowrap;
-      padding:1px 6px;
-      border-radius:4px;
+      font-size:13px;
+      line-height:1;
       flex-shrink:0;
-    }
-    .histModeProduits{
-      color:#34d399;
-      border:1px solid rgba(52,211,153,.30);
-      background: rgba(52,211,153,.10);
-    }
-    .histModeCats{
-      color:var(--muted);
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
+      opacity:.75;
     }
 
     /* Micro-tip "export Catégories" */
@@ -1114,7 +1106,6 @@
                 <button class="histFilterBtn fPigalle" data-filter="Pigalle" id="fPigalle">Pigalle</button>
                 <button class="histFilterBtn fTwo" data-filter="2 boutiques" id="fTwo">2 Boutiques</button>
               </div>
-
             </div>
 
             <div class="microHist" id="microHist"></div>
@@ -1560,7 +1551,9 @@
 
     let base;
     if(!same){
-      base = `du ${fmtFr(fromDt)} au ${fmtFr(toDt)}`;
+      const dayDiff = Math.round((toDt.getTime() - fromDt.getTime()) / (1000*60*60*24)) + 1;
+      const daySuffix = dayDiff > 1 ? ` • ${dayDiff} jours` : '';
+      base = `du ${fmtFr(fromDt)} au ${fmtFr(toDt)}${daySuffix}`;
     } else {
       base = fmtFr(toDt);
     }
@@ -3357,12 +3350,12 @@
         timeBadge = `<span class="histTimeBadge" title="Heure de la dernière vérification enregistrée">⏰ ${escapeHtml(h.caHour)}</span>`;
       }
 
-      // Badge mode Catégories / Produits (uniquement si l'info est connue)
+      // Badge mode Catégories / Produits (emoji seul)
       let modeBadge = '';
       if(h.isProductsMode === true){
-        modeBadge = `<span class="histModeBadge histModeProduits" title="Export Produits — détail produits disponible">📦 Produits</span>`;
+        modeBadge = `<span class="histModeBadge" title="Export Produits — détail produits disponible">📦</span>`;
       } else if(h.isProductsMode === false){
-        modeBadge = `<span class="histModeBadge histModeCats" title="Export Catégories — collé sans détail produit">📋 Catégories</span>`;
+        modeBadge = `<span class="histModeBadge" title="Export Catégories — collé sans détail produit">📋</span>`;
       }
 
       card.innerHTML = `
@@ -4241,6 +4234,52 @@ LGDJ Gambetta\t11421\tPOMES016B\tPokémon ME2.5 : Bundle 6 Boosters Héros Trans
     // Au chargement, arrêter l'animation du bouton (si elle était appliquée)
     els.btnUpdateNotif.style.animation = 'none';
   }
+
+  // Dédoublonnage : même boutique + même période → garder le collé le plus complet
+  (function deduplicateHistory(){
+    const hist = loadHist();
+    const groups = new Map();
+    for(const h of hist){
+      const key = `${h.label||''}|${h.fromStr||''}|${h.toStr||''}`;
+      if(!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(h);
+    }
+    const toRemove = new Set();
+    for(const entries of groups.values()){
+      if(entries.length <= 1) continue;
+      // Trier par longueur de rawText décroissante (plus de données = mieux)
+      entries.sort((a, b) => (b.rawText||'').length - (a.rawText||'').length);
+      for(let i = 1; i < entries.length; i++) toRemove.add(entries[i].id);
+    }
+    if(toRemove.size > 0){
+      saveHistUnlimited(hist.filter(h => !toRemove.has(h.id)));
+    }
+  })();
+
+  // Migration des anciens labels statiques vers les dates brutes
+  (function migrateHistoryDates(){
+    const hist = loadHist();
+    let changed = false;
+    for(const h of hist){
+      if(h.fromStr || h.toStr) continue; // déjà migré
+      const s = h.dateStr || '';
+      if(!s) continue;
+      // Chercher "du JJ/MM/AAAA au JJ/MM/AAAA"
+      const range = s.match(/du\s+(\d{2}\/\d{2}\/\d{4})\s+au\s+(\d{2}\/\d{2}\/\d{4})/);
+      // Chercher un seul "JJ/MM/AAAA"
+      const single = s.match(/(\d{2}\/\d{2}\/\d{4})/);
+      if(range){
+        h.fromStr = range[1];
+        h.toStr   = range[2];
+        changed = true;
+      } else if(single){
+        h.fromStr = single[1];
+        h.toStr   = single[1];
+        changed = true;
+      }
+    }
+    if(changed) saveHistUnlimited(hist);
+  })();
 
   renderMicroHistory();
   render();
